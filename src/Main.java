@@ -5,7 +5,10 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.*;
+
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -96,7 +99,7 @@ public class Main {
 
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
-        //glEnable(GL_CULL_FACE);
+        glEnable(GL_CULL_FACE);
         //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
         // Set the clear color
@@ -218,60 +221,91 @@ public class Main {
         };
 
         float[] cube2 = {
-                -4.0f,-4.0f,-4.0f,
-                -4.0f,-4.0f, 4.0f,
-                -4.0f, 4.0f, 4.0f,
-                4.0f, 4.0f,-4.0f,
-                -4.0f,-4.0f,-4.0f,
-                -4.0f, 4.0f,-4.0f,
-                4.0f,-4.0f, 4.0f,
-                -4.0f,-4.0f,-4.0f,
-                4.0f,-4.0f,-4.0f,
-                4.0f, 4.0f,-4.0f,
-                4.0f,-4.0f,-4.0f,
-                -4.0f,-4.0f,-4.0f,
-                -4.0f,-4.0f,-4.0f,
-                -4.0f, 4.0f, 4.0f,
-                -4.0f, 4.0f,-4.0f,
-                4.0f,-4.0f, 4.0f,
-                -4.0f,-4.0f, 4.0f,
-                -4.0f,-4.0f,-4.0f,
-                -4.0f, 4.0f, 4.0f,
-                -4.0f,-4.0f, 4.0f,
-                4.0f,-4.0f, 4.0f,
-                4.0f, 4.0f, 4.0f,
-                4.0f,-4.0f,-4.0f,
-                4.0f, 4.0f,-4.0f,
-                4.0f,-4.0f,-4.0f,
-                4.0f, 4.0f, 4.0f,
-                4.0f,-4.0f, 4.0f,
-                4.0f, 4.0f, 4.0f,
-                4.0f, 4.0f,-4.0f,
-                -4.0f, 4.0f,-4.0f,
-                4.0f, 4.0f, 4.0f,
-                -4.0f, 4.0f,-4.0f,
-                -4.0f, 4.0f, 4.0f,
-                4.0f, 4.0f, 4.0f,
-                -4.0f, 4.0f, 4.0f,
-                4.0f,-4.0f, 4.0f
+                5.0f,5.0f,5.0f,
+                5.0f,5.0f, 7.0f,
+                5.0f, 7.0f, 7.0f,
+                7.0f, 7.0f,5.0f,
+                5.0f,5.0f,5.0f,
+                5.0f, 7.0f,5.0f,
+                7.0f,5.0f, 7.0f,
+                5.0f,5.0f,5.0f,
+                7.0f,5.0f,5.0f,
+                7.0f, 7.0f,5.0f,
+                7.0f,5.0f,5.0f,
+                5.0f,5.0f,5.0f,
+                5.0f,5.0f,5.0f,
+                5.0f, 7.0f, 7.0f,
+                5.0f, 7.0f,5.0f,
+                7.0f,5.0f, 7.0f,
+                5.0f,5.0f, 7.0f,
+                5.0f,5.0f,5.0f,
+                5.0f, 7.0f, 7.0f,
+                5.0f,5.0f, 7.0f,
+                7.0f,5.0f, 7.0f,
+                7.0f, 7.0f, 7.0f,
+                7.0f,5.0f,5.0f,
+                7.0f, 7.0f,5.0f,
+                7.0f,5.0f,5.0f,
+                7.0f, 7.0f, 7.0f,
+                7.0f,5.0f, 7.0f,
+                7.0f, 7.0f, 7.0f,
+                7.0f, 7.0f,5.0f,
+                5.0f, 7.0f,5.0f,
+                7.0f, 7.0f, 7.0f,
+                5.0f, 7.0f,5.0f,
+                5.0f, 7.0f, 7.0f,
+                7.0f, 7.0f, 7.0f,
+                5.0f, 7.0f, 7.0f,
+                7.0f,5.0f, 7.0f
         };
         //endregion
 
         int vertexArrayId = glGenVertexArrays();
         glBindVertexArray(vertexArrayId);
 
-        FloatBuffer objectBuffer = BufferUtils.createFloatBuffer(cube1.length*2);
-        objectBuffer.put(cube1);
-        objectBuffer.put(cube2);
+        //objectBuffer.put(cube1);
+
+        int size = 0;
+        int vertCount = 0;
+
+        Obj model = null;
+        try {
+            model = OBJLoader.loadModel(new File("src/text.obj"));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        size = model.getFaces().size()*9 + cube2.length*2;
+
+        FloatBuffer objectBuffer = BufferUtils.createFloatBuffer(size);
+        float[] points = new float[model.getFaces().size()*9 + cube2.length];
+        for (Obj.Face face : model.getFaces()) {
+            Vector3f[] vertices = {
+                    model.getVertices().get(face.getVertices()[0] - 1),
+                    model.getVertices().get(face.getVertices()[1] - 1),
+                    model.getVertices().get(face.getVertices()[2] - 1)
+            };
+            {
+                points[vertCount] = vertices[0].x();
+                points[vertCount+1] = vertices[0].y();
+                points[vertCount+2] = vertices[0].z();
+                points[vertCount+3] = vertices[1].x();
+                points[vertCount+4] = vertices[1].y();
+                points[vertCount+5] = vertices[1].z();
+                points[vertCount+6] = vertices[2].x();
+                points[vertCount+7] = vertices[2].y();
+                points[vertCount+8] = vertices[2].z();
+                vertCount+=9;
+            }
+
+        }
+        objectBuffer.put(points);
+        //objectBuffer.put(cube2);
         objectBuffer.flip();
+
         int vertexBuffer = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
         glBufferData(GL_ARRAY_BUFFER, objectBuffer, GL_STATIC_DRAW);
-
-
-        /*FloatBuffer vertices2Buffer = BufferUtils.createFloatBuffer(vertices2.length);
-        vertices2Buffer.put(vertices2).flip();
-        glBufferData(GL_ARRAY_BUFFER, vertices2Buffer, GL_STATIC_DRAW);*/
 
 
         FloatBuffer colorBuffer = BufferUtils.createFloatBuffer(colors.length);
@@ -305,7 +339,7 @@ public class Main {
             glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
 
 
-            glDrawArrays(GL_TRIANGLES, 0, cube1.length);
+            glDrawArrays(GL_TRIANGLES, 0, size*2);
             glDisableVertexAttribArray(0);
             glDisableVertexAttribArray(1);
 
