@@ -24,7 +24,7 @@ public class Camera {
     static Vector3f position = new Vector3f(0,0,5);
     static float horizAngle = 3.14f;
     static float vertAngle = 0f;
-    static float initialFOV = 45;
+    static float initialFOV = 120;
 
     static float speed =5;
     static float mouseSpeed = 0.0005f;

@@ -1,24 +1,30 @@
-/*
+package IO;/*
  * Copyright LWJGL. All rights reserved.
  * License terms: https://www.lwjgl.org/license
  */
-import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
-import org.lwjgl.system.*;
 
-import java.io.*;
-import java.nio.*;
-import java.util.*;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.system.Callback;
+import org.lwjgl.system.MemoryStack;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.Objects;
 
 import static java.lang.Math.*;
-import static org.lwjgl.glfw.Callbacks.*;
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.stb.STBImageResize.*;
-import static org.lwjgl.system.MemoryStack.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.*;
-public final class Image {
+
+public class Image {
 
     private final ByteBuffer image;
 
@@ -36,10 +42,12 @@ public final class Image {
 
     private Callback debugProc;
 
-    private Image(String imagePath) {
+    private int texID;
+
+    public Image(String imagePath) {
         ByteBuffer imageBuffer;
         try {
-            imageBuffer = ioResourceToByteBuffer(imagePath, 8 * 1024);
+            imageBuffer = IOUtil.ioResourceToByteBuffer(imagePath, 8 * 1024);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -56,11 +64,12 @@ public final class Image {
             } else {
                 System.out.println("OK with reason: " + stbi_failure_reason());
             }
+            stbi_set_flip_vertically_on_load(true);
 
-            System.out.println("Image width: " + w.get(0));
-            System.out.println("Image height: " + h.get(0));
-            System.out.println("Image components: " + comp.get(0));
-            System.out.println("Image HDR: " + stbi_is_hdr_from_memory(imageBuffer));
+            System.out.println("IO.Image width: " + w.get(0));
+            System.out.println("IO.Image height: " + h.get(0));
+            System.out.println("IO.Image components: " + comp.get(0));
+            System.out.println("IO.Image HDR: " + stbi_is_hdr_from_memory(imageBuffer));
 
             // Decode the image
             image = stbi_load_from_memory(imageBuffer, w, h, comp, 0);
@@ -74,28 +83,10 @@ public final class Image {
         }
     }
 
-    public static void main(String[] args) {
-        String imagePath;
-        if (args.length == 0) {
-            System.out.println("Use 'ant demo -Dclass=org.lwjgl.demo.stb.Image -Dargs=<path>' to load a different image.\n");
-            imagePath = "lwjgl32.png";
-        } else {
-            imagePath = args[0];
-        }
-        new Image(imagePath).run();
-    }
-
-    private void run() {
-        try {
-            init();
-
-            loop();
-        } finally {
-            try {
-                destroy();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    public Image(String filepath, boolean autoCreateTexture){
+        this(filepath);
+        if(autoCreateTexture){
+            createTexture();
         }
     }
 
@@ -107,92 +98,11 @@ public final class Image {
         glLoadIdentity();
         glOrtho(0.0, width, height, 0.0, -1.0, 1.0);
         glMatrixMode(GL_MODELVIEW);
+        framebufferSizeChanged(window, width, height);
     }
 
     private static void framebufferSizeChanged(long window, int width, int height) {
         glViewport(0, 0, width, height);
-    }
-
-    private void init() {
-        GLFWErrorCallback.createPrint().set();
-        if (!glfwInit()) {
-            throw new IllegalStateException("Unable to initialize GLFW");
-        }
-
-        glfwDefaultWindowHints();
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-
-        GLFWVidMode vidmode = Objects.requireNonNull(glfwGetVideoMode(glfwGetPrimaryMonitor()));
-
-        ww = max(800, min(w, vidmode.width() - 160));
-        wh = max(600, min(h, vidmode.height() - 120));
-
-        this.window = glfwCreateWindow(ww, wh, "STB Image Demo", NULL, NULL);
-        if (window == NULL) {
-            throw new RuntimeException("Failed to create the GLFW window");
-        }
-
-        // Center window
-        glfwSetWindowPos(
-                window,
-                (vidmode.width() - ww) / 2,
-                (vidmode.height() - wh) / 2
-        );
-
-        glfwSetWindowRefreshCallback(window, window -> render());
-        glfwSetWindowSizeCallback(window, this::windowSizeChanged);
-        glfwSetFramebufferSizeCallback(window, Image::framebufferSizeChanged);
-
-        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-            switch (key) {
-                case GLFW_KEY_LEFT_CONTROL:
-                case GLFW_KEY_RIGHT_CONTROL:
-                    ctrlDown = action != GLFW_RELEASE;
-            }
-
-            if (action == GLFW_RELEASE) {
-                return;
-            }
-
-            switch (key) {
-                case GLFW_KEY_ESCAPE:
-                    glfwSetWindowShouldClose(window, true);
-                    break;
-                case GLFW_KEY_KP_ADD:
-                case GLFW_KEY_EQUAL:
-                    setScale(scale + 1);
-                    break;
-                case GLFW_KEY_KP_SUBTRACT:
-                case GLFW_KEY_MINUS:
-                    setScale(scale - 1);
-                    break;
-                case GLFW_KEY_0:
-                case GLFW_KEY_KP_0:
-                    if (ctrlDown) {
-                        setScale(0);
-                    }
-                    break;
-            }
-        });
-
-        glfwSetScrollCallback(window, (window, xoffset, yoffset) -> {
-            if (ctrlDown) {
-                setScale(scale + (int)yoffset);
-            }
-        });
-
-        // Create context
-        glfwMakeContextCurrent(window);
-        GL.createCapabilities();
-        debugProc = GLUtil.setupDebugMessageCallback();
-
-        glfwSwapInterval(1);
-        glfwShowWindow(window);
-
-        glfwInvoke(window, this::windowSizeChanged, Image::framebufferSizeChanged);
     }
 
     private void setScale(int scale) {
@@ -213,8 +123,8 @@ public final class Image {
         }
     }
 
-    private int createTexture() {
-        int texID = glGenTextures();
+    public int createTexture() {
+        texID = glGenTextures();
 
         glBindTexture(GL_TEXTURE_2D, texID);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -276,6 +186,116 @@ public final class Image {
         }
 
         return texID;
+    }
+
+    public int getTexID() {
+        return texID;
+    }
+
+    public static void main(String[] args) {
+        String imagePath;
+        if (args.length == 0) {
+            System.out.println("Use 'ant demo -Dclass=org.lwjgl.demo.stb.IO.Image -Dargs=<path>' to load a different image.\n");
+            imagePath = "bin/texture.png";
+        } else {
+            imagePath = args[0];
+        }
+        new Image(imagePath).run();
+    }
+
+    private void run() {
+        try {
+            init();
+
+            loop();
+        } finally {
+            try {
+                destroy();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void init() {
+        GLFWErrorCallback.createPrint().set();
+        if (!glfwInit()) {
+            throw new IllegalStateException("Unable to initialize GLFW");
+        }
+
+        glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+
+        GLFWVidMode vidmode = Objects.requireNonNull(glfwGetVideoMode(glfwGetPrimaryMonitor()));
+
+        ww = max(800, min(w, vidmode.width() - 160));
+        wh = max(600, min(h, vidmode.height() - 120));
+
+        this.window = glfwCreateWindow(ww, wh, "STB IO.Image Demo", NULL, NULL);
+        if (window == NULL) {
+            throw new RuntimeException("Failed to create the GLFW window");
+        }
+
+        // Center window
+        glfwSetWindowPos(
+                window,
+                (vidmode.width() - ww) / 2,
+                (vidmode.height() - wh) / 2
+        );
+
+        glfwSetWindowRefreshCallback(window, window -> render());
+        glfwSetWindowSizeCallback(window, this::windowSizeChanged);
+        glfwSetFramebufferSizeCallback(window, Image::framebufferSizeChanged);
+
+        glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+            switch (key) {
+                case GLFW_KEY_LEFT_CONTROL:
+                case GLFW_KEY_RIGHT_CONTROL:
+                    ctrlDown = action != GLFW_RELEASE;
+            }
+
+            if (action == GLFW_RELEASE) {
+                return;
+            }
+
+            switch (key) {
+                case GLFW_KEY_ESCAPE:
+                    glfwSetWindowShouldClose(window, true);
+                    break;
+                case GLFW_KEY_KP_ADD:
+                case GLFW_KEY_EQUAL:
+                    setScale(scale + 1);
+                    break;
+                case GLFW_KEY_KP_SUBTRACT:
+                case GLFW_KEY_MINUS:
+                    setScale(scale - 1);
+                    break;
+                case GLFW_KEY_0:
+                case GLFW_KEY_KP_0:
+                    if (ctrlDown) {
+                        setScale(0);
+                    }
+                    break;
+            }
+        });
+
+        glfwSetScrollCallback(window, (window, xoffset, yoffset) -> {
+            if (ctrlDown) {
+                setScale(scale + (int)yoffset);
+            }
+        });
+
+        // Create context
+        glfwMakeContextCurrent(window);
+        GL.createCapabilities();
+        debugProc = GLUtil.setupDebugMessageCallback();
+
+        glfwSwapInterval(1);
+        glfwShowWindow(window);
+        glfwSetWindowSizeCallback(window, this::windowSizeChanged);
     }
 
     private void loop() {

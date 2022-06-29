@@ -1,4 +1,4 @@
-
+package IO;
 /*
 * The MIT License (MIT)
 *
@@ -30,11 +30,6 @@ import java.util.Scanner;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
-import static org.lwjgl.opengl.GL11.GL_FRONT;
-import static org.lwjgl.opengl.GL11.GL_COMPILE;
-import static org.lwjgl.opengl.GL11.GL_SHININESS;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 
 /**
  * OBJloader class. Loads in Wavefront .obj file in to the program.
@@ -45,8 +40,8 @@ public class OBJLoader extends Object {
 
     /**
      * @param file the file to be loaded
-     * @return the loaded <code>Obj</code>
-     * @throws java.io.FileNotFoundException thrown if the Obj file is not found
+     * @return the loaded <code>IO.Obj</code>
+     * @throws java.io.FileNotFoundException thrown if the IO.Obj file is not found
      */
     public static Obj loadModel(File file) throws FileNotFoundException {
         return OBJLoader.loadModel(new Scanner(file));
@@ -54,15 +49,15 @@ public class OBJLoader extends Object {
 
     /**
      * @param stream the stream to be loaded
-     * @return the loaded <code>Obj</code>
+     * @return the loaded <code>IO.Obj</code>
      */
     public static Obj loadModel(InputStream stream) {
         return OBJLoader.loadModel(new Scanner(stream));
     }
 
     /**
-     * @param sc the <code>Obj</code> to be loaded
-     * @return the loaded <code>Obj</code>
+     * @param sc the <code>IO.Obj</code> to be loaded
+     * @return the loaded <code>IO.Obj</code>
      */
     public static Obj loadModel(Scanner sc) {
         Obj model = new Obj();
