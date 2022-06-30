@@ -1,4 +1,4 @@
-package IO;
+package IO.OBJ;
 /*
 * The MIT License (MIT)
 *

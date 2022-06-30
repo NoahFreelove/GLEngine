@@ -1,4 +1,4 @@
-package IO;
+package IO.OBJ;
 /*
 * The MIT License (MIT)
 *
@@ -40,8 +40,8 @@ public class OBJLoader extends Object {
 
     /**
      * @param file the file to be loaded
-     * @return the loaded <code>IO.Obj</code>
-     * @throws java.io.FileNotFoundException thrown if the IO.Obj file is not found
+     * @return the loaded <code>IO.OBJ.Obj</code>
+     * @throws java.io.FileNotFoundException thrown if the IO.OBJ.Obj file is not found
      */
     public static Obj loadModel(File file) throws FileNotFoundException {
         return OBJLoader.loadModel(new Scanner(file));
@@ -49,15 +49,15 @@ public class OBJLoader extends Object {
 
     /**
      * @param stream the stream to be loaded
-     * @return the loaded <code>IO.Obj</code>
+     * @return the loaded <code>IO.OBJ.Obj</code>
      */
     public static Obj loadModel(InputStream stream) {
         return OBJLoader.loadModel(new Scanner(stream));
     }
 
     /**
-     * @param sc the <code>IO.Obj</code> to be loaded
-     * @return the loaded <code>IO.Obj</code>
+     * @param sc the <code>IO.OBJ.Obj</code> to be loaded
+     * @return the loaded <code>IO.OBJ.Obj</code>
      */
     public static Obj loadModel(Scanner sc) {
         Obj model = new Obj();

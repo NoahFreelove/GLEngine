@@ -11,20 +11,12 @@ public class Camera {
 
     static Matrix4f ViewMatrix;
     static Matrix4f ProjectionMatrix;
-
-
-    public static Matrix4f getViewMatrix() {
-        return ViewMatrix;
-    }
-
-    public static Matrix4f getProjectionMatrix() {
-        return ProjectionMatrix;
-    }
+    static Matrix4f ModelMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 
     static Vector3f position = new Vector3f(0,0,5);
     static float horizAngle = 3.14f;
     static float vertAngle = 0f;
-    static float initialFOV = 120;
+    static float initialFOV = 90;
 
     static float speed =5;
     static float mouseSpeed = 0.0005f;
@@ -97,12 +89,30 @@ public class Camera {
         return Math.min(v, max);
     }
 
-    public static FloatBuffer getViewBuffer(){
+    public static FloatBuffer getMVPBuffer(){
         Matrix4f mvp = new Matrix4f();
         ProjectionMatrix.mul(ViewMatrix, mvp);
+        mvp.mul(ModelMatrix, mvp);
         FloatBuffer mvpBuffer = BufferUtils.createFloatBuffer(16);
         matrixToBuffer(mvp,0,mvpBuffer);
         return mvpBuffer;
+    }
+    public static FloatBuffer getViewMatrixBuffer(){
+        FloatBuffer viewMatrixBuffer = BufferUtils.createFloatBuffer(16);
+        matrixToBuffer(ViewMatrix,0,viewMatrixBuffer);
+        return viewMatrixBuffer;
+    }
+
+    public static FloatBuffer getProjectionMatrix(){
+        FloatBuffer projectionMatrixBuffer = BufferUtils.createFloatBuffer(16);
+        matrixToBuffer(ProjectionMatrix,0,projectionMatrixBuffer);
+        return projectionMatrixBuffer;
+    }
+
+    public static FloatBuffer getModelMatrix(){
+        FloatBuffer modelMatrixBuffer = BufferUtils.createFloatBuffer(16);
+        matrixToBuffer(ModelMatrix,0,modelMatrixBuffer);
+        return modelMatrixBuffer;
     }
 
     private static void matrixToBuffer(Matrix4f m, int offset, FloatBuffer dest)
