@@ -1,3 +1,7 @@
+package Core.Shaders;
+
+import Core.Window;
+
 import static org.lwjgl.opengl.GL11.GL_FALSE;
 import static org.lwjgl.opengl.GL20.*;
 
@@ -20,7 +24,7 @@ public class ShaderManager {
                         + glGetShaderInfoLog(fragmentShaderID, glGetShaderi(fragmentShaderID, GL_INFO_LOG_LENGTH)));
 
             // Attach the shader
-            glAttachShader(Main.program, fragmentShaderID);
+            glAttachShader(Window.GetInstance().getProgram(), fragmentShaderID);
         }
         else if (type == GL_VERTEX_SHADER){
 
@@ -37,16 +41,16 @@ public class ShaderManager {
                         + glGetShaderInfoLog(vertexShaderID, glGetShaderi(vertexShaderID, GL_INFO_LOG_LENGTH)));
 
             // Attach the shader
-            glAttachShader(Main.program, vertexShaderID);
+            glAttachShader(Window.GetInstance().getProgram(), vertexShaderID);
         }
     }
 
     private static void linkShaders()
     {
-        glLinkProgram(Main.program);
+        glLinkProgram(Window.getInstance().getProgram());
 
         // Check for errors in the linking process
-        if (glGetProgrami(Main.program, GL_LINK_STATUS) == GL_FALSE)
+        if (glGetProgrami(Window.GetInstance().getProgram(), GL_LINK_STATUS) == GL_FALSE)
             throw new RuntimeException("Unable to link shader program:");
     }
 
@@ -107,7 +111,7 @@ public class ShaderManager {
                 "in vec3 LightDirection_cameraspace;\n" +
                 "\n" +
                 "// Ouput data\n" +
-                "out vec3 color;\n" +
+                "out vec4 color;\n" +
                 "\n" +
                 "// Values that stay constant for the whole mesh.\n" +
                 "uniform sampler2D myTextureSampler;\n" +
@@ -150,7 +154,7 @@ public class ShaderManager {
                 "\t//  - Looking elsewhere -> < 1\n" +
                 "\tfloat cosAlpha = clamp( dot( E,R ), 0,1 );\n" +
                 "\t\n" +
-                "\tcolor = \n" +
+                "\tcolor.rgb = \n" +
                 "\t\t// Ambient : simulates indirect lighting\n" +
                 "\t\tMaterialAmbientColor +\n" +
                 "\t\t// Diffuse : \"color\" of the object\n" +
@@ -158,6 +162,7 @@ public class ShaderManager {
                 "\t\t// Specular : reflective highlight, like a mirror\n" +
                 "\t\tMaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance);\n" +
                 "\n" +
+                "\tcolor.a = 1;\n" +
                 "}", GL_FRAGMENT_SHADER);
         linkShaders();
 

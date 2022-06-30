@@ -1,3 +1,5 @@
+package Core;
+
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -35,8 +37,8 @@ public class Camera {
 
         glfwGetCursorPos(window, xPos, yPos);
 
-        float halfWidth = Main.width/2f;
-        float halfHeight = Main.height/2f;
+        float halfWidth = Window.GetInstance().getWidth()/2f;
+        float halfHeight = Window.GetInstance().getHeight()/2f;
         glfwSetCursorPos(window, halfWidth,halfHeight);
 
         horizAngle += mouseSpeed * (halfWidth-xPos.get(0));
@@ -73,7 +75,7 @@ public class Camera {
         }
         float FOV = initialFOV;
 
-        ProjectionMatrix = new Matrix4f().perspective((float)Math.toRadians(FOV), Main.width/Main.height,0.1f,100f);
+        ProjectionMatrix = new Matrix4f().perspective((float)Math.toRadians(FOV), (float)Window.GetInstance().getWidth()/ (float)Window.GetInstance().getHeight(),0.1f,100f);
 
         ViewMatrix = new Matrix4f();
 
