@@ -226,11 +226,11 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Error loading DDS File: " + e.getMessage());
         }
-
         int matrixID = glGetUniformLocation(program, "MVP");
         int ViewMatrixID = glGetUniformLocation(program, "V");
         int ModelMatrixID = glGetUniformLocation(program, "M");
         int textureID = glGetUniformLocation(program, "myTextureSampler");
+        glUseProgram(program);
         int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
 
         while ( !glfwWindowShouldClose(window) ) {
@@ -261,7 +261,7 @@ public class Main {
 
             glEnableVertexAttribArray(2);
             glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-            glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+            glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
 
             glDrawArrays(GL_TRIANGLES, 0, objectBuffer.vertices.limit());
 
@@ -269,10 +269,7 @@ public class Main {
             glDisableVertexAttribArray(1);
             glDisableVertexAttribArray(2);
 
-            glfwSwapBuffers(window); // swap the color buffers
-
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
+            glfwSwapBuffers(window);
             glfwPollEvents();
         }
     }
