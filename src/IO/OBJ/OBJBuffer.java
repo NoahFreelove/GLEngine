@@ -4,16 +4,39 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+
 public class OBJBuffer {
     public FloatBuffer vertices;
     public FloatBuffer uvs;
     public FloatBuffer normals;
+    public final int vertexArrayId;
+
+    public final int vertexBuffer;
+    public final int uvBuffer;
+    public final int normalBuffer;
 
     public OBJBuffer(FloatBuffer vertices, FloatBuffer uvs, FloatBuffer normals)
     {
         this.vertices = vertices;
         this.uvs = uvs;
         this.normals = normals;
+        vertexArrayId = glGenVertexArrays();
+        glBindVertexArray(vertexArrayId);
+
+        vertexBuffer = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+
+        uvBuffer = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
+        glBufferData(GL_ARRAY_BUFFER, uvs, GL_STATIC_DRAW);
+
+        normalBuffer = glGenBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+        glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
     }
 
     public static OBJBuffer add(OBJBuffer a, OBJBuffer b){

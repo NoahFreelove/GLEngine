@@ -2,10 +2,12 @@ package Core;
 
 import Core.Shaders.ShaderManager;
 import IO.DDS.DDSFile;
+import IO.Image;
 import IO.OBJ.OBJBuffer;
 import IO.OBJ.OBJLoader;
 import IO.OBJ.Obj;
-import IO.OBJ.ObjToBuffer;
+import IO.OBJ.GameObjectToBuffer;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -27,16 +29,19 @@ import static org.lwjgl.opengl.GL30.*;
 
 public class Window {
 
-    private int width = 1500;
-    private int height = 1500;
+    private int width;
+    private int height;
     private static Window instance;
 
     // The window handle
     public long window;
     public int program;
 
+    Obj[] sceneObjects;
+
     public void run() {
         init();
+        loadObjects();
         loop();
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
@@ -46,6 +51,22 @@ public class Window {
         glfwTerminate();
         glfwSetErrorCallback(null).free();
     }
+
+    private void loadObjects() {
+        Obj model;
+        Obj model2;
+        try {
+            model = OBJLoader.loadModel(new File("src/bin/suzanne.obj"));
+            model2 = OBJLoader.loadModel(new File("src/bin/skybox.obj"));
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        sceneObjects = new Obj[]{model,model2};
+
+    }
+
     private Window(int width, int height){
         instance = this;
         this.width = width;
@@ -108,61 +129,24 @@ public class Window {
         GL.createCapabilities();
         program = glCreateProgram();
         ShaderManager.initShaders();
+        glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 
     private void loop() {
-
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        //glEnable(GL_CULL_FACE);
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+        initOpenGLRenderSettings();
 
         // Set the clear color
-        glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-
-        int vertexArrayId = glGenVertexArrays();
-        glBindVertexArray(vertexArrayId);
-        int vertexArray2Id = glGenVertexArrays();
-
+        glClearColor(0.0f, 0.0f, 0.7f, 0.0f);
 
         int nbFrames = 0;
         double lastTime = 0;
 
-        Obj model;
-        Obj model2;
-        try {
-            model = OBJLoader.loadModel(new File("src/bin/suzanne.obj"));
-            model2 = OBJLoader.loadModel(new File("src/bin/farcube.obj"));
+        GameObject suzanne = new GameObject(new Vector3f(0,0,0), new Quaternionf(0,0,0,0), new Vector3f(1,1,1), sceneObjects[0]);
 
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        suzanne.setPosition(new Vector3f(-30,300,0));
 
-        OBJBuffer objectBuffer = ObjToBuffer.objToBuffer(model);
-        OBJBuffer objBuffer2 = ObjToBuffer.objToBuffer(model2);
-
-        int vertexBuffer = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, objectBuffer.vertices, GL_STATIC_DRAW);
-
-        int uvBuffer = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
-        glBufferData(GL_ARRAY_BUFFER, objectBuffer.uvs, GL_STATIC_DRAW);
-
-        int normalBuffer = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-        glBufferData(GL_ARRAY_BUFFER, objectBuffer.normals, GL_STATIC_DRAW);
-
-
-        glBindVertexArray(vertexArray2Id);
-        int vertex2Buffer = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vertex2Buffer);
-        glBufferData(GL_ARRAY_BUFFER, objBuffer2.vertices, GL_STATIC_DRAW);
-
-        glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        GameObject skybox = new GameObject(new Vector3f(0,0,0), new Quaternionf(0,0,0,0), new Vector3f(1,1,1), sceneObjects[1]);
 
 
         int texture = 0;
@@ -172,10 +156,14 @@ public class Window {
         } catch (IOException e) {
             System.out.println("Error loading DDS File: " + e.getMessage());
         }
+
+        int skyboxTexture = new Image("src/bin/skybox.bmp").createTexture();
+
         int matrixID = glGetUniformLocation(program, "MVP");
         int ViewMatrixID = glGetUniformLocation(program, "V");
         int ModelMatrixID = glGetUniformLocation(program, "M");
         int textureID = glGetUniformLocation(program, "myTextureSampler");
+
         glUseProgram(program);
         int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
 
@@ -183,65 +171,69 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             glUseProgram(program);
 
-
+            //region Camera
             Camera.CheckInput(window);
-
             glUniformMatrix4fv(matrixID, false, Camera.getMVPBuffer());
             glUniformMatrix4fv(ViewMatrixID, false, Camera.getViewMatrixBuffer());
             glUniformMatrix4fv(ModelMatrixID, false, Camera.getModelMatrix());
+            //endregion
 
-            Vector3f lightPos = new Vector3f(4,4,4);
+            Vector3f lightPos = new Vector3f(4,4,10);
             glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
 
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture);
+            glBindTexture(GL_TEXTURE_2D, skyboxTexture);
             glUniform1i(textureID, 0);
 
-            glBindVertexArray(vertexArrayId);
-            glEnableVertexAttribArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-
-            glEnableVertexAttribArray(1);
-            glBindBuffer(GL_ARRAY_BUFFER, uvBuffer);
-            glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
-
-            glEnableVertexAttribArray(2);
-            glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-            glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
-
-            glDrawArrays(GL_TRIANGLES, 0, objectBuffer.vertices.limit());
-
-
-            glDisableVertexAttribArray(0);
-            glDisableVertexAttribArray(1);
-            glDisableVertexAttribArray(2);
-
-            glBindVertexArray(vertexArray2Id);
-
-            glEnableVertexAttribArray(0);
-
-            glBindBuffer(GL_ARRAY_BUFFER, vertex2Buffer);
-            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-
-            glDrawArrays(GL_TRIANGLES, 0, objBuffer2.vertices.limit()/4);
-
-            glDisableVertexAttribArray(0);
-
+            RenderGameObject(suzanne);
+            RenderGameObject(skybox);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
-
 
             double currentTime = glfwGetTime();
             nbFrames++;
             if ( currentTime - lastTime >= 1.0 ){
                 // printf and reset timer
-                System.out.printf("%f ms/frame. %d frames/s\n%n", 1000.0/nbFrames, nbFrames);
+                System.out.printf("%f ms/frame. %d frames%n", 1000.0/nbFrames, nbFrames);
                 nbFrames = 0;
                 lastTime += 1.0;
             }
         }
+    }
+
+    private void RenderGameObject(GameObject gameObject){
+
+        OBJBuffer gameObjectBuffer = gameObject.getObjectBuffer();
+
+        glBindVertexArray(gameObjectBuffer.vertexArrayId);
+
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, gameObjectBuffer.vertexBuffer);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, gameObjectBuffer.uvBuffer);
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, gameObjectBuffer.normalBuffer);
+        glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
+
+        glDrawArrays(GL_TRIANGLES, 0, gameObjectBuffer.vertices.limit());
+
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
+    }
+
+    private void initOpenGLRenderSettings() {
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        setCull(false);
+        setWireframe(false);
     }
 
     public static Window CreateWindow(int width, int height){
@@ -270,5 +262,16 @@ public class Window {
 
     public int getProgram() {
         return program;
+    }
+
+    public void setWireframe(boolean isWireframe){
+        glPolygonMode( GL_FRONT_AND_BACK, isWireframe? GL_LINE : GL_FILL );
+    }
+
+    public void setCull(boolean shouldCull){
+        if(shouldCull)
+            glEnable(GL_CULL_FACE);
+        else
+            glDisable(GL_CULL_FACE);
     }
 }

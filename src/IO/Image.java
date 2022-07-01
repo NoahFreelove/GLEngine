@@ -62,14 +62,14 @@ public class Image {
             if (!stbi_info_from_memory(imageBuffer, w, h, comp)) {
                 throw new RuntimeException("Failed to read image information: " + stbi_failure_reason());
             } else {
-                System.out.println("OK with reason: " + stbi_failure_reason());
+                //System.out.println("OK with reason: " + stbi_failure_reason());
             }
             stbi_set_flip_vertically_on_load(true);
 
-            System.out.println("IO.Image width: " + w.get(0));
+            /*System.out.println("IO.Image width: " + w.get(0));
             System.out.println("IO.Image height: " + h.get(0));
             System.out.println("IO.Image components: " + comp.get(0));
-            System.out.println("IO.Image HDR: " + stbi_is_hdr_from_memory(imageBuffer));
+            System.out.println("IO.Image HDR: " + stbi_is_hdr_from_memory(imageBuffer));*/
 
             // Decode the image
             image = stbi_load_from_memory(imageBuffer, w, h, comp, 0);

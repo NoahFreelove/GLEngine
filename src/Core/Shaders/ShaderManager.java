@@ -123,7 +123,7 @@ public class ShaderManager {
                 "\t// Light emission properties\n" +
                 "\t// You probably want to put them as uniforms\n" +
                 "\tvec3 LightColor = vec3(1,1,1);\n" +
-                "\tfloat LightPower = 50.0f;\n" +
+                "\tfloat LightPower = 100.0f;\n" +
                 "\t\n" +
                 "\t// Material properties\n" +
                 "\tvec3 MaterialDiffuseColor = texture( myTextureSampler, UV ).rgb;\n" +

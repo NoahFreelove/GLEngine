@@ -1,16 +1,17 @@
 package IO.OBJ;
 
+import Core.GameObject;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
-
 import java.nio.FloatBuffer;
 
-public class ObjToBuffer {
+public class GameObjectToBuffer {
 
-    public static OBJBuffer objToBuffer(Obj model)
+    public static OBJBuffer gameobjToBuffer(GameObject object)
     {
+        Obj model = object.getObject();
         int vertCount = 0;
         float[] verts = new float[model.getFaces().size()*9];
         FloatBuffer vertBuffer = BufferUtils.createFloatBuffer(verts.length);
@@ -21,15 +22,15 @@ public class ObjToBuffer {
                     model.getVertices().get(face.getVertices()[2] - 1)
             };
             {
-                verts[vertCount] = vertices[0].x();
-                verts[vertCount+1] = vertices[0].y();
-                verts[vertCount+2] = vertices[0].z();
-                verts[vertCount+3] = vertices[1].x();
-                verts[vertCount+4] = vertices[1].y();
-                verts[vertCount+5] = vertices[1].z();
-                verts[vertCount+6] = vertices[2].x();
-                verts[vertCount+7] = vertices[2].y();
-                verts[vertCount+8] = vertices[2].z();
+                verts[vertCount+0] = vertices[0].x()+object.getPosition().x();
+                verts[vertCount+1] = vertices[0].y()+object.getPosition().y();
+                verts[vertCount+2] = vertices[0].z()+object.getPosition().z();
+                verts[vertCount+3] = vertices[1].x()+object.getPosition().x();
+                verts[vertCount+4] = vertices[1].y()+object.getPosition().y();
+                verts[vertCount+5] = vertices[1].z()+object.getPosition().z();
+                verts[vertCount+6] = vertices[2].x()+object.getPosition().x();
+                verts[vertCount+7] = vertices[2].y()+object.getPosition().y();
+                verts[vertCount+8] = vertices[2].z()+object.getPosition().z();
                 vertCount+=9;
             }
 
