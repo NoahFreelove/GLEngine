@@ -11,6 +11,7 @@ public class GameObject {
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scale;
+    private String name;
 
     private Obj object;
     private OBJBuffer objectBuffer;
@@ -55,6 +56,7 @@ public class GameObject {
 
     private void initObject(){
         objectBuffer = BufferGameObject.bufferGameObject(this);
+        name = System.identityHashCode(this) + "";
     }
 
     public Vector3f getPosition() {
@@ -92,5 +94,9 @@ public class GameObject {
 
     public int getTexture() {
         return texture;
+    }
+
+    public String getName() {
+        return name;
     }
 }

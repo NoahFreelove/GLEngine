@@ -8,29 +8,31 @@ import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 
 public class Camera {
 
-    static Matrix4f ViewMatrix;
-    static Matrix4f ProjectionMatrix;
-    static Matrix4f ModelMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+    private Matrix4f ViewMatrix;
+    private Matrix4f ProjectionMatrix;
+    private Matrix4f ModelMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 
-    static Vector3f position = new Vector3f(0,0,5);
-    static float horizAngle = 3.14f;
-    static float vertAngle = 0f;
-    static float initialFOV = 90;
+    private Vector3f position = new Vector3f(0,0,5);
+    private float horizAngle = 3.14f;
+    private float vertAngle = 0f;
+    private float initialFOV = 90;
 
-    static float near = 0.1f;
-    static float far = 300f;
+    private float near = 0.1f;
+    private float far = 300f;
 
-    static float speed = 10;
-    static float mouseSpeed = 0.0005f;
-    static double lastTime = glfwGetTime();
+    private float speed = 10;
+    private float mouseSpeed = 0.0005f;
+    private double lastTime = glfwGetTime();
 
-    static final float bottomAngle = (float) (-Math.PI/2);
-    static final float topAngle = (float) (Math.PI/2);
+    private final float bottomAngle = (float) (-Math.PI/2);
+    private final float topAngle = (float) (Math.PI/2);
 
-    public static void CheckInput(long window){
+    public void CheckInput(long window){
 
         double currentTime = glfwGetTime();
         float deltaTime = (float) (currentTime-lastTime);
@@ -94,7 +96,7 @@ public class Camera {
         return Math.min(v, max);
     }
 
-    public static FloatBuffer getMVPBuffer(){
+    public FloatBuffer getMVPBuffer(){
         Matrix4f mvp = new Matrix4f();
         ProjectionMatrix.mul(ViewMatrix, mvp);
         mvp.mul(ModelMatrix, mvp);
@@ -102,19 +104,19 @@ public class Camera {
         matrixToBuffer(mvp, mvpBuffer);
         return mvpBuffer;
     }
-    public static FloatBuffer getViewMatrixBuffer(){
+    public FloatBuffer getViewMatrixBuffer(){
         FloatBuffer viewMatrixBuffer = BufferUtils.createFloatBuffer(16);
         matrixToBuffer(ViewMatrix, viewMatrixBuffer);
         return viewMatrixBuffer;
     }
 
-    public static FloatBuffer getProjectionMatrix(){
+    public FloatBuffer getProjectionMatrix(){
         FloatBuffer projectionMatrixBuffer = BufferUtils.createFloatBuffer(16);
         matrixToBuffer(ProjectionMatrix, projectionMatrixBuffer);
         return projectionMatrixBuffer;
     }
 
-    public static FloatBuffer getModelMatrix(){
+    public FloatBuffer getModelMatrix(){
         FloatBuffer modelMatrixBuffer = BufferUtils.createFloatBuffer(16);
         matrixToBuffer(ModelMatrix, modelMatrixBuffer);
         return modelMatrixBuffer;
@@ -140,8 +142,19 @@ public class Camera {
         dest.put(15, m.m33());
     }
 
-    public static void setActiveModelMatrix(Matrix4f modelMatrix)
+    public void setActiveModelMatrix(Matrix4f modelMatrix)
     {
         ModelMatrix = modelMatrix;
+    }
+
+    public void setWireframe(boolean isWireframe){
+        glPolygonMode( GL_FRONT_AND_BACK, isWireframe? GL_LINE : GL_FILL );
+    }
+
+    public void setCull(boolean shouldCull){
+        if(shouldCull)
+            glEnable(GL_CULL_FACE);
+        else
+            glDisable(GL_CULL_FACE);
     }
 }

@@ -34,20 +34,23 @@ public class Window {
     private int height;
     private static Window instance;
 
-    // The window handle
     public long window;
     public int program;
+    public Camera RenderCamera = new Camera();
 
     int textureID;
     int ModelMatrixID;
     int matrixID;
     int ViewMatrixID;
-    Obj[] sceneObjects;
-    Vector4f backgroundColor = new Vector4f(0,0.7f,0.7f,0);
+
+    private Callback postInitCallback;
+
+    private Scene source = new Scene();
 
     public void run() {
         init();
-        loadObjects();
+        if(postInitCallback !=null)
+            postInitCallback.call();
         loop();
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
@@ -58,25 +61,11 @@ public class Window {
         glfwSetErrorCallback(null).free();
     }
 
-    private void loadObjects() {
-        Obj model;
-        Obj model2;
-        try {
-            model = OBJLoader.loadModel(new File("src/bin/suzanne.obj"));
-            model2 = OBJLoader.loadModel(new File("src/bin/skybox.obj"));
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        sceneObjects = new Obj[]{model,model2};
-
-    }
-
-    private Window(int width, int height){
+    private Window(int width, int height, Scene startingScene, Callback postInitCallback) {
         instance = this;
         this.width = width;
         this.height = height;
+        this.postInitCallback = postInitCallback;
         run();
     }
 
@@ -135,6 +124,7 @@ public class Window {
         GL.createCapabilities();
         program = glCreateProgram();
         ShaderManager.initShaders();
+        setBackgroundColor(new Vector4f(1,1,1,0));
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
@@ -142,25 +132,9 @@ public class Window {
     private void loop() {
         initOpenGLRenderSettings();
 
-        // Set the clear color
-        setBackgroundColor();
-
         int nbFrames = 0;
         double lastTime = 0;
 
-        DDSFile suzanneTexture = new DDSFile();
-        try {
-            suzanneTexture = new DDSFile("src/bin/uvmap.DDS");
-        } catch (IOException e) {
-            System.out.println("Error loading DDS File: " + e.getMessage());
-        }
-
-        GameObject suzanne = new GameObject(new Vector3f(0,0,0), new Vector3f(0,0,0), new Vector3f(1,1,1), sceneObjects[0], suzanneTexture);
-        GameObject suzanne2 = new GameObject(new Vector3f(2,1,1), new Vector3f(0,0,0), new Vector3f(1,1,1), sceneObjects[0], suzanneTexture);
-
-        //suzanne2.setPosition(new Vector3f(2,1,1));
-
-        GameObject skybox = new GameObject(new Vector3f(1,1,1), new Vector3f(0,0,0), new Vector3f(1,1,1), sceneObjects[1], new Image("src/bin/skybox.bmp"));
 
         matrixID = glGetUniformLocation(program, "MVP");
         ViewMatrixID = glGetUniformLocation(program, "V");
@@ -173,14 +147,17 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             glUseProgram(program);
 
-            Camera.CheckInput(window);
+            RenderCamera.CheckInput(window);
 
-            Vector3f lightPos = new Vector3f(4,4,2);
+            Vector3f lightPos = new Vector3f(4,4,5);
             glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
 
-            RenderGameObject(suzanne);
-            RenderGameObject(suzanne2);
-            RenderGameObject(skybox);
+            for (GameObject o :
+                    source.GameObjects()) {
+                if(o!=null){
+                    RenderGameObject(o);
+                }
+            }
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -195,7 +172,7 @@ public class Window {
         }
     }
 
-    public void setBackgroundColor() {
+    public void setBackgroundColor(Vector4f backgroundColor) {
         glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, backgroundColor.w);
     }
 
@@ -210,11 +187,11 @@ public class Window {
             glUniform1i(textureID, 0);
         }
 
-        Camera.setActiveModelMatrix(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));
+        RenderCamera.setActiveModelMatrix(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));
 
-        glUniformMatrix4fv(ModelMatrixID, false, Camera.getModelMatrix());
-        glUniformMatrix4fv(ViewMatrixID, false, Camera.getViewMatrixBuffer());
-        glUniformMatrix4fv(matrixID, false, Camera.getMVPBuffer());
+        glUniformMatrix4fv(ModelMatrixID, false, RenderCamera.getModelMatrix());
+        glUniformMatrix4fv(ViewMatrixID, false, RenderCamera.getViewMatrixBuffer());
+        glUniformMatrix4fv(matrixID, false, RenderCamera.getMVPBuffer());
 
         glBindVertexArray(gameObjectBuffer.vertexArrayId);
 
@@ -261,12 +238,26 @@ public class Window {
         glDepthFunc(GL_LESS);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        setCull(false);
-        setWireframe(false);
+        RenderCamera.setCull(false);
+        RenderCamera.setWireframe(false);
+    }
+    public static Window CreateWindow(int width, int height, Scene scene){
+        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, scene, null));
     }
 
+    public static Window CreateWindow(int width, int height, Callback postInitCallback, Scene scene){
+        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, scene, postInitCallback));
+    }
+
+    public static Window CreateWindow(int width, int height, Callback postInitCallback){
+        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, new Scene(), postInitCallback));
+    }
     public static Window CreateWindow(int width, int height){
-        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height));
+        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, new Scene(), null));
+    }
+    public static Window CreateWindow(){
+        return Objects.requireNonNullElseGet(instance, () -> new Window(800, 800, new Scene(), null));
+
     }
 
     public static Window GetInstance(){
@@ -281,10 +272,6 @@ public class Window {
         return height;
     }
 
-    public static Window getInstance() {
-        return instance;
-    }
-
     public long getWindowHandle() {
         return window;
     }
@@ -292,15 +279,7 @@ public class Window {
     public int getProgramHandle() {
         return program;
     }
+    
+    public void setRenderSource(Scene scene){ source = scene; }
 
-    public void setWireframe(boolean isWireframe){
-        glPolygonMode( GL_FRONT_AND_BACK, isWireframe? GL_LINE : GL_FILL );
-    }
-
-    public void setCull(boolean shouldCull){
-        if(shouldCull)
-            glEnable(GL_CULL_FACE);
-        else
-            glDisable(GL_CULL_FACE);
-    }
 }

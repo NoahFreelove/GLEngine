@@ -47,7 +47,7 @@ public class ShaderManager {
 
     private static void linkShaders()
     {
-        glLinkProgram(Window.getInstance().getProgramHandle());
+        glLinkProgram(Window.GetInstance().getProgramHandle());
 
         // Check for errors in the linking process
         if (glGetProgrami(Window.GetInstance().getProgramHandle(), GL_LINK_STATUS) == GL_FALSE)
