@@ -6,25 +6,27 @@ import IO.Image;
 import IO.OBJ.OBJBuffer;
 import IO.OBJ.OBJLoader;
 import IO.OBJ.Obj;
-import org.joml.Quaternionf;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
-import org.lwjgl.system.*;
+import org.joml.Vector4f;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryStack;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.*;
+import java.nio.IntBuffer;
 import java.util.Objects;
 
-import static org.lwjgl.glfw.Callbacks.*;
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryStack.*;
-import static org.lwjgl.system.MemoryUtil.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
 
@@ -37,8 +39,11 @@ public class Window {
     public int program;
 
     int textureID;
-
+    int ModelMatrixID;
+    int matrixID;
+    int ViewMatrixID;
     Obj[] sceneObjects;
+    Vector4f backgroundColor = new Vector4f(0,0.7f,0.7f,0);
 
     public void run() {
         init();
@@ -138,7 +143,7 @@ public class Window {
         initOpenGLRenderSettings();
 
         // Set the clear color
-        glClearColor(0.0f, 0.0f, 0.7f, 0.0f);
+        setBackgroundColor();
 
         int nbFrames = 0;
         double lastTime = 0;
@@ -150,15 +155,15 @@ public class Window {
             System.out.println("Error loading DDS File: " + e.getMessage());
         }
 
-        GameObject suzanne = new GameObject(new Vector3f(0,0,0), new Quaternionf(0,0,0,0), new Vector3f(1,1,1), sceneObjects[0], suzanneTexture);
+        GameObject suzanne = new GameObject(new Vector3f(1,1,1), new Vector3f(90,0,0), new Vector3f(1,1,1), sceneObjects[0], suzanneTexture);
 
-        suzanne.setPosition(new Vector3f(-30,300,0));
+        suzanne.setPosition(new Vector3f(1,1,1));
 
-        GameObject skybox = new GameObject(new Vector3f(0,0,0), new Quaternionf(0,0,0,0), new Vector3f(1,1,1), sceneObjects[1], new Image("src/bin/skybox.bmp"));
+        GameObject skybox = new GameObject(new Vector3f(1,1,1), new Vector3f(0,0,0), new Vector3f(5,5,5), sceneObjects[1], new Image("src/bin/skybox.bmp"));
 
-        int matrixID = glGetUniformLocation(program, "MVP");
-        int ViewMatrixID = glGetUniformLocation(program, "V");
-        int ModelMatrixID = glGetUniformLocation(program, "M");
+        matrixID = glGetUniformLocation(program, "MVP");
+        ViewMatrixID = glGetUniformLocation(program, "V");
+        ModelMatrixID = glGetUniformLocation(program, "M");
         textureID = glGetUniformLocation(program, "myTextureSampler");
 
         int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
@@ -167,12 +172,7 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             glUseProgram(program);
 
-            //region Camera
             Camera.CheckInput(window);
-            glUniformMatrix4fv(matrixID, false, Camera.getMVPBuffer());
-            glUniformMatrix4fv(ViewMatrixID, false, Camera.getViewMatrixBuffer());
-            glUniformMatrix4fv(ModelMatrixID, false, Camera.getModelMatrix());
-            //endregion
 
             Vector3f lightPos = new Vector3f(4,4,2);
             glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
@@ -193,6 +193,10 @@ public class Window {
         }
     }
 
+    public void setBackgroundColor() {
+        glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, backgroundColor.w);
+    }
+
     private void RenderGameObject(GameObject gameObject){
 
         OBJBuffer gameObjectBuffer = gameObject.getObjectBuffer();
@@ -203,6 +207,12 @@ public class Window {
             glBindTexture(GL_TEXTURE_2D, gameObject.getTexture());
             glUniform1i(textureID, 0);
         }
+
+        Camera.setActiveModelMatrix(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));
+
+        glUniformMatrix4fv(ModelMatrixID, false, Camera.getModelMatrix());
+        glUniformMatrix4fv(ViewMatrixID, false, Camera.getViewMatrixBuffer());
+        glUniformMatrix4fv(matrixID, false, Camera.getMVPBuffer());
 
         glBindVertexArray(gameObjectBuffer.vertexArrayId);
 
@@ -223,6 +233,23 @@ public class Window {
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
+    }
+
+    private Matrix4f TransformObject(Vector3f position, Vector3f rotation, Vector3f scale)
+    {
+        Matrix4f transformedMatrix = new Matrix4f();
+        System.out.println(transformedMatrix);
+        transformedMatrix.transform(new Vector4f(position,1));
+
+        // Rotate based on the rotation vector
+        Matrix4f rotationMatrix = new Matrix4f();
+        rotationMatrix.rotate((float) Math.toRadians(rotation.x()), new Vector3f(1,0,0));
+        rotationMatrix.rotate((float) Math.toRadians(rotation.y()), new Vector3f(0,1,0));
+        rotationMatrix.rotate((float) Math.toRadians(rotation.z()), new Vector3f(0,0,1));
+        transformedMatrix.mul(rotationMatrix);
+        transformedMatrix.scale(scale);
+
+        return transformedMatrix;
     }
 
     private void initOpenGLRenderSettings() {

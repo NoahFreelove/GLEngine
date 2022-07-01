@@ -4,13 +4,13 @@ import IO.DDS.DDSFile;
 import IO.Image;
 import IO.OBJ.OBJBuffer;
 import IO.OBJ.Obj;
-import IO.OBJ.GameObjectToBuffer;
+import IO.OBJ.BufferGameObject;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class GameObject {
     private Vector3f position;
-    private Quaternionf rotation;
+    private Vector3f rotation;
     private Vector3f scale;
 
     private Obj object;
@@ -20,21 +20,23 @@ public class GameObject {
 
     public GameObject(Obj model){
         position = new Vector3f(0,0,0);
-        rotation = new Quaternionf(0,0,0,0);
+        rotation = new Vector3f(0,0,0);
         scale = new Vector3f(1,1,1);
         this.object = model;
+        this.texture = new Image("src/bin/texture.jpg").createTexture();
         initObject();
     }
 
-    public GameObject(Vector3f position, Quaternionf rotation, Vector3f scale, Obj model){
+    public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, Obj model){
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
         this.object = model;
+        this.texture = new Image("src/bin/texture.jpg").createTexture();
         initObject();
     }
 
-    public GameObject(Vector3f position, Quaternionf rotation, Vector3f scale, Obj model, Image texture){
+    public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, Obj model, Image texture){
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
@@ -43,7 +45,7 @@ public class GameObject {
         initObject();
     }
 
-    public GameObject(Vector3f position, Quaternionf rotation, Vector3f scale, Obj model, DDSFile texture){
+    public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, Obj model, DDSFile texture){
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
@@ -53,14 +55,14 @@ public class GameObject {
     }
 
     private void initObject(){
-        objectBuffer = GameObjectToBuffer.gameobjToBuffer(this);
+        objectBuffer = BufferGameObject.bufferGameObject(this);
     }
 
     public Vector3f getPosition() {
         return position;
     }
 
-    public Quaternionf getRotation() {
+    public Vector3f getRotation() {
         return rotation;
     }
 
@@ -83,29 +85,6 @@ public class GameObject {
     public void setPosition(Vector3f newPos)
     {
         this.position = newPos;
-        updatePosition();
-    }
-
-    private void updatePosition(){
-        for (int i = 0; i < objectBuffer.vertices.limit(); i+=3) {
-            objectBuffer.vertices.put(i,position.x());
-            objectBuffer.vertices.put(i+1,position.y());
-            objectBuffer.vertices.put(i+2,position.z());
-        }
-        //objectBuffer.vertices.flip();
-
-        for (int i = 0; i < objectBuffer.uvs.limit(); i+=2) {
-            objectBuffer.uvs.put(i,position.x());
-            objectBuffer.uvs.put(i+1,position.y());
-        }
-        //objectBuffer.uvs.flip();
-
-        for (int i = 0; i < objectBuffer.normals.limit(); i+=3) {
-            objectBuffer.normals.put(i,position.x());
-            objectBuffer.normals.put(i+1,position.y());
-            objectBuffer.normals.put(i+2,position.z());
-        }
-        //objectBuffer.normals.flip();
     }
 
     public void setTexture(int texture) {

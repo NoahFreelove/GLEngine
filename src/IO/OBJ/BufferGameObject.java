@@ -7,9 +7,9 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
-public class GameObjectToBuffer {
+public class BufferGameObject {
 
-    public static OBJBuffer gameobjToBuffer(GameObject object)
+    public static OBJBuffer bufferGameObject(GameObject object)
     {
         Obj model = object.getObject();
         int vertCount = 0;
@@ -22,15 +22,15 @@ public class GameObjectToBuffer {
                     model.getVertices().get(face.getVertices()[2] - 1)
             };
             {
-                verts[vertCount+0] = vertices[0].x()+object.getPosition().x();
-                verts[vertCount+1] = vertices[0].y()+object.getPosition().y();
-                verts[vertCount+2] = vertices[0].z()+object.getPosition().z();
-                verts[vertCount+3] = vertices[1].x()+object.getPosition().x();
-                verts[vertCount+4] = vertices[1].y()+object.getPosition().y();
-                verts[vertCount+5] = vertices[1].z()+object.getPosition().z();
-                verts[vertCount+6] = vertices[2].x()+object.getPosition().x();
-                verts[vertCount+7] = vertices[2].y()+object.getPosition().y();
-                verts[vertCount+8] = vertices[2].z()+object.getPosition().z();
+                verts[vertCount+0] = (vertices[0].x());
+                verts[vertCount+1] = (vertices[0].y());
+                verts[vertCount+2] = (vertices[0].z());
+                verts[vertCount+3] = (vertices[1].x());
+                verts[vertCount+4] = (vertices[1].y());
+                verts[vertCount+5] = (vertices[1].z());
+                verts[vertCount+6] = (vertices[2].x());
+                verts[vertCount+7] = (vertices[2].y());
+                verts[vertCount+8] = (vertices[2].z());
                 vertCount+=9;
             }
 

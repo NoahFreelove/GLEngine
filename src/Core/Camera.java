@@ -20,7 +20,10 @@ public class Camera {
     static float vertAngle = 0f;
     static float initialFOV = 90;
 
-    static float speed =5;
+    static float near = 0.1f;
+    static float far = 300f;
+
+    static float speed = 50;
     static float mouseSpeed = 0.0005f;
     static double lastTime = glfwGetTime();
 
@@ -75,7 +78,7 @@ public class Camera {
         }
         float FOV = initialFOV;
 
-        ProjectionMatrix = new Matrix4f().perspective((float)Math.toRadians(FOV), (float)Window.GetInstance().getWidth()/ (float)Window.GetInstance().getHeight(),0.1f,100f);
+        ProjectionMatrix = new Matrix4f().perspective((float)Math.toRadians(FOV), (float)Window.GetInstance().getWidth()/ (float)Window.GetInstance().getHeight(),near,far);
 
         ViewMatrix = new Matrix4f();
 
@@ -96,44 +99,49 @@ public class Camera {
         ProjectionMatrix.mul(ViewMatrix, mvp);
         mvp.mul(ModelMatrix, mvp);
         FloatBuffer mvpBuffer = BufferUtils.createFloatBuffer(16);
-        matrixToBuffer(mvp,0,mvpBuffer);
+        matrixToBuffer(mvp, mvpBuffer);
         return mvpBuffer;
     }
     public static FloatBuffer getViewMatrixBuffer(){
         FloatBuffer viewMatrixBuffer = BufferUtils.createFloatBuffer(16);
-        matrixToBuffer(ViewMatrix,0,viewMatrixBuffer);
+        matrixToBuffer(ViewMatrix, viewMatrixBuffer);
         return viewMatrixBuffer;
     }
 
     public static FloatBuffer getProjectionMatrix(){
         FloatBuffer projectionMatrixBuffer = BufferUtils.createFloatBuffer(16);
-        matrixToBuffer(ProjectionMatrix,0,projectionMatrixBuffer);
+        matrixToBuffer(ProjectionMatrix, projectionMatrixBuffer);
         return projectionMatrixBuffer;
     }
 
     public static FloatBuffer getModelMatrix(){
         FloatBuffer modelMatrixBuffer = BufferUtils.createFloatBuffer(16);
-        matrixToBuffer(ModelMatrix,0,modelMatrixBuffer);
+        matrixToBuffer(ModelMatrix, modelMatrixBuffer);
         return modelMatrixBuffer;
     }
 
-    private static void matrixToBuffer(Matrix4f m, int offset, FloatBuffer dest)
+    private static void matrixToBuffer(Matrix4f m, FloatBuffer dest)
     {
-        dest.put(offset, m.m00());
-        dest.put(offset + 1, m.m01());
-        dest.put(offset + 2, m.m02());
-        dest.put(offset + 3, m.m03());
-        dest.put(offset + 4, m.m10());
-        dest.put(offset + 5, m.m11());
-        dest.put(offset + 6, m.m12());
-        dest.put(offset + 7, m.m13());
-        dest.put(offset + 8, m.m20());
-        dest.put(offset + 9, m.m21());
-        dest.put(offset + 10, m.m22());
-        dest.put(offset + 11, m.m23());
-        dest.put(offset + 12, m.m30());
-        dest.put(offset + 13, m.m31());
-        dest.put(offset + 14, m.m32());
-        dest.put(offset + 15, m.m33());
+        dest.put(0, m.m00());
+        dest.put(1, m.m01());
+        dest.put(2, m.m02());
+        dest.put(3, m.m03());
+        dest.put(4, m.m10());
+        dest.put(5, m.m11());
+        dest.put(6, m.m12());
+        dest.put(7, m.m13());
+        dest.put(8, m.m20());
+        dest.put(9, m.m21());
+        dest.put(10, m.m22());
+        dest.put(11, m.m23());
+        dest.put(12, m.m30());
+        dest.put(13, m.m31());
+        dest.put(14, m.m32());
+        dest.put(15, m.m33());
+    }
+
+    public static void setActiveModelMatrix(Matrix4f modelMatrix)
+    {
+        ModelMatrix = modelMatrix;
     }
 }
