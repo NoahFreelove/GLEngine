@@ -155,11 +155,12 @@ public class Window {
             System.out.println("Error loading DDS File: " + e.getMessage());
         }
 
-        GameObject suzanne = new GameObject(new Vector3f(1,1,1), new Vector3f(90,0,0), new Vector3f(1,1,1), sceneObjects[0], suzanneTexture);
+        GameObject suzanne = new GameObject(new Vector3f(0,0,0), new Vector3f(0,0,0), new Vector3f(1,1,1), sceneObjects[0], suzanneTexture);
+        GameObject suzanne2 = new GameObject(new Vector3f(2,1,1), new Vector3f(0,0,0), new Vector3f(1,1,1), sceneObjects[0], suzanneTexture);
 
-        suzanne.setPosition(new Vector3f(1,1,1));
+        //suzanne2.setPosition(new Vector3f(2,1,1));
 
-        GameObject skybox = new GameObject(new Vector3f(1,1,1), new Vector3f(0,0,0), new Vector3f(5,5,5), sceneObjects[1], new Image("src/bin/skybox.bmp"));
+        GameObject skybox = new GameObject(new Vector3f(1,1,1), new Vector3f(0,0,0), new Vector3f(1,1,1), sceneObjects[1], new Image("src/bin/skybox.bmp"));
 
         matrixID = glGetUniformLocation(program, "MVP");
         ViewMatrixID = glGetUniformLocation(program, "V");
@@ -178,6 +179,7 @@ public class Window {
             glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
 
             RenderGameObject(suzanne);
+            RenderGameObject(suzanne2);
             RenderGameObject(skybox);
 
             glfwSwapBuffers(window);
@@ -238,15 +240,17 @@ public class Window {
     private Matrix4f TransformObject(Vector3f position, Vector3f rotation, Vector3f scale)
     {
         Matrix4f transformedMatrix = new Matrix4f();
-        System.out.println(transformedMatrix);
-        transformedMatrix.transform(new Vector4f(position,1));
 
-        // Rotate based on the rotation vector
+        Matrix4f translationMatrix = new Matrix4f();
+        translationMatrix.translate(position.x(), position.y(), position.z());
+        transformedMatrix.mul(translationMatrix);
+
         Matrix4f rotationMatrix = new Matrix4f();
         rotationMatrix.rotate((float) Math.toRadians(rotation.x()), new Vector3f(1,0,0));
         rotationMatrix.rotate((float) Math.toRadians(rotation.y()), new Vector3f(0,1,0));
         rotationMatrix.rotate((float) Math.toRadians(rotation.z()), new Vector3f(0,0,1));
         transformedMatrix.mul(rotationMatrix);
+
         transformedMatrix.scale(scale);
 
         return transformedMatrix;

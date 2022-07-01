@@ -5,7 +5,6 @@ import IO.Image;
 import IO.OBJ.OBJBuffer;
 import IO.OBJ.Obj;
 import IO.OBJ.BufferGameObject;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class GameObject {

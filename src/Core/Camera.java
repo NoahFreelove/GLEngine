@@ -23,7 +23,7 @@ public class Camera {
     static float near = 0.1f;
     static float far = 300f;
 
-    static float speed = 50;
+    static float speed = 10;
     static float mouseSpeed = 0.0005f;
     static double lastTime = glfwGetTime();
 
