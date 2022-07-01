@@ -6,7 +6,6 @@ import IO.Image;
 import IO.OBJ.OBJBuffer;
 import IO.OBJ.OBJLoader;
 import IO.OBJ.Obj;
-import IO.OBJ.GameObjectToBuffer;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.*;
@@ -36,6 +35,8 @@ public class Window {
     // The window handle
     public long window;
     public int program;
+
+    int textureID;
 
     Obj[] sceneObjects;
 
@@ -142,29 +143,24 @@ public class Window {
         int nbFrames = 0;
         double lastTime = 0;
 
-        GameObject suzanne = new GameObject(new Vector3f(0,0,0), new Quaternionf(0,0,0,0), new Vector3f(1,1,1), sceneObjects[0]);
-
-        suzanne.setPosition(new Vector3f(-30,300,0));
-
-        GameObject skybox = new GameObject(new Vector3f(0,0,0), new Quaternionf(0,0,0,0), new Vector3f(1,1,1), sceneObjects[1]);
-
-
-        int texture = 0;
+        DDSFile suzanneTexture = new DDSFile();
         try {
-            DDSFile textureFile = new DDSFile("src/bin/uvmap.DDS");
-            texture = textureFile.generateTexture();
+            suzanneTexture = new DDSFile("src/bin/uvmap.DDS");
         } catch (IOException e) {
             System.out.println("Error loading DDS File: " + e.getMessage());
         }
 
-        int skyboxTexture = new Image("src/bin/skybox.bmp").createTexture();
+        GameObject suzanne = new GameObject(new Vector3f(0,0,0), new Quaternionf(0,0,0,0), new Vector3f(1,1,1), sceneObjects[0], suzanneTexture);
+
+        suzanne.setPosition(new Vector3f(-30,300,0));
+
+        GameObject skybox = new GameObject(new Vector3f(0,0,0), new Quaternionf(0,0,0,0), new Vector3f(1,1,1), sceneObjects[1], new Image("src/bin/skybox.bmp"));
 
         int matrixID = glGetUniformLocation(program, "MVP");
         int ViewMatrixID = glGetUniformLocation(program, "V");
         int ModelMatrixID = glGetUniformLocation(program, "M");
-        int textureID = glGetUniformLocation(program, "myTextureSampler");
+        textureID = glGetUniformLocation(program, "myTextureSampler");
 
-        glUseProgram(program);
         int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
 
         while ( !glfwWindowShouldClose(window) ) {
@@ -178,12 +174,8 @@ public class Window {
             glUniformMatrix4fv(ModelMatrixID, false, Camera.getModelMatrix());
             //endregion
 
-            Vector3f lightPos = new Vector3f(4,4,10);
+            Vector3f lightPos = new Vector3f(4,4,2);
             glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
-
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, skyboxTexture);
-            glUniform1i(textureID, 0);
 
             RenderGameObject(suzanne);
             RenderGameObject(skybox);
@@ -194,7 +186,6 @@ public class Window {
             double currentTime = glfwGetTime();
             nbFrames++;
             if ( currentTime - lastTime >= 1.0 ){
-                // printf and reset timer
                 System.out.printf("%f ms/frame. %d frames%n", 1000.0/nbFrames, nbFrames);
                 nbFrames = 0;
                 lastTime += 1.0;
@@ -205,6 +196,13 @@ public class Window {
     private void RenderGameObject(GameObject gameObject){
 
         OBJBuffer gameObjectBuffer = gameObject.getObjectBuffer();
+
+        if(gameObject.getTexture()>-1)
+        {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, gameObject.getTexture());
+            glUniform1i(textureID, 0);
+        }
 
         glBindVertexArray(gameObjectBuffer.vertexArrayId);
 
@@ -256,11 +254,11 @@ public class Window {
         return instance;
     }
 
-    public long getWindow() {
+    public long getWindowHandle() {
         return window;
     }
 
-    public int getProgram() {
+    public int getProgramHandle() {
         return program;
     }
 

@@ -1,5 +1,7 @@
 package Core;
 
+import IO.DDS.DDSFile;
+import IO.Image;
 import IO.OBJ.OBJBuffer;
 import IO.OBJ.Obj;
 import IO.OBJ.GameObjectToBuffer;
@@ -14,6 +16,7 @@ public class GameObject {
     private Obj object;
     private OBJBuffer objectBuffer;
 
+    private int texture = -1;
 
     public GameObject(Obj model){
         position = new Vector3f(0,0,0);
@@ -28,6 +31,24 @@ public class GameObject {
         this.rotation = rotation;
         this.scale = scale;
         this.object = model;
+        initObject();
+    }
+
+    public GameObject(Vector3f position, Quaternionf rotation, Vector3f scale, Obj model, Image texture){
+        this.position = position;
+        this.rotation = rotation;
+        this.scale = scale;
+        this.object = model;
+        this.texture = texture.createTexture();
+        initObject();
+    }
+
+    public GameObject(Vector3f position, Quaternionf rotation, Vector3f scale, Obj model, DDSFile texture){
+        this.position = position;
+        this.rotation = rotation;
+        this.scale = scale;
+        this.object = model;
+        this.texture = texture.createTexture();
         initObject();
     }
 
@@ -85,5 +106,13 @@ public class GameObject {
             objectBuffer.normals.put(i+2,position.z());
         }
         //objectBuffer.normals.flip();
+    }
+
+    public void setTexture(int texture) {
+        this.texture = texture;
+    }
+
+    public int getTexture() {
+        return texture;
     }
 }

@@ -1,4 +1,5 @@
-package IO;/*
+package IO;
+/*
  * Copyright LWJGL. All rights reserved.
  * License terms: https://www.lwjgl.org/license
  */

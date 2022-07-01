@@ -24,7 +24,7 @@ public class ShaderManager {
                         + glGetShaderInfoLog(fragmentShaderID, glGetShaderi(fragmentShaderID, GL_INFO_LOG_LENGTH)));
 
             // Attach the shader
-            glAttachShader(Window.GetInstance().getProgram(), fragmentShaderID);
+            glAttachShader(Window.GetInstance().getProgramHandle(), fragmentShaderID);
         }
         else if (type == GL_VERTEX_SHADER){
 
@@ -41,16 +41,16 @@ public class ShaderManager {
                         + glGetShaderInfoLog(vertexShaderID, glGetShaderi(vertexShaderID, GL_INFO_LOG_LENGTH)));
 
             // Attach the shader
-            glAttachShader(Window.GetInstance().getProgram(), vertexShaderID);
+            glAttachShader(Window.GetInstance().getProgramHandle(), vertexShaderID);
         }
     }
 
     private static void linkShaders()
     {
-        glLinkProgram(Window.getInstance().getProgram());
+        glLinkProgram(Window.getInstance().getProgramHandle());
 
         // Check for errors in the linking process
-        if (glGetProgrami(Window.GetInstance().getProgram(), GL_LINK_STATUS) == GL_FALSE)
+        if (glGetProgrami(Window.GetInstance().getProgramHandle(), GL_LINK_STATUS) == GL_FALSE)
             throw new RuntimeException("Unable to link shader program:");
     }
 

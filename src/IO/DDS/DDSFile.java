@@ -506,7 +506,7 @@ public class DDSFile
 		return isCubeMap;
 	}
 
-	public int generateTexture(){
+	public int createTexture(){
 		int textureID = GL11.glGenTextures();       // Generate a texture ID.
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);     // Depends on your implementation
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
