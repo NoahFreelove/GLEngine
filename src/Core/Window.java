@@ -1,11 +1,9 @@
 package Core;
 
+import Core.Objects.GameObject;
+import Core.Scenes.Scene;
 import Core.Shaders.ShaderManager;
-import IO.DDS.DDSFile;
-import IO.Image;
 import IO.OBJ.OBJBuffer;
-import IO.OBJ.OBJLoader;
-import IO.OBJ.Obj;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -14,9 +12,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.Objects;
 
@@ -36,7 +31,7 @@ public class Window {
 
     public long window;
     public int program;
-    public Camera RenderCamera = new Camera();
+    public Camera ActiveCamera = new Camera();
 
     int textureID;
     int ModelMatrixID;
@@ -147,17 +142,12 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             glUseProgram(program);
 
-            RenderCamera.CheckInput(window);
+            ActiveCamera.CheckInput(window);
 
             Vector3f lightPos = new Vector3f(4,4,5);
             glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
 
-            for (GameObject o :
-                    source.GameObjects()) {
-                if(o!=null){
-                    RenderGameObject(o);
-                }
-            }
+            Render();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -172,8 +162,19 @@ public class Window {
         }
     }
 
+
+
     public void setBackgroundColor(Vector4f backgroundColor) {
         glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, backgroundColor.w);
+    }
+
+    private void Render() {
+        for (GameObject o :
+                source.GameObjects()) {
+            if(o!=null){
+                RenderGameObject(o);
+            }
+        }
     }
 
     private void RenderGameObject(GameObject gameObject){
@@ -187,11 +188,11 @@ public class Window {
             glUniform1i(textureID, 0);
         }
 
-        RenderCamera.setActiveModelMatrix(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));
+        ActiveCamera.setActiveModelMatrix(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));
 
-        glUniformMatrix4fv(ModelMatrixID, false, RenderCamera.getModelMatrix());
-        glUniformMatrix4fv(ViewMatrixID, false, RenderCamera.getViewMatrixBuffer());
-        glUniformMatrix4fv(matrixID, false, RenderCamera.getMVPBuffer());
+        glUniformMatrix4fv(ModelMatrixID, false, ActiveCamera.getModelMatrix());
+        glUniformMatrix4fv(ViewMatrixID, false, ActiveCamera.getViewMatrixBuffer());
+        glUniformMatrix4fv(matrixID, false, ActiveCamera.getMVPBuffer());
 
         glBindVertexArray(gameObjectBuffer.vertexArrayId);
 
@@ -238,8 +239,8 @@ public class Window {
         glDepthFunc(GL_LESS);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        RenderCamera.setCull(false);
-        RenderCamera.setWireframe(false);
+        ActiveCamera.setCull(false);
+        ActiveCamera.setWireframe(false);
     }
     public static Window CreateWindow(int width, int height, Scene scene){
         return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, scene, null));
@@ -282,4 +283,7 @@ public class Window {
     
     public void setRenderSource(Scene scene){ source = scene; }
 
+    public void setVSync(boolean value) {
+        glfwSwapInterval(value ? 1 : 0);
+    }
 }

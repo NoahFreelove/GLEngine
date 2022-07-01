@@ -1,4 +1,4 @@
-package Core;
+package Core.Objects;
 
 import IO.DDS.DDSFile;
 import IO.Image;
@@ -7,7 +7,9 @@ import IO.OBJ.Obj;
 import IO.OBJ.BufferGameObject;
 import org.joml.Vector3f;
 
-public class GameObject {
+import java.io.Serializable;
+
+public class GameObject implements GameBehavior, Cloneable, Serializable {
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scale;
@@ -17,6 +19,15 @@ public class GameObject {
     private OBJBuffer objectBuffer;
 
     private int texture = -1;
+
+    public GameObject(){
+        position = new Vector3f(0,0,0);
+        rotation = new Vector3f(0,0,0);
+        scale = new Vector3f(1,1,1);
+        this.object = null;
+        this.texture = new Image("src/bin/texture.jpg").createTexture();
+        initObject();
+    }
 
     public GameObject(Obj model){
         position = new Vector3f(0,0,0);
@@ -57,6 +68,8 @@ public class GameObject {
     private void initObject(){
         objectBuffer = BufferGameObject.bufferGameObject(this);
         name = System.identityHashCode(this) + "";
+
+        OnInstantiate();
     }
 
     public Vector3f getPosition() {
@@ -88,6 +101,14 @@ public class GameObject {
         this.position = newPos;
     }
 
+    public void setRotation(Vector3f rotation) {
+        this.rotation = rotation;
+    }
+
+    public void setScale(Vector3f scale) {
+        this.scale = scale;
+    }
+
     public void setTexture(int texture) {
         this.texture = texture;
     }
@@ -98,5 +119,42 @@ public class GameObject {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public void Update() {
+
+    }
+
+    @Override
+    public void Start() {
+
+    }
+
+    @Override
+    public void Unload() {
+
+    }
+
+    @Override
+    public void OnDestroy() {
+
+    }
+
+    @Override
+    public void OnInstantiate() {
+
+    }
+
+    @Override
+    public GameObject clone() {
+        GameObject clone = new GameObject(position, rotation, scale, object);
+        clone.setTexture(texture);
+        clone.setName(name);
+        return clone;
     }
 }

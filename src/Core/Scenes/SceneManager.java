@@ -1,9 +1,14 @@
-package Core;
+package Core.Scenes;
+
+import Core.Objects.GameObject;
+import Core.Window;
 
 import java.util.ArrayList;
 
 public class SceneManager {
     private static ArrayList<Scene> buildScenes = new ArrayList<>(0);
+
+    private static Scene currentScene = new Scene();
 
     public static Scene getSceneByIndex(int i){
         if(i<buildScenes.size())
@@ -24,15 +29,20 @@ public class SceneManager {
 
     public static void SwitchScene(int index){
         if (index < buildScenes.size()) {
-            Window.GetInstance().setRenderSource(buildScenes.get(index));
-            System.out.println("Switching scene");
+            SwitchScene(buildScenes.get(index));
         }
     }
 
     public static void SwitchScene(Scene scene){
         if(buildScenes.contains(scene))
         {
+            for (GameObject o : currentScene.GameObjects()) { o.Unload(); }
+
             Window.GetInstance().setRenderSource(scene);
+
+            for (GameObject o : scene.GameObjects()) { o.Start(); }
+
+            currentScene = scene;
         }
     }
 

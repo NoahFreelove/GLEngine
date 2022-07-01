@@ -85,7 +85,7 @@ public class DDSFile
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public DDSFile(String filePath) throws IOException, FileNotFoundException
+	public DDSFile(String filePath)
 	{
 		this(new File(filePath));
 	}
@@ -96,7 +96,7 @@ public class DDSFile
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public DDSFile(File file) throws IOException, FileNotFoundException
+	public DDSFile(File file)
 	{
 		this.loadFile(file);
 	}
@@ -128,15 +128,20 @@ public class DDSFile
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public void loadFile(File file) throws IOException
-	{
-		if (!file.isFile())
-			throw new FileNotFoundException("DDS: File not found: " + file.getAbsolutePath());
+	public void loadFile(File file) {
+		try {
+			if (!file.isFile())
+				throw new FileNotFoundException("DDS: File not found: " + file.getAbsolutePath());
 
-		try (InputStream is = new FileInputStream(file))
+			try (InputStream is = new FileInputStream(file))
+			{
+				load(is);
+			}
+		} catch (Exception e)
 		{
-			load(is);
+			System.out.println("Error loading DDS file: " + file.getAbsolutePath());
 		}
+
 	}
 	
 	/**

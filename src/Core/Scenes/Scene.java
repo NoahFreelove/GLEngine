@@ -1,4 +1,6 @@
-package Core;
+package Core.Scenes;
+
+import Core.Objects.GameObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;

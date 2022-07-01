@@ -1,6 +1,6 @@
 package IO.OBJ;
 
-import Core.GameObject;
+import Core.Objects.GameObject;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;

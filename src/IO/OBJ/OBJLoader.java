@@ -43,8 +43,12 @@ public class OBJLoader extends Object {
      * @return the loaded <code>IO.OBJ.Obj</code>
      * @throws java.io.FileNotFoundException thrown if the IO.OBJ.Obj file is not found
      */
-    public static Obj loadModel(File file) throws FileNotFoundException {
-        return OBJLoader.loadModel(new Scanner(file));
+    public static Obj loadModel(File file)  {
+        try {
+            return OBJLoader.loadModel(new Scanner(file));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
