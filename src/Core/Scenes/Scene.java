@@ -31,6 +31,7 @@ public class Scene {
         gameObjects.add(object);
     }
     public void Remove(GameObject object){
+        object.OnDestroy();
         gameObjects.remove(object);
     }
 }

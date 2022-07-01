@@ -148,7 +148,7 @@ public class Window {
             glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
 
             Render();
-
+            UpdateObjects();
             glfwSwapBuffers(window);
             glfwPollEvents();
 
@@ -162,6 +162,11 @@ public class Window {
         }
     }
 
+    private void UpdateObjects() {
+        for (GameObject o : source.GameObjects()) {
+            o.Update();
+        }
+    }
 
 
     public void setBackgroundColor(Vector4f backgroundColor) {
