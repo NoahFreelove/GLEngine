@@ -1,7 +1,6 @@
 package Core;
 
 import Core.Objects.Component;
-import Core.Objects.GameObject;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -21,7 +20,7 @@ public class Camera extends Component {
 
     private float horizAngle = 3.14f;
     private float vertAngle = 0f;
-    private float initialFOV = 90;
+    private float fov = 90;
 
     private float near = 0.1f;
     private float far = 300f;
@@ -87,7 +86,7 @@ public class Camera extends Component {
         }
         speed = (glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS)? sprintSpeed : baseSpeed;
 
-        float FOV = initialFOV;
+        float FOV = fov;
 
         ProjectionMatrix = new Matrix4f().perspective((float)Math.toRadians(FOV), (float)Window.GetInstance().getWidth()/ (float)Window.GetInstance().getHeight(),near,far);
 
