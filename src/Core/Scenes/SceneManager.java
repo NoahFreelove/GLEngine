@@ -23,7 +23,6 @@ public class SceneManager {
                 foundScene[0] = n;
             }
         });
-
         return foundScene[0];
     }
 

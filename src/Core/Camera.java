@@ -1,5 +1,7 @@
 package Core;
 
+import Core.Objects.Component;
+import Core.Objects.GameObject;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -11,13 +13,12 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 
-public class Camera {
+public class Camera extends Component {
 
     private Matrix4f ViewMatrix;
     private Matrix4f ProjectionMatrix;
     private Matrix4f ModelMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 
-    private Vector3f position = new Vector3f(0,0,5);
     private float horizAngle = 3.14f;
     private float vertAngle = 0f;
     private float initialFOV = 90;
@@ -31,6 +32,10 @@ public class Camera {
 
     private final float bottomAngle = (float) (-Math.PI/2);
     private final float topAngle = (float) (Math.PI/2);
+
+    public Camera() {
+        super();
+    }
 
     public void CheckInput(long window){
 
@@ -61,22 +66,22 @@ public class Camera {
         right.cross(direction,up);
 
         if (glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS){
-            position.add(direction.mul(deltaTime).mul(speed));
+            getParentPosition().add(direction.mul(deltaTime).mul(speed));
         }
         if (glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS){
-            position.sub(direction.mul(deltaTime).mul(speed));
+            getParentPosition().sub(direction.mul(deltaTime).mul(speed));
         }
         if (glfwGetKey( window, GLFW_KEY_D ) == GLFW_PRESS){
-            position.add(right.mul(deltaTime).mul(speed));
+            getParentPosition().add(right.mul(deltaTime).mul(speed));
         }
         if (glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS){
-            position.sub(right.mul(deltaTime).mul(speed));
+            getParentPosition().sub(right.mul(deltaTime).mul(speed));
         }
         if (glfwGetKey( window, GLFW_KEY_SPACE ) == GLFW_PRESS){
-            position.add(new Vector3f(0,1,0).mul(deltaTime).mul(speed));
+            getParentPosition().add(new Vector3f(0,1,0).mul(deltaTime).mul(speed));
         }
         if (glfwGetKey( window, GLFW_KEY_LEFT_CONTROL ) == GLFW_PRESS){
-            position.add(new Vector3f(0,-1,0).mul(deltaTime).mul(speed));
+            getParentPosition().add(new Vector3f(0,-1,0).mul(deltaTime).mul(speed));
         }
         float FOV = initialFOV;
 
@@ -85,8 +90,8 @@ public class Camera {
         ViewMatrix = new Matrix4f();
 
         Vector3f addedPos = new Vector3f();
-        position.add(direction, addedPos);
-        ViewMatrix.lookAt(position,addedPos,up);
+        getParentPosition().add(direction, addedPos);
+        ViewMatrix.lookAt(getParentPosition(),addedPos,up);
         lastTime=currentTime;
     }
 
@@ -106,6 +111,7 @@ public class Camera {
     }
     public FloatBuffer getViewMatrixBuffer(){
         FloatBuffer viewMatrixBuffer = BufferUtils.createFloatBuffer(16);
+        //Rotate the view matrix
         matrixToBuffer(ViewMatrix, viewMatrixBuffer);
         return viewMatrixBuffer;
     }

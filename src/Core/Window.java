@@ -27,25 +27,28 @@ public class Window {
 
     private int width;
     private int height;
+
     private static Window instance;
 
     public long window;
     public int program;
-    public Camera ActiveCamera = new Camera();
+    public Camera ActiveCamera;
 
     int textureID;
     int ModelMatrixID;
     int matrixID;
     int ViewMatrixID;
 
-    private Callback postInitCallback;
+    private final Callback postInitCallback;
 
-    private Scene source = new Scene();
+    private Scene source;
 
     public void run() {
         init();
+
         if(postInitCallback !=null)
             postInitCallback.call();
+
         loop();
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
@@ -60,16 +63,14 @@ public class Window {
         instance = this;
         this.width = width;
         this.height = height;
+        this.source = startingScene;
         this.postInitCallback = postInitCallback;
         run();
     }
 
     private void init() {
-        // Setup an error callback. The default implementation
-        // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
 
-        // Initialize GLFW. Most GLFW functions will not work before doing this.
         if ( !glfwInit() )
             throw new IllegalStateException("Unable to initialize GLFW");
 
@@ -79,7 +80,7 @@ public class Window {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
         // Create the window
-        window = glfwCreateWindow(width, height, "This is a window", NULL, NULL);
+        window = glfwCreateWindow(width, height, "GL Engine", NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -142,12 +143,17 @@ public class Window {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             glUseProgram(program);
 
-            ActiveCamera.CheckInput(window);
+
 
             Vector3f lightPos = new Vector3f(4,4,5);
             glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
 
-            Render();
+            if(ActiveCamera != null)
+            {
+                ActiveCamera.CheckInput(window);
+                Render();
+            }
+
             UpdateObjects();
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -185,6 +191,10 @@ public class Window {
     private void RenderGameObject(GameObject gameObject){
 
         OBJBuffer gameObjectBuffer = gameObject.getObjectBuffer();
+
+        // If the object doesn't have a model, we don't render it
+        if(gameObjectBuffer == null)
+            return;
 
         if(gameObject.getTexture()>-1)
         {
@@ -290,5 +300,21 @@ public class Window {
 
     public void setVSync(boolean value) {
         glfwSwapInterval(value ? 1 : 0);
+    }
+
+    public void setWidth(int width) {
+        if(width<=0)
+            throw new IllegalArgumentException("Width must be greater than 0");
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        if(height<=0)
+            throw new IllegalArgumentException("Height must be greater than 0");
+        this.height = height;
+    }
+
+    public void setTitle(String title){
+        glfwSetWindowTitle(window, title);
     }
 }

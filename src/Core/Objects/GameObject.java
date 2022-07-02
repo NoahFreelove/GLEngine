@@ -7,16 +7,19 @@ import IO.OBJ.Obj;
 import IO.OBJ.BufferGameObject;
 import org.joml.Vector3f;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 
-public class GameObject implements GameBehavior, Cloneable, Serializable {
+public final class GameObject {
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scale;
-    private String name;
+
+    private final ArrayList<Component> components = new ArrayList<>();
+
+    private Identity identity;
 
     private Obj object;
-    private OBJBuffer objectBuffer;
+    private OBJBuffer objectBuffer = null;
 
     private int texture = -1;
 
@@ -35,6 +38,14 @@ public class GameObject implements GameBehavior, Cloneable, Serializable {
         scale = new Vector3f(1,1,1);
         this.object = model;
         this.texture = new Image("src/bin/texture.jpg").createTexture();
+        initObject();
+    }
+
+    public GameObject(Vector3f position, Vector3f rotation, Vector3f scale){
+        this.position = position;
+        this.rotation = rotation;
+        this.scale = scale;
+        this.object = null;
         initObject();
     }
 
@@ -66,9 +77,10 @@ public class GameObject implements GameBehavior, Cloneable, Serializable {
     }
 
     private void initObject(){
-        objectBuffer = BufferGameObject.bufferGameObject(this);
-        name = System.identityHashCode(this) + "";
-
+        if(object != null){
+            objectBuffer = BufferGameObject.bufferGameObject(this);
+        }
+        identity = new Identity("GameObject", "gameObject");
         OnInstantiate();
     }
 
@@ -117,44 +129,77 @@ public class GameObject implements GameBehavior, Cloneable, Serializable {
         return texture;
     }
 
-    public String getName() {
-        return name;
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Identity getIdentity() {
+        return identity;
     }
 
-    @Override
     public void Update() {
-
+        for (Component component : components) {
+            component.Update();
+        }
     }
 
-    @Override
     public void Start() {
-
+        for (Component component : components) {
+            component.Start();
+        }
     }
 
-    @Override
     public void Unload() {
-
+        for (Component component : components) {
+            component.Unload();
+        }
     }
 
-    @Override
     public void OnDestroy() {
-
+        for (Component component : components) {
+            component.OnDestroy();
+        }
     }
 
-    @Override
     public void OnInstantiate() {
 
     }
 
     @Override
     public GameObject clone() {
-        GameObject clone = new GameObject(position, rotation, scale, object);
-        clone.setTexture(texture);
-        clone.setName(name);
+        GameObject clone = new GameObject();
+        try {
+            clone = (GameObject) super.clone();
+        }catch (CloneNotSupportedException e){
+            System.out.println("Could not clone GameObject");
+        }
+        clone.position = new Vector3f(position);
+        clone.rotation = new Vector3f(rotation);
+        clone.scale = new Vector3f(scale);
+        clone.object = object;
+        clone.texture = texture;
+        clone.identity = getIdentity();
+        clone.initObject();
         return clone;
+    }
+
+    public void RemoveComponent(Component component){
+        component.OnRemoved();
+        components.remove(component);
+    }
+
+    public void AddComponent(Component component){
+        component.OnAdded();
+        component.setParent(this);
+        components.add(component);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("GameObject: %s (%s). %d Components", identity.getName(), identity.getTag(), components.size());
+    }
+
+    public Component getComponent(int index){
+        return components.get(index);
     }
 }

@@ -11,13 +11,10 @@ public class Scene {
 
     public Scene(GameObject[] initObjects, String name){
         gameObjects.addAll(Arrays.asList(initObjects));
-
         this.name = name;
     }
 
-    public Scene(){
-
-    }
+    public Scene(){}
 
     public ArrayList<GameObject> GameObjects() {
         return gameObjects;
@@ -29,6 +26,10 @@ public class Scene {
 
     public void Add(GameObject object){
         gameObjects.add(object);
+    }
+
+    public void Add(GameObject... objects){
+        gameObjects.addAll(Arrays.asList(objects));
     }
     public void Remove(GameObject object){
         object.OnDestroy();
