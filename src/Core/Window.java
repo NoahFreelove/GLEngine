@@ -4,11 +4,9 @@ import Core.Objects.GameObject;
 import Core.Objects.Models.RenderSettings;
 import Core.Scenes.Scene;
 import Core.Shaders.ShaderManager;
-import IO.Image;
 import IO.OBJ.ModelBuffer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -124,7 +122,6 @@ public class Window {
         GL.createCapabilities();
         program = glCreateProgram();
         ShaderManager.initShaders();
-        setBackgroundColor(new Vector4f(1,1,1,0));
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
@@ -174,9 +171,7 @@ public class Window {
         }
     }
 
-    public void setBackgroundColor(Vector4f backgroundColor) {
-        glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, backgroundColor.w);
-    }
+
 
     private void Render() {
         for (GameObject o :
@@ -213,7 +208,7 @@ public class Window {
             System.out.println("Object has no texture");
         }
 
-        ActiveCamera.setActiveModelMatrix(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));
+        ActiveCamera.setActiveGameObject(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));
 
         glUniformMatrix4fv(ModelMatrixID, false, ActiveCamera.getModelMatrix());
         glUniformMatrix4fv(ViewMatrixID, false, ActiveCamera.getViewMatrixBuffer());
@@ -265,6 +260,7 @@ public class Window {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
+
     public static Window CreateWindow(int width, int height, Scene scene){
         return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, scene, null));
     }
@@ -276,9 +272,11 @@ public class Window {
     public static Window CreateWindow(int width, int height, Callback postInitCallback){
         return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, new Scene(), postInitCallback));
     }
+
     public static Window CreateWindow(int width, int height){
         return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, new Scene(), null));
     }
+
     public static Window CreateWindow(){
         return Objects.requireNonNullElseGet(instance, () -> new Window(800, 800, new Scene(), null));
     }
@@ -324,4 +322,5 @@ public class Window {
     public void setTitle(String title){
         glfwSetWindowTitle(window, title);
     }
+
 }

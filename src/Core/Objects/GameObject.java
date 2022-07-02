@@ -54,7 +54,7 @@ public final class GameObject {
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
-        addComponent(meshRenderer = new MeshRenderer(new Mesh(model), new Image("src/bin/texture.jpg")));
+        addComponent(meshRenderer = new MeshRenderer(new Mesh(model), new Image("bin/texture.jpg")));
         initObject();
     }
 

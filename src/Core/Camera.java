@@ -3,6 +3,7 @@ package Core;
 import Core.Objects.Components.Component;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.DoubleBuffer;
@@ -152,7 +153,7 @@ public class Camera extends Component {
         dest.put(15, m.m33());
     }
 
-    public void setActiveModelMatrix(Matrix4f modelMatrix)
+    public void setActiveGameObject(Matrix4f modelMatrix)
     {
         ModelMatrix = modelMatrix;
     }
@@ -175,5 +176,9 @@ public class Camera extends Component {
         }
         else
             glDisable(GL_DEPTH_TEST);
+    }
+
+    public void setBackgroundColor(Vector4f backgroundColor) {
+        glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, backgroundColor.w);
     }
 }
