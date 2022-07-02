@@ -1,6 +1,7 @@
 package IO.OBJ;
 
 import Core.Objects.Models.Model;
+import IO.CustomModels.CustomModel;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -11,7 +12,38 @@ public class ModelToBuffer {
 
     public static ModelBuffer modelToBuffer(Model object)
     {
-        return objToBuffer(object.getObjModel());
+        return switch (object.type)
+        {
+            case OBJ -> objToBuffer(object.getObjModel());
+            case CUSTOM -> customModelToBuffer(object.getCustomModel());
+        };
+    }
+
+    public static ModelBuffer customModelToBuffer(CustomModel model){
+        FloatBuffer vertices = BufferUtils.createFloatBuffer(model.getVertices().length * 3);
+        for (Vector3f vertex : model.getVertices()){
+            vertices.put(vertex.x);
+            vertices.put(vertex.y);
+            vertices.put(vertex.z);
+        }
+        vertices.flip();
+
+        FloatBuffer normals = BufferUtils.createFloatBuffer(model.getNormals().length * 3);
+        for (Vector3f normal : model.getNormals()){
+            normals.put(normal.x);
+            normals.put(normal.y);
+            normals.put(normal.z);
+        }
+        normals.flip();
+
+        FloatBuffer uvs = BufferUtils.createFloatBuffer(model.getUvs().length * 2);
+        for (Vector2f uv : model.getUvs()){
+            uvs.put(uv.x);
+            uvs.put(uv.y);
+        }
+        uvs.flip();
+
+        return new ModelBuffer(vertices, uvs, normals);
     }
 
     public static ModelBuffer objToBuffer(Obj object)

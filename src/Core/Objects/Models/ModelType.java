@@ -1,5 +1,6 @@
 package Core.Objects.Models;
 
 public enum ModelType {
-    OBJ
+    OBJ,
+    CUSTOM
 }

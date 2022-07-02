@@ -26,7 +26,7 @@ public final class GameObject {
         rotation = new Vector3f(0,0,0);
         scale = new Vector3f(1,1,1);
 
-        meshRenderer = new MeshRenderer(new Image("src/bin/texture.jpg"));
+        meshRenderer = new MeshRenderer(new Image("bin/texture.jpg"));
         addComponent(meshRenderer);
         initObject();
     }
@@ -35,7 +35,7 @@ public final class GameObject {
         position = new Vector3f(0,0,0);
         rotation = new Vector3f(0,0,0);
         scale = new Vector3f(1,1,1);
-        meshRenderer = new MeshRenderer(new Mesh(model),new Image("src/bin/texture.jpg"));
+        meshRenderer = new MeshRenderer(new Mesh(model),new Image("bin/texture.jpg"));
         addComponent(meshRenderer);
         initObject();
     }
@@ -45,7 +45,7 @@ public final class GameObject {
         this.rotation = rotation;
         this.scale = scale;
 
-        meshRenderer = new MeshRenderer(new Image("src/bin/texture.jpg"));
+        meshRenderer = new MeshRenderer(new Image("bin/texture.jpg"));
         addComponent(meshRenderer);
         initObject();
     }

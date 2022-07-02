@@ -41,8 +41,6 @@ public class Window {
     int matrixID;
     int ViewMatrixID;
 
-    int skyTexture;
-
     private final Callback postInitCallback;
 
     private Scene source;
@@ -142,7 +140,7 @@ public class Window {
         textureID = glGetUniformLocation(program, "myTextureSampler");
 
         int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
-        skyTexture = new Image("src/bin/skybox.bmp").createTexture();
+
         while ( !glfwWindowShouldClose(window) ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             glUseProgram(program);
@@ -190,7 +188,6 @@ public class Window {
     }
 
     private void RenderGameObject(GameObject gameObject){
-
         RenderSettings rs = gameObject.getMeshRenderer().getRenderSettings();
         ModelBuffer gameObjectBuffer = gameObject.getMeshRenderer().getMesh().getObjectBuffer();
         int textureID = gameObject.getMeshRenderer().getTexture().getTextureID();
@@ -213,7 +210,7 @@ public class Window {
             glUniform1i(textureID, 0);
         }
         else{
-            System.out.println("No texture");
+            System.out.println("Object has no texture");
         }
 
         ActiveCamera.setActiveModelMatrix(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));
