@@ -23,19 +23,22 @@ public class SuzanneExample {
     }
 
     private static void postInit(){
-        GameObject suzanne = new GameObject(new Vector3f(0,0,0), new Vector3f(0,0,0), new Vector3f(1,1,1), new Model(OBJLoader.loadModel(new File("bin/suzanne.obj"))), new DDSFile("bin/uvmap.DDS"));
-        GameObject text = new GameObject(new Vector3f(-3,2,0), new Vector3f(0,0,0), new Vector3f(1,1,1), new Model(OBJLoader.loadModel(new File("bin/text.obj"))));
-        GameObject sphere = new GameObject(new Vector3f(0,5,3), new Vector3f(0,0,0), new Vector3f(1,1,1), new Model(OBJLoader.loadModel(new File("bin/highressphere.obj"))), new Image("bin/skybox.bmp"));
-
+        GameObject suzanne = new GameObject(new Vector3f(-5,0,0), new Vector3f(0,0,0), new Vector3f(1,1,1), new Model(OBJLoader.loadModel(new File("bin/suzanne.obj"))), new DDSFile("bin/uvmap.DDS"));
         GameObject skybox = new GameObject(new Vector3f(0,0,0), new Vector3f(0,0,0), new Vector3f(2,2,2), new Model(OBJLoader.loadModel(new File("bin/skybox.obj"))), new Image("bin/skybox.bmp"));
+
+        GameObject axisY = new GameObject(new Vector3f(0,0.5f,0), new Vector3f(0,0,0),   new Vector3f(0.5f,0.5f,0.5f), new Model(OBJLoader.loadModel(new File("bin/axis.obj"))), new Image("bin/green.png"));
+        GameObject axisX = new GameObject(new Vector3f(0,0,0.5f), new Vector3f(90,0,0),  new Vector3f(0.5f,0.5f,0.5f), new Model(OBJLoader.loadModel(new File("bin/axis.obj"))), new Image("bin/red.png"));
+        GameObject axisZ = new GameObject(new Vector3f(0.5f,0,0), new Vector3f(0,0,-90), new Vector3f(0.5f,0.5f,0.5f), new Model(OBJLoader.loadModel(new File("bin/axis.obj"))), new Image("bin/blue.png"));
+
+        // We don't want to cull the skybox because we wouldn't be able to see it!
         skybox.getMeshRenderer().setRenderSettings(new RenderSettings(false,false,true));
 
-        GameObject camera = new GameObject(new Vector3f(0,1,-3), new Vector3f(0,0,0), new Vector3f(1,1,1));
+        GameObject camera = new GameObject(new Vector3f(0,1,5), new Vector3f(0,0,0), new Vector3f(1,1,1));
         Camera cam = new Camera();
         camera.addComponent(cam);
         Window.GetInstance().ActiveCamera = cam;
 
-        Scene gameScene = new Scene(new GameObject[]{suzanne, skybox, sphere,text }, "GameScene");
+        Scene gameScene = new Scene(new GameObject[]{ suzanne, skybox, axisX,axisY, axisZ, camera }, "Suzanne Example");
         SceneManager.AddSceneToBuild(gameScene);
         SceneManager.SwitchScene(0);
 

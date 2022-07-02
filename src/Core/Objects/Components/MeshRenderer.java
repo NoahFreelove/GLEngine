@@ -40,7 +40,6 @@ public class MeshRenderer extends Component {
     public Mesh getMesh(){
         if(mesh == null)
         {
-            System.out.println("Mesh is null");
             return new Mesh();
         }
         return mesh;

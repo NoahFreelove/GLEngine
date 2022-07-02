@@ -193,10 +193,8 @@ public class Window {
 
         // If the object doesn't have a model, we don't render it
         if(gameObjectBuffer == null)
-        {
-            System.out.println("Object has no model");
             return;
-        }
+
 
         if(textureID >-1)
         {
