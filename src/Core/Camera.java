@@ -27,6 +27,8 @@ public class Camera extends Component {
     private float far = 300f;
 
     private float speed = 10;
+    private float baseSpeed = 10;
+    private float sprintSpeed = 20;
     private float mouseSpeed = 0.0005f;
     private double lastTime = glfwGetTime();
 
@@ -83,6 +85,8 @@ public class Camera extends Component {
         if (glfwGetKey( window, GLFW_KEY_LEFT_CONTROL ) == GLFW_PRESS){
             getParentPosition().add(new Vector3f(0,-1,0).mul(deltaTime).mul(speed));
         }
+        speed = (glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS)? sprintSpeed : baseSpeed;
+
         float FOV = initialFOV;
 
         ProjectionMatrix = new Matrix4f().perspective((float)Math.toRadians(FOV), (float)Window.GetInstance().getWidth()/ (float)Window.GetInstance().getHeight(),near,far);
