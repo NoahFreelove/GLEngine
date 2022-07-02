@@ -54,8 +54,11 @@ public class Obj extends Object {
     }
 
     public Obj() {
-        this(new ArrayList<Vector3f>(), new ArrayList<Vector2f>(),
-                new ArrayList<Vector3f>(), new ArrayList<Face>(), true);
+        this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), true);
+    }
+
+    public Obj(Obj object){
+        this(new ArrayList<>(object.vertices), new ArrayList<>(object.textureCoords), new ArrayList<>(object.normals), new ArrayList<>(object.faces), object.enableSmoothShading);
     }
 
 

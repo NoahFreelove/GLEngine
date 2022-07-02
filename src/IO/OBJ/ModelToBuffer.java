@@ -1,25 +1,29 @@
 package IO.OBJ;
 
-import Core.Objects.GameObject;
+import Core.Objects.Models.Model;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 
-public class BufferGameObject {
+public class ModelToBuffer {
 
-    public static OBJBuffer bufferGameObject(GameObject object)
+    public static ModelBuffer modelToBuffer(Model object)
     {
-        Obj model = object.getObject();
+        return objToBuffer(object.getObjModel());
+    }
+
+    public static ModelBuffer objToBuffer(Obj object)
+    {
         int vertCount = 0;
-        float[] verts = new float[model.getFaces().size()*9];
+        float[] verts = new float[object.getFaces().size()*9];
         FloatBuffer vertBuffer = BufferUtils.createFloatBuffer(verts.length);
-        for (Obj.Face face : model.getFaces()) {
+        for (Obj.Face face : object.getFaces()) {
             Vector3f[] vertices = {
-                    model.getVertices().get(face.getVertices()[0] - 1),
-                    model.getVertices().get(face.getVertices()[1] - 1),
-                    model.getVertices().get(face.getVertices()[2] - 1)
+                    object.getVertices().get(face.getVertices()[0] - 1),
+                    object.getVertices().get(face.getVertices()[1] - 1),
+                    object.getVertices().get(face.getVertices()[2] - 1)
             };
             {
                 verts[vertCount+0] = (vertices[0].x());
@@ -39,13 +43,13 @@ public class BufferGameObject {
         vertBuffer.flip();
 
         int normalCount = 0;
-        float[] normals = new float[model.getFaces().size()*9];
+        float[] normals = new float[object.getFaces().size()*9];
         FloatBuffer normalBuffer = BufferUtils.createFloatBuffer(normals.length);
-        for (Obj.Face face : model.getFaces()) {
+        for (Obj.Face face : object.getFaces()) {
             Vector3f[] vertices = {
-                    model.getNormals().get(face.getNormals()[0] - 1),
-                    model.getNormals().get(face.getNormals()[1] - 1),
-                    model.getNormals().get(face.getNormals()[2] - 1)
+                    object.getNormals().get(face.getNormals()[0] - 1),
+                    object.getNormals().get(face.getNormals()[1] - 1),
+                    object.getNormals().get(face.getNormals()[2] - 1)
             };
             {
                 normals[normalCount] = vertices[0].x();
@@ -65,13 +69,13 @@ public class BufferGameObject {
         normalBuffer.flip();
 
         int uvCount = 0;
-        float[] uvs = new float[model.getFaces().size()*6];
+        float[] uvs = new float[object.getFaces().size()*6];
         FloatBuffer uvBuffer = BufferUtils.createFloatBuffer(uvs.length);
-        for (Obj.Face face : model.getFaces()) {
+        for (Obj.Face face : object.getFaces()) {
             Vector2f[] vertices = {
-                    model.getTextureCoordinates().get(face.getTextureCoords()[0] - 1),
-                    model.getTextureCoordinates().get(face.getTextureCoords()[1] - 1),
-                    model.getTextureCoordinates().get(face.getTextureCoords()[2] - 1),
+                    object.getTextureCoordinates().get(face.getTextureCoords()[0] - 1),
+                    object.getTextureCoordinates().get(face.getTextureCoords()[1] - 1),
+                    object.getTextureCoordinates().get(face.getTextureCoords()[2] - 1),
             };
             {
                 uvs[uvCount] = vertices[0].x();
@@ -85,7 +89,6 @@ public class BufferGameObject {
         }
         uvBuffer.put(uvs);
         uvBuffer.flip();
-
-        return new OBJBuffer(vertBuffer, uvBuffer, normalBuffer);
+        return new ModelBuffer(vertBuffer,uvBuffer,normalBuffer);
     }
 }

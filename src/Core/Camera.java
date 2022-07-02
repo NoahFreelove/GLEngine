@@ -1,6 +1,6 @@
 package Core;
 
-import Core.Objects.Component;
+import Core.Objects.Components.Component;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -84,6 +84,7 @@ public class Camera extends Component {
         if (glfwGetKey( window, GLFW_KEY_LEFT_CONTROL ) == GLFW_PRESS){
             getParentPosition().add(new Vector3f(0,-1,0).mul(deltaTime).mul(speed));
         }
+
         speed = (glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS)? sprintSpeed : baseSpeed;
 
         float FOV = fov;
@@ -165,5 +166,14 @@ public class Camera extends Component {
             glEnable(GL_CULL_FACE);
         else
             glDisable(GL_CULL_FACE);
+    }
+
+    public void setDepthTest(boolean depthTest) {
+        if(depthTest) {
+            glEnable(GL_DEPTH_TEST);
+            glDepthFunc(GL_LESS);
+        }
+        else
+            glDisable(GL_DEPTH_TEST);
     }
 }

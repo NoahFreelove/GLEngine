@@ -1,10 +1,14 @@
-package Core.Objects;
+package Core.Objects.Components;
 
+import Core.Objects.GameBehavior;
+import Core.Objects.GameObject;
 import org.joml.Vector3f;
 
 public class Component implements GameBehavior {
 
-    private GameObject attachedObject = new GameObject();
+    private GameObject attachedObject = null;
+
+    private boolean isActive = true;
 
     public Component(){}
 
@@ -57,5 +61,13 @@ public class Component implements GameBehavior {
 
     public void setParentScale(Vector3f scale){
         attachedObject.setScale(scale);
+    }
+
+    public void setActive(boolean active){
+        isActive = active;
+    }
+
+    public boolean isActive(){
+        return isActive;
     }
 }

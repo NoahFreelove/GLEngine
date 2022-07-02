@@ -65,7 +65,7 @@ public class Image {
             } else {
                 //System.out.println("OK with reason: " + stbi_failure_reason());
             }
-            stbi_set_flip_vertically_on_load(true);
+            stbi_set_flip_vertically_on_load(false);
 
             /*System.out.println("IO.Image width: " + w.get(0));
             System.out.println("IO.Image height: " + h.get(0));

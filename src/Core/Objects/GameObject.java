@@ -1,10 +1,11 @@
 package Core.Objects;
 
+import Core.Objects.Components.Component;
+import Core.Objects.Components.MeshRenderer;
+import Core.Objects.Models.Mesh;
+import Core.Objects.Models.Model;
 import IO.DDS.DDSFile;
 import IO.Image;
-import IO.OBJ.OBJBuffer;
-import IO.OBJ.Obj;
-import IO.OBJ.BufferGameObject;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -18,26 +19,24 @@ public final class GameObject {
 
     private Identity identity;
 
-    private Obj object;
-    private OBJBuffer objectBuffer = null;
-
-    private int texture = -1;
+    private MeshRenderer meshRenderer;
 
     public GameObject(){
         position = new Vector3f(0,0,0);
         rotation = new Vector3f(0,0,0);
         scale = new Vector3f(1,1,1);
-        this.object = null;
-        this.texture = new Image("src/bin/texture.jpg").createTexture();
+
+        meshRenderer = new MeshRenderer(new Image("src/bin/texture.jpg"));
+        addComponent(meshRenderer);
         initObject();
     }
 
-    public GameObject(Obj model){
+    public GameObject(Model model){
         position = new Vector3f(0,0,0);
         rotation = new Vector3f(0,0,0);
         scale = new Vector3f(1,1,1);
-        this.object = model;
-        this.texture = new Image("src/bin/texture.jpg").createTexture();
+        meshRenderer = new MeshRenderer(new Mesh(model),new Image("src/bin/texture.jpg"));
+        addComponent(meshRenderer);
         initObject();
     }
 
@@ -45,41 +44,37 @@ public final class GameObject {
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
-        this.object = null;
+
+        meshRenderer = new MeshRenderer(new Image("src/bin/texture.jpg"));
+        addComponent(meshRenderer);
         initObject();
     }
 
-    public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, Obj model){
+    public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, Model model){
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
-        this.object = model;
-        this.texture = new Image("src/bin/texture.jpg").createTexture();
+        addComponent(meshRenderer = new MeshRenderer(new Mesh(model), new Image("src/bin/texture.jpg")));
         initObject();
     }
 
-    public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, Obj model, Image texture){
+    public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, Model model, Image texture){
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
-        this.object = model;
-        this.texture = texture.createTexture();
+        addComponent(meshRenderer = new MeshRenderer(new Mesh(model), texture));
         initObject();
     }
 
-    public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, Obj model, DDSFile texture){
+    public GameObject(Vector3f position, Vector3f rotation, Vector3f scale, Model model, DDSFile texture){
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
-        this.object = model;
-        this.texture = texture.createTexture();
+        addComponent(meshRenderer = new MeshRenderer(new Mesh(model), texture.createTexture()));
         initObject();
     }
 
     private void initObject(){
-        if(object != null){
-            objectBuffer = BufferGameObject.bufferGameObject(this);
-        }
         identity = new Identity("GameObject", "gameObject");
         OnInstantiate();
     }
@@ -96,17 +91,6 @@ public final class GameObject {
         return scale;
     }
 
-    public Obj getObject() {
-        return object;
-    }
-
-    public void setObject(Obj object) {
-        this.object = object;
-    }
-
-    public OBJBuffer getObjectBuffer() {
-        return objectBuffer;
-    }
 
     public void setPosition(Vector3f newPos)
     {
@@ -119,14 +103,6 @@ public final class GameObject {
 
     public void setScale(Vector3f scale) {
         this.scale = scale;
-    }
-
-    public void setTexture(int texture) {
-        this.texture = texture;
-    }
-
-    public int getTexture() {
-        return texture;
     }
 
     public void setIdentity(Identity identity) {
@@ -176,21 +152,23 @@ public final class GameObject {
         clone.position = new Vector3f(position);
         clone.rotation = new Vector3f(rotation);
         clone.scale = new Vector3f(scale);
-        clone.object = object;
-        clone.texture = texture;
+        clone.meshRenderer = new MeshRenderer(meshRenderer);
         clone.identity = getIdentity();
         clone.initObject();
         return clone;
     }
 
-    public void RemoveComponent(Component component){
+    public void removeComponent(Component component){
         component.OnRemoved();
         components.remove(component);
     }
 
-    public void AddComponent(Component component){
-        component.OnAdded();
+    public void addComponent(Component component){
+        if(components.contains(component))
+            return;
+
         component.setParent(this);
+        component.OnAdded();
         components.add(component);
     }
 
@@ -201,5 +179,23 @@ public final class GameObject {
 
     public Component getComponent(int index){
         return components.get(index);
+    }
+
+    public Component getComponentByType(Class type){
+        for(Component component : components){
+            if(component.getClass() == type){
+                return component;
+            }
+        }
+        return null;
+    }
+
+    public MeshRenderer getMeshRenderer(){
+        if(meshRenderer == null)
+        {
+            System.out.println("MeshRenderer is null");
+            return new MeshRenderer();
+        }
+        return meshRenderer;
     }
 }

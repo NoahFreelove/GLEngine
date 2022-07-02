@@ -1,9 +1,11 @@
 package Core;
 
 import Core.Objects.GameObject;
+import Core.Objects.Models.RenderSettings;
 import Core.Scenes.Scene;
 import Core.Shaders.ShaderManager;
-import IO.OBJ.OBJBuffer;
+import IO.Image;
+import IO.OBJ.ModelBuffer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -39,17 +41,21 @@ public class Window {
     int matrixID;
     int ViewMatrixID;
 
+    int skyTexture;
+
     private final Callback postInitCallback;
 
     private Scene source;
 
     public void run() {
         init();
+        initOpenGLRenderSettings();
 
         if(postInitCallback !=null)
             postInitCallback.call();
 
         loop();
+
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
@@ -126,11 +132,9 @@ public class Window {
     }
 
     private void loop() {
-        initOpenGLRenderSettings();
 
         int nbFrames = 0;
         double lastTime = 0;
-
 
         matrixID = glGetUniformLocation(program, "MVP");
         ViewMatrixID = glGetUniformLocation(program, "V");
@@ -138,12 +142,10 @@ public class Window {
         textureID = glGetUniformLocation(program, "myTextureSampler");
 
         int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
-
+        skyTexture = new Image("src/bin/skybox.bmp").createTexture();
         while ( !glfwWindowShouldClose(window) ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             glUseProgram(program);
-
-
 
             Vector3f lightPos = new Vector3f(4,4,5);
             glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
@@ -174,7 +176,6 @@ public class Window {
         }
     }
 
-
     public void setBackgroundColor(Vector4f backgroundColor) {
         glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, backgroundColor.w);
     }
@@ -190,17 +191,29 @@ public class Window {
 
     private void RenderGameObject(GameObject gameObject){
 
-        OBJBuffer gameObjectBuffer = gameObject.getObjectBuffer();
+        RenderSettings rs = gameObject.getMeshRenderer().getRenderSettings();
+        ModelBuffer gameObjectBuffer = gameObject.getMeshRenderer().getMesh().getObjectBuffer();
+        int textureID = gameObject.getMeshRenderer().getTexture().getTextureID();
+
+        ActiveCamera.setWireframe(rs.wireframe);
+        ActiveCamera.setCull(rs.cullFace);
+        ActiveCamera.setDepthTest(rs.depthTest);
 
         // If the object doesn't have a model, we don't render it
         if(gameObjectBuffer == null)
+        {
+            System.out.println("Object has no model");
             return;
+        }
 
-        if(gameObject.getTexture()>-1)
+        if(textureID >-1)
         {
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, gameObject.getTexture());
+            glBindTexture(GL_TEXTURE_2D, textureID);
             glUniform1i(textureID, 0);
+        }
+        else{
+            System.out.println("No texture");
         }
 
         ActiveCamera.setActiveModelMatrix(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));
@@ -254,8 +267,6 @@ public class Window {
         glDepthFunc(GL_LESS);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        ActiveCamera.setCull(false);
-        ActiveCamera.setWireframe(false);
     }
     public static Window CreateWindow(int width, int height, Scene scene){
         return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, scene, null));
@@ -273,7 +284,6 @@ public class Window {
     }
     public static Window CreateWindow(){
         return Objects.requireNonNullElseGet(instance, () -> new Window(800, 800, new Scene(), null));
-
     }
 
     public static Window GetInstance(){

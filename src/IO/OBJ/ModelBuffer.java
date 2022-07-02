@@ -8,7 +8,7 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-public class OBJBuffer {
+public class ModelBuffer {
     public FloatBuffer vertices;
     public FloatBuffer uvs;
     public FloatBuffer normals;
@@ -18,7 +18,7 @@ public class OBJBuffer {
     public final int uvBuffer;
     public final int normalBuffer;
 
-    public OBJBuffer(FloatBuffer vertices, FloatBuffer uvs, FloatBuffer normals)
+    public ModelBuffer(FloatBuffer vertices, FloatBuffer uvs, FloatBuffer normals)
     {
         this.vertices = vertices;
         this.uvs = uvs;
@@ -39,7 +39,7 @@ public class OBJBuffer {
         glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
     }
 
-    public static OBJBuffer add(OBJBuffer a, OBJBuffer b){
+    public static ModelBuffer add(ModelBuffer a, ModelBuffer b){
         FloatBuffer vertBuf = BufferUtils.createFloatBuffer(a.vertices.limit() + b.vertices.limit());
         vertBuf.put(a.vertices);
         vertBuf.put(b.vertices);
@@ -55,6 +55,6 @@ public class OBJBuffer {
         normalBuf.put(b.normals);
         normalBuf.flip();
 
-        return new OBJBuffer(vertBuf,uvBuf,normalBuf);
+        return new ModelBuffer(vertBuf,uvBuf,normalBuf);
     }
 }
