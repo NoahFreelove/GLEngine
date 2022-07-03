@@ -20,7 +20,7 @@ public class ShaderManager {
 
             // Check for errors
             if (glGetShaderi(fragmentShaderID, GL_COMPILE_STATUS) == GL_FALSE)
-                throw new RuntimeException("Error creating vertex shader\n"
+                throw new RuntimeException("Error creating fragment shader\n"
                         + glGetShaderInfoLog(fragmentShaderID, glGetShaderi(fragmentShaderID, GL_INFO_LOG_LENGTH)));
 
             // Attach the shader
@@ -123,7 +123,7 @@ public class ShaderManager {
                 "\t// Light emission properties\n" +
                 "\t// You probably want to put them as uniforms\n" +
                 "\tvec3 LightColor = vec3(1,1,1);\n" +
-                "\tfloat LightPower = 100.0f;\n" +
+                "\tfloat LightPower = 0.0f;\n" +
                 "\t\n" +
                 "\t// Material properties\n" +
                 "\tvec3 MaterialDiffuseColor = texture( myTextureSampler, UV ).rgb;\n" +
@@ -158,9 +158,9 @@ public class ShaderManager {
                 "\t\t// Ambient : simulates indirect lighting\n" +
                 "\t\tMaterialAmbientColor +\n" +
                 "\t\t// Diffuse : \"color\" of the object\n" +
-                "\t\tMaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance) +\n" +
+                "\t\tMaterialDiffuseColor * LightColor * 1 * cosTheta +\n" +
                 "\t\t// Specular : reflective highlight, like a mirror\n" +
-                "\t\tMaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,5) / (distance*distance);\n" +
+                "\t\tMaterialSpecularColor * LightColor * 1 * pow(cosAlpha,5);\n" +
                 "\n" +
                 "\tcolor.a = 1;\n" +
                 "}", GL_FRAGMENT_SHADER);
