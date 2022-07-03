@@ -2,9 +2,9 @@ package IO.CustomModels;
 
 import org.joml.Vector3f;
 
-public class BoundingBox extends CustomModel{
+public class Cube extends CustomModel{
 
-    public BoundingBox(Vector3f dimensions){
+    public Cube(Vector3f dimensions){
 
         float[] points = new float[]{
                 -dimensions.x(),-dimensions.y(),-dimensions.z(),

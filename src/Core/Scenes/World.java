@@ -38,6 +38,7 @@ public final class World {
     }
     public void AddGizmo(GameObject gizmo){
         gizmos.add(gizmo);
+        gizmo.Added();
     }
 
     public void Add(GameObject... objects){
@@ -46,6 +47,14 @@ public final class World {
             o.Added();
         }
     }
+
+    public void AddGizmo(GameObject... gizmo){
+        gizmos.addAll(Arrays.asList(gizmo));
+        for (GameObject g : gizmo) {
+            g.Added();
+        }
+    }
+
     public void Remove(GameObject object){
         object.OnDestroy();
         gameObjects.remove(object);

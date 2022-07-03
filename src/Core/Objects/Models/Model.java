@@ -34,12 +34,11 @@ public class Model {
     }
 
     public Object getPrimaryObject(){
-        switch (type) {
-            case OBJ:
-                return objModel;
-            default:
-                return null;
-        }
+        return switch (type) {
+            case OBJ -> objModel;
+            case CUSTOM -> customModel;
+            case NONE -> null;
+        };
     }
 
     public Obj getObjModel(){

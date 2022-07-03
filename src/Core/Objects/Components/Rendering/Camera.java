@@ -1,6 +1,7 @@
-package Core;
+package Core.Objects.Components.Rendering;
 
 import Core.Objects.Components.Component;
+import Core.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;

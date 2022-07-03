@@ -1,5 +1,7 @@
 package Core;
 
+import Core.Objects.Components.Component;
+import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.GameObject;
 import Core.Objects.Models.RenderSettings;
 import Core.Scenes.World;
@@ -52,6 +54,7 @@ public class Window {
 
         if(postInitCallback !=null)
             postInitCallback.call();
+
 
         loop();
 
@@ -150,7 +153,7 @@ public class Window {
             Vector3f lightPos = new Vector3f(0,4,5);
             glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
 
-            if(ActiveCamera != null)
+            if(Component.isComponentValid(ActiveCamera))
             {
                 ActiveCamera.UpdateRenderMatrix(window);
                 Render();
@@ -179,19 +182,22 @@ public class Window {
         }
     }
 
-
-
     private void Render() {
         for (GameObject o :
                 source.GameObjects()) {
             if(o!=null){
-                RenderGameObject(o);
+                if(o.getMeshRenderer().isActive()){
+                    RenderGameObject(o);
+                }
             }
         }
-        for (GameObject o :
-                source.Gizmos()) {
-            if(o!=null){
-                RenderGameObject(o);
+        if(WorldManager.areGizmosEnabled())
+        {
+            for (GameObject o :
+                    source.Gizmos()) {
+                if(o!=null){
+                    RenderGameObject(o);
+                }
             }
         }
     }

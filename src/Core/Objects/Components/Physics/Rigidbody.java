@@ -38,10 +38,10 @@ public class Rigidbody extends Component {
 
     @Override
     public void Update(){
+        if(!isActive())
+            return;
         Transform transform = new Transform();
         rigidBody.getWorldTransform(transform);
-
-
         setParentPosition(new org.joml.Vector3f(transform.origin.x,transform.origin.y,transform.origin.z));
     }
     public org.joml.Vector3f getDimensions(){

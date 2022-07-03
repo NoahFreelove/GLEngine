@@ -6,9 +6,11 @@ import Core.Window;
 import java.util.ArrayList;
 
 public class WorldManager {
-    private static ArrayList<World> buildWorlds = new ArrayList<>(0);
+    private static final ArrayList<World> buildWorlds = new ArrayList<>(0);
 
     private static World currentWorld = new World();
+
+    private static boolean enableGizmos = true;
 
     public static World getSceneByIndex(int i){
         if(i< buildWorlds.size())
@@ -53,4 +55,11 @@ public class WorldManager {
         return currentWorld;
     }
 
+    public static boolean areGizmosEnabled() {
+        return enableGizmos;
+    }
+
+    public static void setEnableGizmos(boolean enableGizmos) {
+        WorldManager.enableGizmos = enableGizmos;
+    }
 }

@@ -75,4 +75,11 @@ public class Component implements GameBehavior {
     public boolean isActive(){
         return isActive;
     }
+
+    public static boolean isComponentValid(Component comp){
+        if(comp !=null)
+            return comp.isActive;
+
+        return false;
+    }
 }
