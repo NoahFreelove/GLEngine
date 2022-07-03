@@ -2,7 +2,8 @@ package Core;
 
 import Core.Objects.GameObject;
 import Core.Objects.Models.RenderSettings;
-import Core.Scenes.Scene;
+import Core.Scenes.World;
+import Core.Scenes.WorldManager;
 import Core.Shaders.ShaderManager;
 import IO.OBJ.ModelBuffer;
 import org.joml.Matrix4f;
@@ -41,7 +42,9 @@ public class Window {
 
     private final Callback postInitCallback;
 
-    private Scene source;
+    private World source;
+
+    private static float deltaTime;
 
     public void run() {
         init();
@@ -61,11 +64,11 @@ public class Window {
         glfwSetErrorCallback(null).free();
     }
 
-    private Window(int width, int height, Scene startingScene, Callback postInitCallback) {
+    private Window(int width, int height, World startingWorld, Callback postInitCallback) {
         instance = this;
         this.width = width;
         this.height = height;
-        this.source = startingScene;
+        this.source = startingWorld;
         this.postInitCallback = postInitCallback;
         run();
     }
@@ -131,6 +134,8 @@ public class Window {
         int nbFrames = 0;
         double lastTime = 0;
 
+
+
         matrixID = glGetUniformLocation(program, "MVP");
         ViewMatrixID = glGetUniformLocation(program, "V");
         ModelMatrixID = glGetUniformLocation(program, "M");
@@ -139,10 +144,11 @@ public class Window {
         int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
 
         while ( !glfwWindowShouldClose(window) ) {
+            double preFrameTime = glfwGetTime();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             glUseProgram(program);
 
-            Vector3f lightPos = new Vector3f(4,4,5);
+            Vector3f lightPos = new Vector3f(0,4,5);
             glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
 
             if(ActiveCamera != null)
@@ -155,6 +161,9 @@ public class Window {
             glfwSwapBuffers(window);
             glfwPollEvents();
 
+            deltaTime = (float) (glfwGetTime() - preFrameTime);
+            WorldManager.getCurrentWorld().step(deltaTime);
+            // FPS counter
             double currentTime = glfwGetTime();
             nbFrames++;
             if ( currentTime - lastTime >= 1.0 ){
@@ -176,6 +185,12 @@ public class Window {
     private void Render() {
         for (GameObject o :
                 source.GameObjects()) {
+            if(o!=null){
+                RenderGameObject(o);
+            }
+        }
+        for (GameObject o :
+                source.Gizmos()) {
             if(o!=null){
                 RenderGameObject(o);
             }
@@ -214,19 +229,27 @@ public class Window {
 
         glBindVertexArray(gameObjectBuffer.vertexArrayId);
 
-        glEnableVertexAttribArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, gameObjectBuffer.vertexBuffer);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+        if(gameObjectBuffer.vertices.limit()>0)
+        {
+            glEnableVertexAttribArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, gameObjectBuffer.vertexBuffer);
+            glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+        }
 
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, gameObjectBuffer.uvBuffer);
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+        if(gameObjectBuffer.uvs.limit()>0)
+        {
+            glEnableVertexAttribArray(1);
+            glBindBuffer(GL_ARRAY_BUFFER, gameObjectBuffer.uvBuffer);
+            glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+        }
+        if(gameObjectBuffer.normals.limit()>0)
+        {
+            glEnableVertexAttribArray(2);
+            glBindBuffer(GL_ARRAY_BUFFER, gameObjectBuffer.normalBuffer);
+            glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
+        }
 
-        glEnableVertexAttribArray(2);
-        glBindBuffer(GL_ARRAY_BUFFER, gameObjectBuffer.normalBuffer);
-        glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
-
-        glDrawArrays(GL_TRIANGLES, 0, gameObjectBuffer.vertices.limit());
+        glDrawArrays(gameObject.getMeshRenderer().getRenderSettings().drawMode, 0, gameObjectBuffer.vertices.limit());
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
@@ -259,24 +282,26 @@ public class Window {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
-    public static Window CreateWindow(int width, int height, Scene scene){
-        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, scene, null));
+
+    //region Constructors, Getters, Setters
+    public static Window CreateWindow(int width, int height, World world){
+        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, world, null));
     }
 
-    public static Window CreateWindow(int width, int height, Callback postInitCallback, Scene scene){
-        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, scene, postInitCallback));
+    public static Window CreateWindow(int width, int height, Callback postInitCallback, World world){
+        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, world, postInitCallback));
     }
 
     public static Window CreateWindow(int width, int height, Callback postInitCallback){
-        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, new Scene(), postInitCallback));
+        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, new World(), postInitCallback));
     }
 
     public static Window CreateWindow(int width, int height){
-        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, new Scene(), null));
+        return Objects.requireNonNullElseGet(instance, () -> new Window(width, height, new World(), null));
     }
 
     public static Window CreateWindow(){
-        return Objects.requireNonNullElseGet(instance, () -> new Window(800, 800, new Scene(), null));
+        return Objects.requireNonNullElseGet(instance, () -> new Window(800, 800, new World(), null));
     }
 
     public static Window GetInstance(){
@@ -299,7 +324,7 @@ public class Window {
         return program;
     }
     
-    public void setRenderSource(Scene scene){ source = scene; }
+    public void setRenderSource(World world){ source = world; }
 
     public void setVSync(boolean value) {
         glfwSwapInterval(value ? 1 : 0);
@@ -320,5 +345,10 @@ public class Window {
     public void setTitle(String title){
         glfwSetWindowTitle(window, title);
     }
+
+    public static float getDeltaTime() {
+        return deltaTime;
+    }
+    //endregion
 
 }

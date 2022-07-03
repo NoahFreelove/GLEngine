@@ -131,7 +131,7 @@ public class ShaderManager {
                 "\tvec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);\n" +
                 "\n" +
                 "\t// Distance to the light\n" +
-                "\tfloat distance = length( LightPosition_worldspace - Position_worldspace );\n" +
+                "\tfloat distance = 1;\n" +
                 "\n" +
                 "\t// Normal of the computed fragment, in camera space\n" +
                 "\tvec3 n = normalize( Normal_cameraspace );\n" +

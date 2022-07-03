@@ -1,7 +1,7 @@
 package Core.Objects;
 
 import Core.Objects.Components.Component;
-import Core.Objects.Components.MeshRenderer;
+import Core.Objects.Components.Rendering.MeshRenderer;
 import Core.Objects.Models.Mesh;
 import Core.Objects.Models.Model;
 import IO.DDS.DDSFile;

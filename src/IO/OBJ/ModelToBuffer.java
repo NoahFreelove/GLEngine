@@ -42,7 +42,6 @@ public class ModelToBuffer {
             uvs.put(uv.y);
         }
         uvs.flip();
-
         return new ModelBuffer(vertices, uvs, normals);
     }
 

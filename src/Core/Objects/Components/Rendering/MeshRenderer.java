@@ -1,5 +1,6 @@
-package Core.Objects.Components;
+package Core.Objects.Components.Rendering;
 
+import Core.Objects.Components.Component;
 import Core.Objects.Models.Mesh;
 import Core.Objects.Models.RenderSettings;
 import Core.Objects.Models.Texture;
