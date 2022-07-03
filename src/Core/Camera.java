@@ -11,7 +11,6 @@ import java.nio.FloatBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 
 public class Camera extends Component {
 
@@ -26,7 +25,7 @@ public class Camera extends Component {
     private float near = 0.1f;
     private float far = 300f;
 
-    private float speed = 10;
+    protected float speed = 10;
     private float baseSpeed = 10;
     private float sprintSpeed = 20;
     private float mouseSpeed = 0.0005f;
@@ -39,7 +38,7 @@ public class Camera extends Component {
         super();
     }
 
-    public void CheckInput(long window){
+    public void UpdateRenderMatrix(long window){
 
         double currentTime = glfwGetTime();
         float deltaTime = (float) (currentTime-lastTime);
@@ -67,24 +66,8 @@ public class Camera extends Component {
         Vector3f up = new Vector3f();
         right.cross(direction,up);
 
-        if (glfwGetKey( window, GLFW_KEY_W ) == GLFW_PRESS){
-            getParentPosition().add(direction.mul(deltaTime).mul(speed));
-        }
-        if (glfwGetKey( window, GLFW_KEY_S ) == GLFW_PRESS){
-            getParentPosition().sub(direction.mul(deltaTime).mul(speed));
-        }
-        if (glfwGetKey( window, GLFW_KEY_D ) == GLFW_PRESS){
-            getParentPosition().add(right.mul(deltaTime).mul(speed));
-        }
-        if (glfwGetKey( window, GLFW_KEY_A ) == GLFW_PRESS){
-            getParentPosition().sub(right.mul(deltaTime).mul(speed));
-        }
-        if (glfwGetKey( window, GLFW_KEY_SPACE ) == GLFW_PRESS){
-            getParentPosition().add(new Vector3f(0,1,0).mul(deltaTime).mul(speed));
-        }
-        if (glfwGetKey( window, GLFW_KEY_LEFT_CONTROL ) == GLFW_PRESS){
-            getParentPosition().add(new Vector3f(0,-1,0).mul(deltaTime).mul(speed));
-        }
+        CheckInput(window, deltaTime, direction, right);
+
 
         speed = (glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS)? sprintSpeed : baseSpeed;
 
@@ -98,6 +81,27 @@ public class Camera extends Component {
         getParentPosition().add(direction, addedPos);
         ViewMatrix.lookAt(getParentPosition(),addedPos,up);
         lastTime=currentTime;
+    }
+
+    public void CheckInput(long window, float deltaTime, Vector3f direction, Vector3f right) {
+        if (glfwGetKey(window, GLFW_KEY_W ) == GLFW_PRESS){
+            getParentPosition().add(direction.mul(deltaTime).mul(speed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_S ) == GLFW_PRESS){
+            getParentPosition().sub(direction.mul(deltaTime).mul(speed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_D ) == GLFW_PRESS){
+            getParentPosition().add(right.mul(deltaTime).mul(speed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_A ) == GLFW_PRESS){
+            getParentPosition().sub(right.mul(deltaTime).mul(speed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_SPACE ) == GLFW_PRESS){
+            getParentPosition().add(new Vector3f(0,1,0).mul(deltaTime).mul(speed));
+        }
+        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL ) == GLFW_PRESS){
+            getParentPosition().add(new Vector3f(0,-1,0).mul(deltaTime).mul(speed));
+        }
     }
 
     public static float clamp(float min, float max, float v){

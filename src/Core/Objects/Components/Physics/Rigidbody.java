@@ -13,6 +13,7 @@ import javax.vecmath.Vector3f;
 public class Rigidbody extends Component {
     private RigidBody rigidBody;
     private Vector3f dimensions;
+
     public Rigidbody(org.joml.Vector3f colliderDimensions) {
         this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
     }
@@ -28,8 +29,6 @@ public class Rigidbody extends Component {
 
         transform.setIdentity();
         transform.setTranslation(position);
-
-
         rigidBody.setWorldTransform(new Transform(transform));
 
     }
@@ -38,12 +37,20 @@ public class Rigidbody extends Component {
     public void Update(){
         Transform transform = new Transform();
         rigidBody.getWorldTransform(transform);
-        System.out.println(transform.origin);
+
 
         setParentPosition(new org.joml.Vector3f(transform.origin.x,transform.origin.y,transform.origin.z));
     }
     public org.joml.Vector3f getDimensions(){
         return new org.joml.Vector3f(dimensions.x, dimensions.y, dimensions.z);
+    }
+
+    public RigidBody getRigidBody() {
+        return rigidBody;
+    }
+
+    public void disableGravity(){
+        rigidBody.setGravity(new Vector3f(0,0,0));
     }
 }
 

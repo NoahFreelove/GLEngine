@@ -19,6 +19,11 @@ public class Component implements GameBehavior {
     public void Start() {}
 
     @Override
+    public void ParentAdded() {
+
+    }
+
+    @Override
     public void Unload() {}
 
     @Override

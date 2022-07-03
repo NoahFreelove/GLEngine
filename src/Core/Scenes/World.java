@@ -1,6 +1,8 @@
 package Core.Scenes;
 
 import Core.Objects.GameObject;
+import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.dynamics.RigidBody;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +34,7 @@ public final class World {
 
     public void Add(GameObject object){
         gameObjects.add(object);
+        object.Added();
     }
     public void AddGizmo(GameObject gizmo){
         gizmos.add(gizmo);
@@ -39,6 +42,9 @@ public final class World {
 
     public void Add(GameObject... objects){
         gameObjects.addAll(Arrays.asList(objects));
+        for (GameObject o : objects) {
+            o.Added();
+        }
     }
     public void Remove(GameObject object){
         object.OnDestroy();
@@ -58,5 +64,13 @@ public final class World {
 
     public ArrayList<GameObject> Gizmos() {
         return gizmos;
+    }
+
+    public void addRigidBody(RigidBody rigidBody){
+        physicsWorld.getPhysicsWorldObject().addRigidBody(rigidBody);
+    }
+
+    public void addCollider(CollisionObject collider){
+        physicsWorld.getPhysicsWorldObject().addCollisionObject(collider);
     }
 }

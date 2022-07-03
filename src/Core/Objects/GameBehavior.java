@@ -2,6 +2,7 @@ package Core.Objects;
 
 public interface GameBehavior {
     void Start(); // Called when scene is loaded
+    void ParentAdded(); // Called when parent is added to scene
     void Update(); // Called every frame this object is in an active scene
     void Unload(); // Called when scene is unloaded
     void OnDestroy(); // Called when the parent object is destroyed (removed from scene)

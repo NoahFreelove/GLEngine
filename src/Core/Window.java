@@ -153,7 +153,7 @@ public class Window {
 
             if(ActiveCamera != null)
             {
-                ActiveCamera.CheckInput(window);
+                ActiveCamera.UpdateRenderMatrix(window);
                 Render();
             }
 

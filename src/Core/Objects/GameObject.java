@@ -137,6 +137,12 @@ public final class GameObject {
         }
     }
 
+    public void Added(){
+        for (Component component : components) {
+            component.ParentAdded();
+        }
+    }
+
     public void OnInstantiate() {
 
     }
