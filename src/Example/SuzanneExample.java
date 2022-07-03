@@ -34,6 +34,10 @@ public class SuzanneExample {
         BoxCollider floorCollider = new BoxCollider(new Vector3f(0,-5,0), new Vector3f(10,0.2f,10));
         floor.addComponent(floorCollider);
 
+        GameObject sphere = new GameObject(new Vector3f(0,5,0), new Vector3f(0,0,0), new Vector3f(1,1,1), new Model(OBJLoader.loadModel(new File("bin/sphere.obj"))), new DDSFile("bin/uvmap.DDS"));
+        Rigidbody sphereRb = new Rigidbody(new Vector3f(1,1,1));
+        sphere.addComponent(sphereRb);
+
         GameObject skybox = new GameObject(new Vector3f(0,0,0), new Vector3f(0,0,0), new Vector3f(2,2,2), new Model(OBJLoader.loadModel(new File("bin/skybox.obj"))), new Image("bin/skybox.bmp"));
 
         GameObject axisY = new GameObject(new Vector3f(0,0.5f,0), new Vector3f(0,0,0),   new Vector3f(0.5f,0.5f,0.5f), new Model(OBJLoader.loadModel(new File("bin/axis.obj"))), new Image("bin/green.png"));
@@ -47,16 +51,14 @@ public class SuzanneExample {
         CustomCamera cam = new CustomCamera();
         camera.addComponent(cam);
         Window.GetInstance().ActiveCamera = cam;
-
-        gameWorld.Add(suzanne, skybox, axisY, axisX, axisZ, camera, floor);
-
         Rigidbody suzanneBody = new Rigidbody(new Vector3f(1,1,1));
         suzanne.addComponent(suzanneBody);
 
+        gameWorld.Add(suzanne, skybox, axisY, axisX, axisZ, camera, floor, sphere);
+        
         suzanneController = new SuzanneController(suzanneBody);
         suzanne.addComponent(suzanneController);
         suzanne.addComponent(new SuzanneGizmo());
-
 
         cam.setBackgroundColor(new Vector4f(0,0.7f,0.7f,0));
     }

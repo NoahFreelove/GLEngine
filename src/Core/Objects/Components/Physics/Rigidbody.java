@@ -21,7 +21,6 @@ public class Rigidbody extends Component {
     @Override
     public void OnAdded(){
         rigidBody = new RigidBody(1, new DefaultMotionState(), new BoxShape(dimensions));
-        WorldManager.getCurrentWorld().getPhysicsWorld().getPhysicsWorldObject().addRigidBody(rigidBody);
         rigidBody.activate();
 
         Vector3f position = new Vector3f(getParentPosition().x(), getParentPosition().y(), getParentPosition().z());
@@ -30,7 +29,11 @@ public class Rigidbody extends Component {
         transform.setIdentity();
         transform.setTranslation(position);
         rigidBody.setWorldTransform(new Transform(transform));
+    }
 
+    @Override
+    public void ParentAdded(){
+        WorldManager.getCurrentWorld().getPhysicsWorld().getPhysicsWorldObject().addRigidBody(rigidBody);
     }
 
     @Override
