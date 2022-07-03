@@ -134,8 +134,6 @@ public class Window {
         int nbFrames = 0;
         double lastTime = 0;
 
-
-
         matrixID = glGetUniformLocation(program, "MVP");
         ViewMatrixID = glGetUniformLocation(program, "V");
         ModelMatrixID = glGetUniformLocation(program, "M");
@@ -143,6 +141,7 @@ public class Window {
 
         int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
 
+        // Infinite render loop
         while ( !glfwWindowShouldClose(window) ) {
             double preFrameTime = glfwGetTime();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer

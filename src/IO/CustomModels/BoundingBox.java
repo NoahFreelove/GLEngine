@@ -7,12 +7,12 @@ public class BoundingBox extends CustomModel{
     public BoundingBox(Vector3f dimensions){
 
         float[] points = new float[]{
-                -dimensions.x(),-dimensions.y(),-dimensions.z(), // triangle 1 : begin
-                -dimensions.x(),-dimensions.y(), dimensions.z(),
-                -dimensions.x(), dimensions.y(), dimensions.z(), // triangle 1 : end
-                 dimensions.x(), dimensions.y(),-dimensions.z(), // triangle 2 : begin
                 -dimensions.x(),-dimensions.y(),-dimensions.z(),
-                -dimensions.x(), dimensions.y(),-dimensions.z(), // triangle 2 : end
+                -dimensions.x(),-dimensions.y(), dimensions.z(),
+                -dimensions.x(), dimensions.y(), dimensions.z(),
+                 dimensions.x(), dimensions.y(),-dimensions.z(),
+                -dimensions.x(),-dimensions.y(),-dimensions.z(),
+                -dimensions.x(), dimensions.y(),-dimensions.z(),
                  dimensions.x(),-dimensions.y(), dimensions.z(),
                 -dimensions.x(),-dimensions.y(),-dimensions.z(),
                  dimensions.x(),-dimensions.y(),-dimensions.z(),

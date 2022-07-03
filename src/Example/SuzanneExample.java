@@ -20,7 +20,7 @@ public class SuzanneExample {
     public static SuzanneController suzanneController;
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void main(String[] args){
-        Window.CreateWindow(1920, 1080, SuzanneExample::postInit);
+        Window.CreateWindow(1280, 720, SuzanneExample::postInit);
     }
 
     private static void postInit(){
@@ -55,7 +55,7 @@ public class SuzanneExample {
         suzanne.addComponent(suzanneBody);
 
         gameWorld.Add(suzanne, skybox, axisY, axisX, axisZ, camera, floor, sphere);
-        
+
         suzanneController = new SuzanneController(suzanneBody);
         suzanne.addComponent(suzanneController);
         suzanne.addComponent(new SuzanneGizmo());
