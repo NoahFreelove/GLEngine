@@ -1,5 +1,6 @@
 package Example;
 
+import Core.Objects.Components.Physics.BoundingBox;
 import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.Components.Colliders.BoxCollider;
 import Core.Objects.Components.Physics.Rigidbody;
@@ -53,9 +54,10 @@ public class SuzanneExample {
 
         cam.setBackgroundColor(new Vector4f(0,0.7f,0.7f,0));
         camera.addComponent(cam);
+        camera.addComponent(new CameraController(cam));
         Window.GetInstance().ActiveCamera = cam;
 
-        gameWorld.Add(suzanne, skybox, floor, sphere);
+        gameWorld.Add(suzanne, skybox, floor, sphere, camera);
         gameWorld.AddGizmo(axisX, axisY, axisZ);
 
         Rigidbody suzanneBody = new Rigidbody(new Vector3f(1,1,1));

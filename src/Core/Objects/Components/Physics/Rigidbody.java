@@ -37,7 +37,7 @@ public class Rigidbody extends Component {
     }
 
     @Override
-    public void Update(){
+    public void Update(float deltaTime){
         if(!isActive())
             return;
         Transform transform = new Transform();

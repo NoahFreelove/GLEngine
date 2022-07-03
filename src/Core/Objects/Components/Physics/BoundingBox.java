@@ -1,7 +1,6 @@
-package Example;
+package Core.Objects.Components.Physics;
 
 import Core.Objects.Components.Component;
-import Core.Objects.Components.Physics.Rigidbody;
 import Core.Objects.GameObject;
 import Core.Objects.Models.Model;
 import Core.Objects.Models.RenderSettings;
@@ -26,7 +25,7 @@ public class BoundingBox extends Component {
     }
 
     @Override
-    public void Update(){
+    public void Update(float deltaTime){
         boundingBox.setPosition(getParentPosition());
     }
 }

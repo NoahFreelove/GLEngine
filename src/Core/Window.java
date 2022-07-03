@@ -155,7 +155,7 @@ public class Window {
 
             if(Component.isComponentValid(ActiveCamera))
             {
-                ActiveCamera.UpdateRenderMatrix(window);
+                ActiveCamera.UpdateRenderMatrix();
                 Render();
             }
 
@@ -178,7 +178,7 @@ public class Window {
 
     private void UpdateObjects() {
         for (GameObject o : source.GameObjects()) {
-            o.Update();
+            o.Update(deltaTime);
         }
     }
 

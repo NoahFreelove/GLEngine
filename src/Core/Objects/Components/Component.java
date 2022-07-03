@@ -13,7 +13,7 @@ public class Component implements GameBehavior {
     public Component(){}
 
     @Override
-    public void Update() {}
+    public void Update(float deltaTime) {}
 
     @Override
     public void Start() {}

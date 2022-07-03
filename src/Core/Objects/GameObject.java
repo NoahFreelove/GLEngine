@@ -113,9 +113,9 @@ public final class GameObject {
         return identity;
     }
 
-    public void Update() {
+    public void Update(float deltaTime) {
         for (Component component : components) {
-            component.Update();
+            component.Update(deltaTime);
         }
     }
 

@@ -30,7 +30,7 @@ public class SuzanneController extends Component {
     }
 
     @Override
-    public void Update(){
+    public void Update(float deltaTime){
         if (glfwGetKey(window, GLFW_KEY_UP ) == GLFW_PRESS){
             SuzanneExample.suzanneController.Move(0, 0,-suzanneSpeed);
         }

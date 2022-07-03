@@ -16,6 +16,7 @@ public class ModelToBuffer {
         {
             case OBJ -> objToBuffer(object.getObjModel());
             case CUSTOM -> customModelToBuffer(object.getCustomModel());
+            case NONE -> customModelToBuffer(new CustomModel());
         };
     }
 
