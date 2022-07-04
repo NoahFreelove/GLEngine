@@ -8,7 +8,7 @@ SCA (10,1,10)
 
 MOD "bin/cube.obj"
 
-TEX "bin/red.png"
+TEX "bin/wall.png"
 ///END GAMEOBJECT///
 
 Left Wall
@@ -21,7 +21,7 @@ SCA (1,10,10)
 
 MOD "bin/cube.obj"
 
-TEX "bin/red.png"
+TEX "bin/wall.png"
 ///END GAMEOBJECT///
 
 Right Wall
@@ -34,5 +34,5 @@ SCA (1,10,10)
 
 MOD "bin/cube.obj"
 
-TEX "bin/red.png"
+TEX "bin/wall.png"
 ///END GAMEOBJECT///

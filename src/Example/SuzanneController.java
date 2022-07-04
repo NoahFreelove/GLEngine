@@ -6,7 +6,6 @@ import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.GameObject;
 import Core.Worlds.WorldManager;
 import Core.Window;
-import com.bulletphysics.linearmath.Transform;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
@@ -36,32 +35,44 @@ public class SuzanneController extends Component {
         cam2.addHorizAngle(3.14f);
     }
 
-    public void Move(float x, float y, float z) {
-        rb.getRigidBody().applyCentralForce(new Vector3f(x, y, z));
+    public void SetVelocity(Vector3f velocity){
+        rb.getRigidBody().setLinearVelocity(velocity);
     }
 
     @Override
     public void Update(float deltaTime){
+        Vector3f currVelocity = new Vector3f();
+        rb.getRigidBody().getLinearVelocity(currVelocity);
 
+        Vector3f velocity = new Vector3f(0,currVelocity.y,0);
         if (glfwGetKey(window, GLFW_KEY_UP ) == GLFW_PRESS){
-            SuzanneExample.suzanneController.Move(0, 0,-suzanneSpeed);
+            velocity.z = -suzanneSpeed;
         }
-        if (glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS){
-            SuzanneExample.suzanneController.Move(0,0,suzanneSpeed);
+        else if (glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS){
+            velocity.z = suzanneSpeed;
         }
-        if (glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS){
-            SuzanneExample.suzanneController.Move(suzanneSpeed,0,0);
+        else velocity.z = 0;
+
+        if (glfwGetKey(window, GLFW_KEY_LEFT ) == GLFW_PRESS){
+            velocity.x = -suzanneSpeed;
         }
-        if (glfwGetKey( window, GLFW_KEY_LEFT ) == GLFW_PRESS){
-            SuzanneExample.suzanneController.Move(-suzanneSpeed,0,0);
+        else if (glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS){
+            velocity.x = suzanneSpeed;
         }
-        if (glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS){
-            SuzanneExample.suzanneController.Move(0,suzanneSpeed*5,0);
+        else velocity.x = 0;
+
+        if (glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT ) == GLFW_PRESS){
+            velocity.y = suzanneSpeed;
         }
+
+        SetVelocity(velocity);
 
         if (glfwGetKey( window, GLFW_KEY_R ) == GLFW_PRESS){
             SuzanneExample.suzanneController.rb.setPosition(new org.joml.Vector3f(0,2,0));
+            SetVelocity(new Vector3f(0,0,0));
         }
+
+
 
         if (glfwGetKey( window, GLFW_KEY_F1 ) == GLFW_PRESS){
             WorldManager.setEnableGizmos(false);

@@ -8,6 +8,7 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
@@ -15,7 +16,7 @@ public class Rigidbody extends Component {
     private RigidBody rigidBody;
     private Vector3f dimensions;
     private CollisionShape colliderShape;
-
+    private float mass = 1f;
     public Rigidbody(org.joml.Vector3f colliderDimensions) {
         this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
         colliderShape = new BoxShape(dimensions);
@@ -26,12 +27,19 @@ public class Rigidbody extends Component {
         this.colliderShape = collider;
     }
 
+    public Rigidbody(org.joml.Vector3f colliderDimensions, CollisionShape collider, float mass) {
+        this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
+        this.colliderShape = collider;
+        this.mass = mass;
+    }
+
     @Override
     public void OnAdded(){
-        rigidBody = new RigidBody(1, new DefaultMotionState(), colliderShape);
+        rigidBody = new RigidBody(mass, new DefaultMotionState(), colliderShape);
         rigidBody.activate();
 
         Vector3f position = new Vector3f(getParentPosition().x(), getParentPosition().y(), getParentPosition().z());
+
         Matrix4f transform = new Matrix4f();
 
         transform.setIdentity();
@@ -71,6 +79,7 @@ public class Rigidbody extends Component {
         transform.setIdentity();
         transform.setTranslation(position);
         rigidBody.setWorldTransform(new Transform(transform));
+
     }
 }
 

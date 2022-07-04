@@ -127,7 +127,7 @@ public class ShaderManager {
                 "\t\n" +
                 "\t// Material properties\n" +
                 "\tvec3 MaterialDiffuseColor = texture( myTextureSampler, UV ).rgb;\n" +
-                "\tvec3 MaterialAmbientColor = vec3(0.1,0.1,0.1) * MaterialDiffuseColor;\n" +
+                "\tvec3 MaterialAmbientColor = vec3(0.5,0.5,0.5) * MaterialDiffuseColor;\n" +
                 "\tvec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);\n" +
                 "\n" +
                 "\t// Distance to the light\n" +
