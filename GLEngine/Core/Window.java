@@ -1,5 +1,6 @@
 package Core;
 
+import Core.Input.KeyEvent;
 import Core.Objects.Components.Component;
 import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.GameObject;
@@ -16,6 +17,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -47,6 +49,8 @@ public class Window {
     private World source;
 
     private static float deltaTime;
+
+    public ArrayList<KeyEvent> keyCallbacks = new ArrayList<>();
 
     public void run() {
         init();
@@ -96,6 +100,16 @@ public class Window {
         glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
             if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+
+            for (KeyEvent callback : keyCallbacks) {
+                 if(action == GLFW_RELEASE){
+                     callback.keyReleased(key);
+                 }
+                 else if (action == GLFW_PRESS){
+                     callback.keyPressed(key);
+                 }
+
+            }
         });
 
         // Get the thread stack and push a new frame

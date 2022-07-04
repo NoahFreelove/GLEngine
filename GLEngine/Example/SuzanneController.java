@@ -1,5 +1,7 @@
 package Example;
 
+import Core.Input.Input;
+import Core.Input.KeyEvent;
 import Core.Objects.Components.Component;
 import Core.Objects.Components.Physics.Rigidbody;
 import Core.Objects.Components.Rendering.Camera;
@@ -33,6 +35,18 @@ public class SuzanneController extends Component {
         this.cam2 = cam2;
 
         cam2.addHorizAngle(3.14f);
+
+        Window.GetInstance().keyCallbacks.add(new KeyEvent() {
+            @Override
+            public void keyPressed(int key) {
+                if(key == GLFW_KEY_RIGHT_SHIFT)
+                    Jump();
+            }
+
+            @Override
+            public void keyReleased(int key) {
+            }
+        });
     }
 
     public void SetVelocity(Vector3f velocity){
@@ -45,25 +59,21 @@ public class SuzanneController extends Component {
         rb.getRigidBody().getLinearVelocity(currVelocity);
 
         Vector3f velocity = new Vector3f(0,currVelocity.y,0);
-        if (glfwGetKey(window, GLFW_KEY_UP ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_UP)){
             velocity.z = -suzanneSpeed;
         }
-        else if (glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS){
+        else if (Input.isKeyPressed(GLFW_KEY_DOWN)){
             velocity.z = suzanneSpeed;
         }
         else velocity.z = 0;
 
-        if (glfwGetKey(window, GLFW_KEY_LEFT ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_LEFT)){
             velocity.x = -suzanneSpeed;
         }
-        else if (glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS){
+        else if (Input.isKeyPressed(GLFW_KEY_RIGHT)){
             velocity.x = suzanneSpeed;
         }
         else velocity.x = 0;
-
-        if (glfwGetKey( window, GLFW_KEY_RIGHT_SHIFT ) == GLFW_PRESS){
-            velocity.y = suzanneSpeed;
-        }
 
         SetVelocity(velocity);
 
@@ -71,7 +81,6 @@ public class SuzanneController extends Component {
             SuzanneExample.suzanneController.rb.setPosition(new org.joml.Vector3f(0,2,0));
             SetVelocity(new Vector3f(0,0,0));
         }
-
 
 
         if (glfwGetKey( window, GLFW_KEY_F1 ) == GLFW_PRESS){
@@ -92,5 +101,10 @@ public class SuzanneController extends Component {
         }
         // Suzanne can sometimes deactivate
         SuzanneExample.suzanneController.rb.getRigidBody().activate();
+    }
+
+    private void Jump(){
+        rb.getRigidBody().applyCentralForce(new Vector3f(0, suzanneSpeed*50, 0));
+        System.out.println("jump");
     }
 }
