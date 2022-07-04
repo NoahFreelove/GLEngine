@@ -8,6 +8,7 @@ import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.GameObject;
 import Core.Worlds.WorldManager;
 import Core.Window;
+import com.bulletphysics.collision.dispatch.CollisionWorld;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
@@ -25,6 +26,8 @@ public class SuzanneController extends Component {
     private float suzanneSpeed = 10;
     private GameObject cameraModel;
 
+    private boolean canJump = false;
+
     public SuzanneController(Rigidbody rb, Camera cam1, Camera cam2, GameObject cameraModel)
     {
         this.cameraModel = cameraModel;
@@ -34,19 +37,20 @@ public class SuzanneController extends Component {
         this.cam1 = cam1;
         this.cam2 = cam2;
 
-        cam2.addHorizAngle(3.14f);
-
         Window.GetInstance().keyCallbacks.add(new KeyEvent() {
             @Override
             public void keyPressed(int key) {
-                if(key == GLFW_KEY_RIGHT_SHIFT)
-                    Jump();
+                if(key == GLFW_KEY_F5)
+                    System.gc();
             }
 
             @Override
             public void keyReleased(int key) {
+
             }
         });
+
+        cam2.addHorizAngle((float) Math.toRadians(180));
     }
 
     public void SetVelocity(Vector3f velocity){
@@ -57,6 +61,16 @@ public class SuzanneController extends Component {
     public void Update(float deltaTime){
         Vector3f currVelocity = new Vector3f();
         rb.getRigidBody().getLinearVelocity(currVelocity);
+
+        Vector3f fromPos = new Vector3f(getParentPosition().x(),getParentPosition().y(),getParentPosition().z());
+        Vector3f toPos = new Vector3f(getParentPosition().x(),getParentPosition().y()-1,getParentPosition().z());
+
+        CollisionWorld.ClosestRayResultCallback res = new CollisionWorld.ClosestRayResultCallback(fromPos,toPos);
+        WorldManager.getCurrentWorld().getPhysicsWorld().getPhysicsWorldObject().rayTest(fromPos,toPos,res);
+
+        if(res.hasHit()){
+            canJump = true;
+        }
 
         Vector3f velocity = new Vector3f(0,currVelocity.y,0);
         if (Input.isKeyPressed(GLFW_KEY_UP)){
@@ -75,6 +89,9 @@ public class SuzanneController extends Component {
         }
         else velocity.x = 0;
 
+        if(Input.isKeyPressed(GLFW_KEY_RIGHT_SHIFT))
+            Jump();
+
         SetVelocity(velocity);
 
         if (glfwGetKey( window, GLFW_KEY_R ) == GLFW_PRESS){
@@ -82,29 +99,29 @@ public class SuzanneController extends Component {
             SetVelocity(new Vector3f(0,0,0));
         }
 
-
-        if (glfwGetKey( window, GLFW_KEY_F1 ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_F1)){
             WorldManager.setEnableGizmos(false);
         }
-        if (glfwGetKey( window, GLFW_KEY_F2 ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_F2)){
             WorldManager.setEnableGizmos(true);
         }
 
-        if (glfwGetKey( window, GLFW_KEY_F3 ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_F3)){
             Window.GetInstance().ActiveCamera = cam1;
             cameraModel.getMeshRenderer().setActive(false);
         }
 
-        if (glfwGetKey( window, GLFW_KEY_F4 ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_F4)){
             Window.GetInstance().ActiveCamera = cam2;
             cameraModel.getMeshRenderer().setActive(true);
         }
-        // Suzanne can sometimes deactivate
-        SuzanneExample.suzanneController.rb.getRigidBody().activate();
     }
 
     private void Jump(){
-        rb.getRigidBody().applyCentralForce(new Vector3f(0, suzanneSpeed*50, 0));
-        System.out.println("jump");
+        if(canJump)
+        {
+            rb.getRigidBody().applyCentralForce(new Vector3f(0, suzanneSpeed*50, 0));
+            canJump = false;
+        }
     }
 }

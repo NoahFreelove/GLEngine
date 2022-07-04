@@ -73,6 +73,5 @@ public class SuzanneExample {
         suzanne.addComponent(new BoundingBox());
 
         gameWorld.addRigidBody(suzanneBody.getRigidBody());
-
     }
 }

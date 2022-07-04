@@ -36,7 +36,6 @@ public class Rigidbody extends Component {
     @Override
     public void OnAdded(){
         rigidBody = new RigidBody(mass, new DefaultMotionState(), colliderShape);
-        rigidBody.activate();
 
         Vector3f position = new Vector3f(getParentPosition().x(), getParentPosition().y(), getParentPosition().z());
 
@@ -56,6 +55,7 @@ public class Rigidbody extends Component {
     public void Update(float deltaTime){
         if(!isActive())
             return;
+        rigidBody.activate();
         Transform transform = new Transform();
         rigidBody.getWorldTransform(transform);
         setParentPosition(new org.joml.Vector3f(transform.origin.x,transform.origin.y,transform.origin.z));
