@@ -28,11 +28,10 @@ public class SuzanneExample {
 
     private static void SetupWorld(){
         World gameWorld = new World();
-        WorldLoader.LoadWorldToObject("bin/worlds/world1.txt", gameWorld);
-
         WorldManager.AddWorldToBuild(gameWorld);
-
         WorldManager.SwitchWorld(0);
+
+        WorldLoader.LoadWorldToObject("bin/worlds/world1.txt", gameWorld);
 
         GameObject suzanne = new GameObject(new Vector3f(-5,0,0), new Vector3f(0,0,0), new Vector3f(1,1,1), new Model(OBJLoader.loadModel(new File("bin/suzanne.obj"))), new DDSFile("bin/uvmap.DDS"));
 

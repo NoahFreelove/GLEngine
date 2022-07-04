@@ -63,5 +63,14 @@ public class Rigidbody extends Component {
     public void disableGravity(){
         rigidBody.setGravity(new Vector3f(0,0,0));
     }
+
+    public void setPosition(org.joml.Vector3f newPos) {
+        Vector3f position = new Vector3f(newPos.x(), newPos.y(), newPos.z());
+        Matrix4f transform = new Matrix4f();
+
+        transform.setIdentity();
+        transform.setTranslation(position);
+        rigidBody.setWorldTransform(new Transform(transform));
+    }
 }
 

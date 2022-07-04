@@ -60,7 +60,7 @@ public class SuzanneController extends Component {
         }
 
         if (glfwGetKey( window, GLFW_KEY_R ) == GLFW_PRESS){
-            SuzanneExample.suzanneController.rb.getRigidBody().setWorldTransform(new Transform(suzanneOrigin));
+            SuzanneExample.suzanneController.rb.setPosition(new org.joml.Vector3f(0,2,0));
         }
 
         if (glfwGetKey( window, GLFW_KEY_F1 ) == GLFW_PRESS){
