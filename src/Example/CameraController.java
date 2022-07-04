@@ -2,6 +2,8 @@ package Example;
 
 import Core.Objects.Components.Component;
 import Core.Objects.Components.Rendering.Camera;
+import Core.Objects.GameObject;
+import Core.Scenes.WorldManager;
 import Core.Window;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -9,7 +11,6 @@ import org.lwjgl.BufferUtils;
 import java.nio.DoubleBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
 public class CameraController extends Component {
     private Camera camRef;
@@ -18,9 +19,15 @@ public class CameraController extends Component {
     private float sprintSpeed = 20;
     private float mouseSpeed = 0.0005f;
     private long window;
+    private GameObject cameraModel;
 
-    public CameraController(Camera camRef){
+
+
+    public CameraController(Camera camRef, GameObject cameraModel){
         this.camRef = camRef;
+        this.cameraModel = cameraModel;
+        this.cameraModel.getMeshRenderer().setActive(false);
+        WorldManager.getCurrentWorld().AddGizmo(cameraModel);
     }
 
     @Override
@@ -28,6 +35,7 @@ public class CameraController extends Component {
         window = Window.GetInstance().getWindowHandle();
         CheckKeyboardInput(window, deltaTime, camRef.getDirectionFacingVector(), camRef.getRightVector());
         CheckMouseInput();
+        cameraModel.setPosition(camRef.getParentPosition());
     }
 
     private void CheckMouseInput() {
@@ -38,7 +46,6 @@ public class CameraController extends Component {
         camRef.addHorizAngle((float) (mouseSpeed * (camRef.getHalfWidth()-xPos.get(0))));
         camRef.addVertAngle((float) (mouseSpeed * (camRef.getHalfHeight()- yPos.get(0))));
         glfwSetCursorPos(window, camRef.getHalfWidth(),camRef.getHalfHeight());
-
     }
 
     private void CheckKeyboardInput(long window, float deltaTime, Vector3f direction, Vector3f right) {

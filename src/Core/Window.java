@@ -185,17 +185,15 @@ public class Window {
     private void Render() {
         for (GameObject o :
                 source.GameObjects()) {
-            if(o!=null){
-                if(o.getMeshRenderer().isActive()){
-                    RenderGameObject(o);
-                }
+            if(Component.isComponentValid(o.getMeshRenderer())){
+                RenderGameObject(o);
             }
         }
         if(WorldManager.areGizmosEnabled())
         {
             for (GameObject o :
                     source.Gizmos()) {
-                if(o!=null){
+                if(Component.isComponentValid(o.getMeshRenderer())){
                     RenderGameObject(o);
                 }
             }
