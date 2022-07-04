@@ -1,0 +1,22 @@
+///START GAMEOBJECT///
+POS (4,4,4)
+
+ROT (0,0,0)
+
+SCA (1,1,1)
+
+MOD "bin/model.obj"
+
+TEX "bin/texture.png"
+
+
+///START COMPONENTS///
+
+///COMP///
+CLASS "BoxCollider"
+DIM (1,1,1)
+///END COMP///
+
+//END COMPONENTS///
+
+///END GAMEOBJECT///

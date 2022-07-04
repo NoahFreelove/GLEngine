@@ -1,10 +1,12 @@
 package Core.Objects.Components;
 
-import Core.Objects.GameBehavior;
+import Core.Objects.ComponentBehavior;
 import Core.Objects.GameObject;
 import org.joml.Vector3f;
 
-public class Component implements GameBehavior {
+import java.io.Serializable;
+
+public class Component implements ComponentBehavior, Serializable, Cloneable {
 
     private GameObject attachedObject = null;
 
@@ -19,9 +21,7 @@ public class Component implements GameBehavior {
     public void Start() {}
 
     @Override
-    public void ParentAdded() {
-
-    }
+    public void ParentAdded() {}
 
     @Override
     public void Unload() {}
@@ -34,6 +34,9 @@ public class Component implements GameBehavior {
 
     @Override
     public void OnAdded() {}
+
+    @Override
+    public void ParentTransformed(Vector3f newPos, Vector3f newRot, Vector3f newScale) {}
 
 
     public Vector3f getParentPosition(){
@@ -81,5 +84,16 @@ public class Component implements GameBehavior {
             return comp.isActive;
 
         return false;
+    }
+
+    @Override
+    public Component clone() {
+        try {
+            Component clone = (Component) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

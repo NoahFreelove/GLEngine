@@ -1,4 +1,4 @@
-package Core.Scenes;
+package Core.Worlds;
 
 import Core.Objects.GameObject;
 import Core.Window;

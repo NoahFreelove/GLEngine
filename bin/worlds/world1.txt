@@ -1,0 +1,25 @@
+Floor
+///START GAMEOBJECT///
+POS (0,-4,0)
+
+ROT (0,0,0)
+
+SCA (10,1,10)
+
+MOD "bin/cube.obj"
+
+TEX "bin/red.png"
+///END GAMEOBJECT///
+
+Left Wall
+///START GAMEOBJECT///
+POS (-11,5,0)
+
+ROT (0,0,0)
+
+SCA (1,10,10)
+
+MOD "bin/cube.obj"
+
+TEX "bin/red.png"
+///END GAMEOBJECT///

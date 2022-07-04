@@ -1,10 +1,13 @@
 package Core.Objects.Models;
 
 import IO.CustomModels.CustomModel;
+import IO.OBJ.OBJLoader;
 import IO.OBJ.Obj;
 
+import java.io.File;
+
 public class Model {
-    public ModelType type = ModelType.OBJ;
+    public ModelType type = ModelType.NONE;
     private Obj objModel;
     private CustomModel customModel;
 
@@ -13,9 +16,20 @@ public class Model {
         this.objModel = objModel;
     }
 
+    public Model(){
+
+    }
+
     public Model(CustomModel customModel){
         type = ModelType.CUSTOM;
         this.customModel = customModel;
+    }
+
+    public Model(String path){
+        if(path.endsWith(".obj")){
+            type = ModelType.OBJ;
+            objModel = OBJLoader.loadModel(new File(path));
+        }
     }
 
     public Model(Object model){

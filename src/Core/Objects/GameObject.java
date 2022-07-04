@@ -8,9 +8,10 @@ import IO.DDS.DDSFile;
 import IO.Image;
 import org.joml.Vector3f;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public final class GameObject {
+public final class GameObject implements Serializable, Cloneable {
     private Vector3f position;
     private Vector3f rotation;
     private Vector3f scale;
@@ -95,14 +96,24 @@ public final class GameObject {
     public void setPosition(Vector3f newPos)
     {
         this.position = newPos;
+        onTransformUpdate();
     }
 
     public void setRotation(Vector3f rotation) {
         this.rotation = rotation;
+        onTransformUpdate();
     }
 
     public void setScale(Vector3f scale) {
         this.scale = scale;
+        onTransformUpdate();
+    }
+
+    private void onTransformUpdate(){
+        for (Component c :
+                components) {
+            c.ParentTransformed(position,rotation,scale);
+        }
     }
 
     public void setIdentity(Identity identity) {
@@ -143,9 +154,7 @@ public final class GameObject {
         }
     }
 
-    public void OnInstantiate() {
-
-    }
+    public void OnInstantiate() {}
 
     @Override
     public GameObject clone() {

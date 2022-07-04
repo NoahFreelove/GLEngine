@@ -1,7 +1,7 @@
 package Core.Objects.Components.Colliders;
 
 import Core.Objects.Components.Component;
-import Core.Scenes.WorldManager;
+import Core.Worlds.WorldManager;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.collision.shapes.StaticPlaneShape;
 import com.bulletphysics.dynamics.RigidBody;

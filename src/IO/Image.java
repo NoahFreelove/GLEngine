@@ -4,6 +4,7 @@ package IO;
  * License terms: https://www.lwjgl.org/license
  */
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -45,6 +46,12 @@ public class Image {
 
     private int texID;
 
+    public Image(){
+        image = BufferUtils.createByteBuffer(0);
+        w = 0;
+        h = 0;
+        comp = 0;
+    }
     public Image(String imagePath) {
         ByteBuffer imageBuffer;
         try {

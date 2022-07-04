@@ -1,8 +1,9 @@
 package Core.Objects.Components.Physics;
 
 import Core.Objects.Components.Component;
-import Core.Scenes.WorldManager;
+import Core.Worlds.WorldManager;
 import com.bulletphysics.collision.shapes.BoxShape;
+import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
@@ -13,14 +14,21 @@ import javax.vecmath.Vector3f;
 public class Rigidbody extends Component {
     private RigidBody rigidBody;
     private Vector3f dimensions;
+    private CollisionShape colliderShape;
 
     public Rigidbody(org.joml.Vector3f colliderDimensions) {
         this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
+        colliderShape = new BoxShape(dimensions);
+    }
+
+    public Rigidbody(org.joml.Vector3f colliderDimensions, CollisionShape collider) {
+        this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
+        this.colliderShape = collider;
     }
 
     @Override
     public void OnAdded(){
-        rigidBody = new RigidBody(1, new DefaultMotionState(), new BoxShape(dimensions));
+        rigidBody = new RigidBody(1, new DefaultMotionState(), colliderShape);
         rigidBody.activate();
 
         Vector3f position = new Vector3f(getParentPosition().x(), getParentPosition().y(), getParentPosition().z());

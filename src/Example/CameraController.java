@@ -3,7 +3,7 @@ package Example;
 import Core.Objects.Components.Component;
 import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.GameObject;
-import Core.Scenes.WorldManager;
+import Core.Worlds.WorldManager;
 import Core.Window;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;

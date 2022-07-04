@@ -1,15 +1,16 @@
 package Example;
 
-import Core.Objects.Components.Physics.BoundingBox;
-import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.Components.Colliders.BoxCollider;
+import Core.Objects.Components.Physics.BoundingBox;
 import Core.Objects.Components.Physics.Rigidbody;
+import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.GameObject;
 import Core.Objects.Models.Model;
 import Core.Objects.Models.RenderSettings;
-import Core.Scenes.World;
-import Core.Scenes.WorldManager;
 import Core.Window;
+import Core.Worlds.World;
+import Core.Worlds.WorldLoader;
+import Core.Worlds.WorldManager;
 import IO.DDS.DDSFile;
 import IO.Image;
 import IO.OBJ.OBJLoader;
@@ -22,19 +23,18 @@ public class SuzanneExample {
     public static SuzanneController suzanneController;
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void main(String[] args){
-        Window.CreateWindow(1280, 720, SuzanneExample::SetupWorld);
+        Window.CreateWindow(1920, 1080, SuzanneExample::SetupWorld);
     }
 
     private static void SetupWorld(){
         World gameWorld = new World();
+        WorldLoader.LoadWorldToObject("bin/worlds/world1.txt", gameWorld);
+
         WorldManager.AddWorldToBuild(gameWorld);
+
         WorldManager.SwitchWorld(0);
 
         GameObject suzanne = new GameObject(new Vector3f(-5,0,0), new Vector3f(0,0,0), new Vector3f(1,1,1), new Model(OBJLoader.loadModel(new File("bin/suzanne.obj"))), new DDSFile("bin/uvmap.DDS"));
-
-        GameObject floor = new GameObject(new Vector3f(0,-5,0), new Vector3f(0,0,0), new Vector3f(10,0.2f,10), new Model(OBJLoader.loadModel(new File("bin/cube.obj"))), new DDSFile("bin/uvmap.DDS"));
-        BoxCollider floorCollider = new BoxCollider(floor.getPosition(), floor.getScale());
-        floor.addComponent(floorCollider);
 
         GameObject sphere = new GameObject(new Vector3f(0,5,0), new Vector3f(0,0,0), new Vector3f(1,1,1), new Model(OBJLoader.loadModel(new File("bin/sphere.obj"))), new DDSFile("bin/uvmap.DDS"));
         Rigidbody sphereRb = new Rigidbody(new Vector3f(1,1,1));
@@ -59,7 +59,8 @@ public class SuzanneExample {
         camera.addComponent(new CameraController(cam, cameraModel));
         Window.GetInstance().ActiveCamera = cam;
 
-        gameWorld.Add(suzanne, skybox, floor, sphere, camera);
+
+        gameWorld.Add(suzanne, skybox, sphere, camera);
         gameWorld.AddGizmo(axisX, axisY, axisZ);
 
         Rigidbody suzanneBody = new Rigidbody(new Vector3f(1,1,1));

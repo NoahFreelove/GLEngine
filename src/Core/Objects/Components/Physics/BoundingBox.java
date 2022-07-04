@@ -4,7 +4,7 @@ import Core.Objects.Components.Component;
 import Core.Objects.GameObject;
 import Core.Objects.Models.Model;
 import Core.Objects.Models.RenderSettings;
-import Core.Scenes.WorldManager;
+import Core.Worlds.WorldManager;
 import IO.CustomModels.Cube;
 import IO.Image;
 import org.joml.Vector3f;

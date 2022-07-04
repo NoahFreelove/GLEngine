@@ -4,7 +4,7 @@ import Core.Objects.Components.Component;
 import Core.Objects.Components.Physics.Rigidbody;
 import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.GameObject;
-import Core.Scenes.WorldManager;
+import Core.Worlds.WorldManager;
 import Core.Window;
 import com.bulletphysics.linearmath.Transform;
 
