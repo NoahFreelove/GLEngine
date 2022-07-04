@@ -18,7 +18,7 @@ public final class GameObject implements Serializable, Cloneable {
 
     private final ArrayList<Component> components = new ArrayList<>();
 
-    private Identity identity;
+    private Identity identity = new Identity("empty", "gameObject");
 
     private MeshRenderer meshRenderer;
 
@@ -76,7 +76,6 @@ public final class GameObject implements Serializable, Cloneable {
     }
 
     private void initObject(){
-        identity = new Identity("GameObject", "gameObject");
         OnInstantiate();
     }
 
@@ -212,5 +211,20 @@ public final class GameObject implements Serializable, Cloneable {
             return new MeshRenderer();
         }
         return meshRenderer;
+    }
+
+    public void setName (String name){
+        identity.setName(name);
+    }
+
+    public void setTag(String tag){
+        identity.setTag(tag);
+    }
+
+    public static boolean isValid(GameObject object){
+        if(object == null)
+            return false;
+
+        return (!object.getIdentity().name.equals("empty") && object.getMeshRenderer().isActive());
     }
 }

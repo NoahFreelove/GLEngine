@@ -1,6 +1,7 @@
 package Core.Objects.Components.Colliders;
 
 import Core.Objects.Components.Component;
+import Core.Worlds.HashObject;
 import Core.Worlds.WorldManager;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.linearmath.Transform;
@@ -14,7 +15,6 @@ public class Collider extends Component {
     public Collider(Vector3f position){
         object = new CollisionObject();
         object.activate(true);
-
         Matrix4f positionMatrix = new Matrix4f();
         positionMatrix.setIdentity();
         positionMatrix.setTranslation(new javax.vecmath.Vector3f(position.x, position.y, position.z));
@@ -24,6 +24,7 @@ public class Collider extends Component {
     @Override
     public void ParentAdded() {
         WorldManager.getCurrentWorld().addCollider(object);
+        WorldManager.getCurrentWorld().RegisterCollider(new HashObject(getParent(), object.getCollisionShape().hashCode()));
 
     }
 

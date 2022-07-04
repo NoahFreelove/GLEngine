@@ -1,7 +1,10 @@
 package Core.Objects.Components.Rendering;
 
 import Core.Objects.Components.Component;
+import Core.Objects.GameObject;
 import Core.Window;
+import Core.Worlds.WorldManager;
+import com.bulletphysics.collision.dispatch.CollisionWorld;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -182,5 +185,39 @@ public class Camera extends Component {
 
     public float getHalfHeight() {
         return halfHeight;
+    }
+
+    public static CollisionWorld.ClosestRayResultCallback Raycast(Vector3f startPos, Vector3f directionNormalized, float distance){
+        javax.vecmath.Vector3f fromPos = new javax.vecmath.Vector3f(startPos.x(),startPos.y(),startPos.z());
+        Vector3f toPos = new Vector3f(directionNormalized);
+        toPos.mul(distance);
+        javax.vecmath.Vector3f finalVec =new javax.vecmath.Vector3f(fromPos.x + toPos.x(), fromPos.y +toPos.y(), fromPos.z +toPos.z());
+        CollisionWorld.ClosestRayResultCallback res = new CollisionWorld.ClosestRayResultCallback(fromPos,new javax.vecmath.Vector3f(toPos.x(),toPos.y(),toPos.z()));
+        WorldManager.getCurrentWorld().getPhysicsWorld().getPhysicsWorldObject().rayTest(fromPos,finalVec,res);
+        return res;
+    }
+
+    public boolean RaycastFromCenterCamera(float distance){
+        Vector3f rayDirection = new Vector3f(getDirectionFacingVector());
+        rayDirection.normalize();
+        CollisionWorld.ClosestRayResultCallback result = Raycast(getParentPosition(),rayDirection,distance);
+
+        return result.hasHit();
+    }
+
+    public GameObject RayCastHitObject(float distance){
+        Vector3f rayDirection = new Vector3f(getDirectionFacingVector());
+        rayDirection.normalize();
+        CollisionWorld.ClosestRayResultCallback result = Raycast(getParentPosition(),rayDirection,distance);
+        int hashCode = -1;
+        if(result.collisionObject != null)
+        {
+            hashCode = result.collisionObject.getCollisionShape().hashCode();
+        }
+        return WorldManager.getCurrentWorld().getObjectByColliderHash(hashCode);
+    }
+
+    public static boolean RaycastFromCenterCamera(Camera cam, float distance){
+        return cam.RaycastFromCenterCamera(distance);
     }
 }

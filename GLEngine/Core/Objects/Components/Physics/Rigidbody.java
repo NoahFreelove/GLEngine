@@ -1,6 +1,7 @@
 package Core.Objects.Components.Physics;
 
 import Core.Objects.Components.Component;
+import Core.Worlds.HashObject;
 import Core.Worlds.WorldManager;
 import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.CollisionShape;
@@ -8,7 +9,6 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 
-import javax.vecmath.Matrix3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
@@ -17,6 +17,7 @@ public class Rigidbody extends Component {
     private Vector3f dimensions;
     private CollisionShape colliderShape;
     private float mass = 1f;
+    private int colliderHash;
     public Rigidbody(org.joml.Vector3f colliderDimensions) {
         this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
         colliderShape = new BoxShape(dimensions);
@@ -36,6 +37,8 @@ public class Rigidbody extends Component {
     @Override
     public void OnAdded(){
         rigidBody = new RigidBody(mass, new DefaultMotionState(), colliderShape);
+
+        WorldManager.getCurrentWorld().RegisterCollider(new HashObject(getParent(), rigidBody.getCollisionShape().hashCode()));
 
         Vector3f position = new Vector3f(getParentPosition().x(), getParentPosition().y(), getParentPosition().z());
 
@@ -79,7 +82,14 @@ public class Rigidbody extends Component {
         transform.setIdentity();
         transform.setTranslation(position);
         rigidBody.setWorldTransform(new Transform(transform));
+    }
 
+    /**
+     * Used for uniquely identifying this collider.
+     * @param id The unique id to set.
+     */
+    public void setColliderID(int id){
+        rigidBody.setIslandTag(id);
     }
 }
 

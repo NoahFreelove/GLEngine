@@ -11,6 +11,7 @@ public final class World {
     private final PhysicsWorld physicsWorld;
     private final ArrayList<GameObject> gameObjects = new ArrayList<>();
     private final ArrayList<GameObject> gizmos = new ArrayList<>();
+    private final ArrayList<HashObject> colliderHashes = new ArrayList<>();
 
     private String name = "Scene";
 
@@ -81,5 +82,20 @@ public final class World {
 
     public void addCollider(CollisionObject collider){
         physicsWorld.getPhysicsWorldObject().addCollisionObject(collider);
+    }
+
+    public void RegisterCollider(HashObject ho){
+        colliderHashes.add(ho);
+        //System.out.printf("registered collider %d : %s%n", ho.getColliderHash(), ho.getGameObject().getIdentity().getName());
+    }
+
+    public GameObject getObjectByColliderHash(int hash){
+        for (HashObject ho :
+                colliderHashes) {
+            if (ho.getColliderHash() == hash) {
+                return ho.getGameObject();
+            }
+        }
+        return new GameObject();
     }
 }

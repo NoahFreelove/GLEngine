@@ -1,6 +1,7 @@
 package Core;
 
 import Core.Input.KeyEvent;
+import Core.Input.MouseEvent;
 import Core.Objects.Components.Component;
 import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.GameObject;
@@ -37,7 +38,7 @@ public class Window {
 
     public long window;
     public int program;
-    public Camera ActiveCamera;
+    private Camera ActiveCamera;
 
     int textureID;
     int ModelMatrixID;
@@ -51,6 +52,8 @@ public class Window {
     private static float deltaTime;
 
     public ArrayList<KeyEvent> keyCallbacks = new ArrayList<>();
+    public ArrayList<MouseEvent> mouseCallbacks = new ArrayList<>();
+
 
     public void run() {
         init();
@@ -103,12 +106,22 @@ public class Window {
 
             for (KeyEvent callback : keyCallbacks) {
                  if(action == GLFW_RELEASE){
-                     callback.keyReleased(key);
+                     callback.keyReleased(key, mods);
                  }
                  else if (action == GLFW_PRESS){
-                     callback.keyPressed(key);
+                     callback.keyPressed(key,mods);
                  }
+            }
+        });
 
+        glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
+            for (MouseEvent callback : mouseCallbacks) {
+                if(action == GLFW_RELEASE){
+                    callback.mouseReleased(button);
+                }
+                else if (action == GLFW_PRESS){
+                    callback.mousePressed(button);
+                }
             }
         });
 
@@ -156,16 +169,15 @@ public class Window {
         ModelMatrixID = glGetUniformLocation(program, "M");
         textureID = glGetUniformLocation(program, "myTextureSampler");
 
-        int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
+        //int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
+        //Vector3f lightPos = new Vector3f(0,4,5);
+        //glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
 
         // Infinite render loop
         while ( !glfwWindowShouldClose(window) ) {
             double preFrameTime = glfwGetTime();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             glUseProgram(program);
-
-            Vector3f lightPos = new Vector3f(0,4,5);
-            glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
 
             if(Component.isComponentValid(ActiveCamera))
             {
@@ -183,7 +195,7 @@ public class Window {
             double currentTime = glfwGetTime();
             nbFrames++;
             if ( currentTime - lastTime >= 1.0 ){
-                System.out.printf("%f ms/frame. %d frames%n", 1000.0/nbFrames, nbFrames);
+                //System.out.printf("%f ms/frame. %d frames%n", 1000.0/nbFrames, nbFrames);
                 nbFrames = 0;
                 lastTime += 1.0;
             }
@@ -366,6 +378,15 @@ public class Window {
     public static float getDeltaTime() {
         return deltaTime;
     }
+
+    public Camera getActiveCamera() {
+        return ActiveCamera;
+    }
+
+    public void setActiveCamera(Camera activeCamera) {
+        ActiveCamera = activeCamera;
+    }
+
     //endregion
 
 }

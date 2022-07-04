@@ -37,19 +37,6 @@ public class SuzanneController extends Component {
         this.cam1 = cam1;
         this.cam2 = cam2;
 
-        Window.GetInstance().keyCallbacks.add(new KeyEvent() {
-            @Override
-            public void keyPressed(int key) {
-                if(key == GLFW_KEY_F5)
-                    System.gc();
-            }
-
-            @Override
-            public void keyReleased(int key) {
-
-            }
-        });
-
         cam2.addHorizAngle((float) Math.toRadians(180));
     }
 
@@ -107,12 +94,12 @@ public class SuzanneController extends Component {
         }
 
         if (Input.isKeyPressed(GLFW_KEY_F3)){
-            Window.GetInstance().ActiveCamera = cam1;
+            Window.GetInstance().setActiveCamera(cam1);
             cameraModel.getMeshRenderer().setActive(false);
         }
 
         if (Input.isKeyPressed(GLFW_KEY_F4)){
-            Window.GetInstance().ActiveCamera = cam2;
+            Window.GetInstance().setActiveCamera(cam2);
             cameraModel.getMeshRenderer().setActive(true);
         }
     }

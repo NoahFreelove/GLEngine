@@ -1,10 +1,14 @@
 package Example;
 
+import Core.Input.Input;
+import Core.Input.KeyEvent;
+import Core.Input.MouseEvent;
 import Core.Objects.Components.Component;
 import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.GameObject;
 import Core.Worlds.WorldManager;
 import Core.Window;
+import com.bulletphysics.collision.dispatch.CollisionWorld;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
@@ -21,13 +25,24 @@ public class CameraController extends Component {
     private long window;
     private GameObject cameraModel;
 
-
-
     public CameraController(Camera camRef, GameObject cameraModel){
         this.camRef = camRef;
         this.cameraModel = cameraModel;
         this.cameraModel.getMeshRenderer().setActive(false);
         WorldManager.getCurrentWorld().AddGizmo(cameraModel);
+
+        Window.GetInstance().mouseCallbacks.add(new MouseEvent() {
+            @Override
+            public void mousePressed(int button) {
+                if(button == GLFW_MOUSE_BUTTON_1){
+                    Raycast(camRef.RayCastHitObject(30));
+                }
+            }
+            @Override
+            public void mouseReleased(int button) {
+
+            }
+        });
     }
 
     @Override
@@ -49,26 +64,34 @@ public class CameraController extends Component {
     }
 
     private void CheckKeyboardInput(long window, float deltaTime, Vector3f direction, Vector3f right) {
-        if (glfwGetKey(window, GLFW_KEY_W ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_W)) {
             getParentPosition().add(direction.mul(deltaTime).mul(speed));
         }
-        if (glfwGetKey(window, GLFW_KEY_S ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_S)) {
             getParentPosition().sub(direction.mul(deltaTime).mul(speed));
         }
-        if (glfwGetKey(window, GLFW_KEY_D ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_D)) {
             getParentPosition().add(right.mul(deltaTime).mul(speed));
         }
-        if (glfwGetKey(window, GLFW_KEY_A ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_A)) {
             getParentPosition().sub(right.mul(deltaTime).mul(speed));
         }
-        if (glfwGetKey(window, GLFW_KEY_SPACE ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_SPACE)) {
             getParentPosition().add(new Vector3f(0,1,0).mul(deltaTime).mul(speed));
         }
-        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL ) == GLFW_PRESS){
+        if (Input.isKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
             getParentPosition().add(new Vector3f(0,-1,0).mul(deltaTime).mul(speed));
         }
 
         speed = (glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS)? sprintSpeed : baseSpeed;
     }
+
+
+    private void Raycast(GameObject object){
+        if(GameObject.isValid(object)){
+            System.out.println("You Hit:" + object.getIdentity().getName());
+        }
+    }
+
 
 }
