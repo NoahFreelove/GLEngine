@@ -64,6 +64,7 @@ public class WorldLoader {
                 lineNum++;
 
                 object = new GameObject(pos,rot,sca,model,image);
+                object.setName("Loaded obj");
                 object.addComponent(BoxCollider.GenerateBoxColliderForObject(object, true));
                 world.Add(object);
 

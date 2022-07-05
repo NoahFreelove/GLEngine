@@ -103,7 +103,7 @@ public class SuzanneController extends Component {
             cameraModel.getMeshRenderer().setActive(true);
         }
 
-        System.out.println(rb.StepRaycast());
+        //System.out.println(rb.StepRaycast());
         if(rb.StepRaycast()){
             rb.Step();
         }

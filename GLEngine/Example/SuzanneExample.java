@@ -61,7 +61,7 @@ public class SuzanneExample {
         camera.addComponent(new CameraController(cam, cameraModel));
         Window.GetInstance().setActiveCamera(cam);
 
-        gameWorld.Add(suzanne, skybox, camera, sphere);
+        gameWorld.Add(suzanne, skybox, camera);
         gameWorld.AddGizmo(axisX, axisY, axisZ);
 
         Rigidbody suzanneBody = new Rigidbody(new Vector3f(1,1,1), new BoxShape(new javax.vecmath.Vector3f(1,1,1)), 1);

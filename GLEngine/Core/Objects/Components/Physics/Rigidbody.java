@@ -18,7 +18,7 @@ public class Rigidbody extends Component {
     private Vector3f dimensions;
     private CollisionShape colliderShape;
     private float mass = 1f;
-    private float stepThreshold = 0.3f;
+    protected float stepThreshold = 0.3f;
 
     public Rigidbody(org.joml.Vector3f colliderDimensions) {
         this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
@@ -85,38 +85,52 @@ public class Rigidbody extends Component {
         transform.setTranslation(position);
         rigidBody.setWorldTransform(new Transform(transform));
     }
+    public void setMass(float newMass){
+        this.mass = newMass;
+        rigidBody.setMassProps(newMass, new Vector3f());
+    }
 
 
     public boolean StepRaycast(){
         boolean isFalling;
-        // Floor case
-        Vector3f fromPos = new Vector3f(getParentPosition().x(),getParentPosition().y()- getParentScale().y() ,getParentPosition().z());
+        Vector3f fromPos = new Vector3f(getParentPosition().x(), (getParentPosition().y()-1f),getParentPosition().z());
+        //System.out.println(fromPos.y);
+
         Vector3f dir = new Vector3f();
         rigidBody.getLinearVelocity(dir);
-        isFalling = (Math.abs(dir.y)>0.000001);
+
+        isFalling = (Math.abs(dir.y)>0.001);
         dir.normalize();
         org.joml.Vector3f toPos = new org.joml.Vector3f(dir.x,dir.y,dir.z);
-        toPos.mul(1f);
-        javax.vecmath.Vector3f finalVec =new javax.vecmath.Vector3f(fromPos.x + toPos.x(), fromPos.y +toPos.y(), fromPos.z +toPos.z());
+        toPos.mul(2f);
+        javax.vecmath.Vector3f finalVec =new javax.vecmath.Vector3f(fromPos.x + toPos.x(), fromPos.y, fromPos.z +toPos.z());
         CollisionWorld.ClosestRayResultCallback res = new CollisionWorld.ClosestRayResultCallback(fromPos,finalVec);
+
         WorldManager.getCurrentWorld().getPhysicsWorld().getPhysicsWorldObject().rayTest(fromPos,finalVec,res);
 
         // Threshold cast
-        fromPos = new Vector3f(getParentPosition().x(),getParentPosition().y()- getParentScale().y()+stepThreshold ,getParentPosition().z());
+        fromPos.y += stepThreshold;
         dir = new Vector3f();
         rigidBody.getLinearVelocity(dir);
         dir.normalize();
         toPos = new org.joml.Vector3f(dir.x,dir.y,dir.z);
-        toPos.mul(1f);
-         finalVec =new javax.vecmath.Vector3f(fromPos.x + toPos.x(), fromPos.y +toPos.y(), fromPos.z +toPos.z());
+        toPos.mul(2f);
+
+        finalVec =new javax.vecmath.Vector3f(fromPos.x + toPos.x(), fromPos.y +stepThreshold, fromPos.z +toPos.z());
+
+
         CollisionWorld.ClosestRayResultCallback res2 = new CollisionWorld.ClosestRayResultCallback(fromPos,finalVec);
         WorldManager.getCurrentWorld().getPhysicsWorld().getPhysicsWorldObject().rayTest(fromPos,finalVec,res2);
+
+        //System.out.println("Is Falling:" + isFalling);
+        //System.out.println("res: " + res.hasHit());
+        //System.out.println("res2: " + res2.hasHit());
 
         return (res.hasHit()) && !res2.hasHit() && !isFalling;
     }
 
     public void Step(){
-        setPosition(new org.joml.Vector3f(getParentPosition().x, getParentPosition().y+stepThreshold, getParentPosition().z));
+        setPosition(new org.joml.Vector3f(getParentPosition().x, getParentPosition().y+stepThreshold+0.2f, getParentPosition().z));
     }
 }
 
