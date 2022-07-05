@@ -26,7 +26,6 @@ public class MeshRenderer extends Component {
     public MeshRenderer(MeshRenderer meshRenderer) {
         this.mesh = new Mesh(meshRenderer.mesh);
         this.texture = meshRenderer.texture;
-
     }
 
     public MeshRenderer(Image texture){

@@ -192,7 +192,7 @@ public class Camera extends Component {
         Vector3f toPos = new Vector3f(directionNormalized);
         toPos.mul(distance);
         javax.vecmath.Vector3f finalVec =new javax.vecmath.Vector3f(fromPos.x + toPos.x(), fromPos.y +toPos.y(), fromPos.z +toPos.z());
-        CollisionWorld.ClosestRayResultCallback res = new CollisionWorld.ClosestRayResultCallback(fromPos,new javax.vecmath.Vector3f(toPos.x(),toPos.y(),toPos.z()));
+        CollisionWorld.ClosestRayResultCallback res = new CollisionWorld.ClosestRayResultCallback(fromPos,finalVec);
         WorldManager.getCurrentWorld().getPhysicsWorld().getPhysicsWorldObject().rayTest(fromPos,finalVec,res);
         return res;
     }

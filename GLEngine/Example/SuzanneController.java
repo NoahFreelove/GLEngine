@@ -37,7 +37,7 @@ public class SuzanneController extends Component {
         this.cam1 = cam1;
         this.cam2 = cam2;
 
-        cam2.addHorizAngle((float) Math.toRadians(180));
+        cam2.addHorizAngle((float) Math.toRadians(0));
     }
 
     public void SetVelocity(Vector3f velocity){
@@ -101,6 +101,11 @@ public class SuzanneController extends Component {
         if (Input.isKeyPressed(GLFW_KEY_F4)){
             Window.GetInstance().setActiveCamera(cam2);
             cameraModel.getMeshRenderer().setActive(true);
+        }
+
+        System.out.println(rb.StepRaycast());
+        if(rb.StepRaycast()){
+            rb.Step();
         }
     }
 

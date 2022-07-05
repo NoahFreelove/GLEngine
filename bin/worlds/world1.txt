@@ -36,3 +36,17 @@ MOD "bin/cube.obj"
 
 TEX "bin/wall.png"
 ///END GAMEOBJECT///
+
+Step
+///START GAMEOBJECT///
+POS (1,-3,0)
+
+ROT (0,0,0)
+
+SCA (1,0.2,1)
+
+MOD "bin/cube.obj"
+
+TEX "bin/wall.png"
+///END GAMEOBJECT///
+
