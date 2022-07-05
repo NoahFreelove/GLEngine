@@ -7,56 +7,9 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderManager {
 
-    public static void attachShader(String source, int type)
-    {
-        if(type == GL_FRAGMENT_SHADER)
-        {
-            // Create the shader and set the source
-            int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(fragmentShaderID, source);
-
-            // Compile the shader
-            glCompileShader(fragmentShaderID);
-
-            // Check for errors
-            if (glGetShaderi(fragmentShaderID, GL_COMPILE_STATUS) == GL_FALSE)
-                throw new RuntimeException("Error creating fragment shader\n"
-                        + glGetShaderInfoLog(fragmentShaderID, glGetShaderi(fragmentShaderID, GL_INFO_LOG_LENGTH)));
-
-            // Attach the shader
-            glAttachShader(Window.GetInstance().getProgramHandle(), fragmentShaderID);
-        }
-        else if (type == GL_VERTEX_SHADER){
-
-            // Create the shader and set the source
-            int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vertexShaderID, source);
-
-            // Compile the shader
-            glCompileShader(vertexShaderID);
-
-            // Check for errors
-            if (glGetShaderi(vertexShaderID, GL_COMPILE_STATUS) == GL_FALSE)
-                throw new RuntimeException("Error creating vertex shader\n"
-                        + glGetShaderInfoLog(vertexShaderID, glGetShaderi(vertexShaderID, GL_INFO_LOG_LENGTH)));
-
-            // Attach the shader
-            glAttachShader(Window.GetInstance().getProgramHandle(), vertexShaderID);
-        }
-    }
-
-    private static void linkShaders()
-    {
-        glLinkProgram(Window.GetInstance().getProgramHandle());
-
-        // Check for errors in the linking process
-        if (glGetProgrami(Window.GetInstance().getProgramHandle(), GL_LINK_STATUS) == GL_FALSE)
-            throw new RuntimeException("Unable to link shader program:");
-    }
-
     public static void initShaders(){
         // vertex shader
-        attachShader("#version 330 core\n" +
+        Window.GetInstance().defaultShader.attachShader("#version 330 core\n" +
                 "\n" +
                 "// Input vertex data, different for all executions of this shader.\n" +
                 "layout(location = 0) in vec3 vertexPosition_modelspace;\n" +
@@ -98,10 +51,10 @@ public class ShaderManager {
                 "\t\n" +
                 "\t// UV of the vertex. No special space for this one.\n" +
                 "\tUV = vertexUV;\n" +
-                "}", GL_VERTEX_SHADER);
+                "}", GL_VERTEX_SHADER, Window.GetInstance().defaultShader);
 
         // fragment shader
-        attachShader("#version 330 core\n" +
+        Window.GetInstance().defaultShader.attachShader("#version 330 core\n" +
                 "\n" +
                 "// Interpolated values from the vertex shaders\n" +
                 "in vec2 UV;\n" +
@@ -114,7 +67,7 @@ public class ShaderManager {
                 "out vec4 color;\n" +
                 "\n" +
                 "// Values that stay constant for the whole mesh.\n" +
-                "uniform sampler2D myTextureSampler;\n" +
+                "uniform sampler2D textureSample;\n" +
                 "uniform mat4 MV;\n" +
                 "uniform vec3 LightPosition_worldspace;\n" +
                 "\n" +
@@ -126,7 +79,7 @@ public class ShaderManager {
                 "\tfloat LightPower = 0.0f;\n" +
                 "\t\n" +
                 "\t// Material properties\n" +
-                "\tvec3 MaterialDiffuseColor = texture( myTextureSampler, UV ).rgb;\n" +
+                "\tvec3 MaterialDiffuseColor = texture( textureSample, UV ).rgb;\n" +
                 "\tvec3 MaterialAmbientColor = vec3(0.5,0.5,0.5) * MaterialDiffuseColor;\n" +
                 "\tvec3 MaterialSpecularColor = vec3(0.3,0.3,0.3);\n" +
                 "\n" +
@@ -163,9 +116,8 @@ public class ShaderManager {
                 "\t\tMaterialSpecularColor * LightColor * 1 * pow(cosAlpha,5);\n" +
                 "\n" +
                 "\tcolor.a = 1;\n" +
-                "}", GL_FRAGMENT_SHADER);
-        linkShaders();
-
+                "}", GL_FRAGMENT_SHADER, Window.GetInstance().defaultShader);
+        Window.GetInstance().defaultShader.LinkShaders();
     }
 
 

@@ -6,12 +6,16 @@ import Core.Objects.Components.Component;
 import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.GameObject;
 import Core.Objects.Models.RenderSettings;
+import Core.Shaders.ShaderProgram;
+import Core.Shaders.ShaderUniformElement;
+import Core.Shaders.UniformValueType;
 import Core.Worlds.World;
 import Core.Worlds.WorldManager;
 import Core.Shaders.ShaderManager;
 import IO.OBJ.ModelBuffer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -37,10 +41,9 @@ public class Window {
     private static Window instance;
 
     public long window;
-    public int program;
     private Camera ActiveCamera;
 
-    int textureID;
+
     int ModelMatrixID;
     int matrixID;
     int ViewMatrixID;
@@ -53,6 +56,8 @@ public class Window {
 
     public ArrayList<KeyEvent> keyCallbacks = new ArrayList<>();
     public ArrayList<MouseEvent> mouseCallbacks = new ArrayList<>();
+
+    public ShaderProgram defaultShader;
 
 
     public void run() {
@@ -153,8 +158,15 @@ public class Window {
         glfwShowWindow(window);
 
         GL.createCapabilities();
-        program = glCreateProgram();
+        defaultShader = new ShaderProgram();
         ShaderManager.initShaders();
+
+        defaultShader.getUniformElements().add(new ShaderUniformElement("MVP", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, defaultShader));
+        defaultShader.getUniformElements().add(new ShaderUniformElement("V", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, defaultShader));
+        defaultShader.getUniformElements().add(new ShaderUniformElement("M", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, defaultShader));
+        matrixID = glGetUniformLocation(defaultShader.getProgram(), "MVP");
+        ViewMatrixID = glGetUniformLocation(defaultShader.getProgram(), "V");
+        ModelMatrixID = glGetUniformLocation(defaultShader.getProgram(), "M");
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
@@ -164,11 +176,6 @@ public class Window {
         int nbFrames = 0;
         double lastTime = 0;
 
-        matrixID = glGetUniformLocation(program, "MVP");
-        ViewMatrixID = glGetUniformLocation(program, "V");
-        ModelMatrixID = glGetUniformLocation(program, "M");
-        textureID = glGetUniformLocation(program, "myTextureSampler");
-
         //int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
         //Vector3f lightPos = new Vector3f(0,4,5);
         //glUniform3f(LightID, lightPos.x(), lightPos.y(), lightPos.z());
@@ -177,15 +184,19 @@ public class Window {
         while ( !glfwWindowShouldClose(window) ) {
             double preFrameTime = glfwGetTime();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-            glUseProgram(program);
 
+            UpdateObjects();
+            defaultShader.setElementValue("MVP", ActiveCamera.getMVPBuffer());
+            defaultShader.setElementValue("V", ActiveCamera.getViewMatrixBuffer());
+            defaultShader.setElementValue("M", ActiveCamera.getModelMatrixBuffer());
             if(Component.isComponentValid(ActiveCamera))
             {
                 ActiveCamera.UpdateRenderMatrix();
                 Render();
             }
 
-            UpdateObjects();
+
+
             glfwSwapBuffers(window);
             glfwPollEvents();
 
@@ -212,7 +223,11 @@ public class Window {
         for (GameObject o :
                 source.GameObjects()) {
             if(Component.isComponentValid(o.getMeshRenderer())){
-                RenderGameObject(o);
+                if(o.getMeshRenderer().getShader() != null){
+                    glUseProgram(o.getMeshRenderer().getShader().getProgram());
+                    RenderGameObject(o,o.getMeshRenderer().getShader());
+                }
+                else RenderGameObject(o,defaultShader);
             }
         }
         if(WorldManager.areGizmosEnabled())
@@ -220,16 +235,22 @@ public class Window {
             for (GameObject o :
                     source.Gizmos()) {
                 if(Component.isComponentValid(o.getMeshRenderer())){
-                    RenderGameObject(o);
+                    if(o.getMeshRenderer().getShader() != null){
+                        glUseProgram(o.getMeshRenderer().getShader().getProgram());
+                        RenderGameObject(o,o.getMeshRenderer().getShader());
+                    }
+                    else RenderGameObject(o,defaultShader);
                 }
             }
         }
     }
 
-    private void RenderGameObject(GameObject gameObject){
+    private void RenderGameObject(GameObject gameObject, ShaderProgram shader){
         RenderSettings rs = gameObject.getMeshRenderer().getRenderSettings();
         ModelBuffer gameObjectBuffer = gameObject.getMeshRenderer().getMesh().getObjectBuffer();
         int textureID = gameObject.getMeshRenderer().getTexture().getTextureID();
+        glUseProgram(defaultShader.getProgram());
+
 
         ActiveCamera.setWireframe(rs.wireframe);
         ActiveCamera.setCull(rs.cullFace);
@@ -238,7 +259,6 @@ public class Window {
         // If the object doesn't have a model, we don't render it
         if(gameObjectBuffer == null)
             return;
-
 
         if(textureID >-1)
         {
@@ -252,9 +272,19 @@ public class Window {
 
         ActiveCamera.setActiveGameObject(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));
 
-        glUniformMatrix4fv(ModelMatrixID, false, ActiveCamera.getModelMatrix());
-        glUniformMatrix4fv(ViewMatrixID, false, ActiveCamera.getViewMatrixBuffer());
-        glUniformMatrix4fv(matrixID, false, ActiveCamera.getMVPBuffer());
+        defaultShader.setElementValue("MVP", ActiveCamera.getMVPBuffer());
+        defaultShader.setElementValue("V", ActiveCamera.getViewMatrixBuffer());
+        defaultShader.setElementValue("M", ActiveCamera.getModelMatrixBuffer());
+
+        for (ShaderUniformElement element :
+                shader.getUniformElements()) {
+            if(element.type() == UniformValueType.MAT4){
+                glUniformMatrix4fv(element.getLocation(), false, element.getValue());
+            }
+            else if(element.type() == UniformValueType.VEC3){
+                glUniformMatrix3fv(element.getLocation(), false, element.getValue());
+            }
+        }
 
         glBindVertexArray(gameObjectBuffer.vertexArrayId);
 
@@ -347,10 +377,6 @@ public class Window {
 
     public long getWindowHandle() {
         return window;
-    }
-
-    public int getProgramHandle() {
-        return program;
     }
     
     public void setRenderSource(World world){ source = world; }

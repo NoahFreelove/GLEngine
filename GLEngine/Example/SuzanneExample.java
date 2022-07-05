@@ -20,9 +20,10 @@ import org.joml.Vector4f;
 
 import java.io.File;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class SuzanneExample {
     public static SuzanneController suzanneController;
-    @SuppressWarnings("ResultOfMethodCallIgnored")
+
     public static void main(String[] args){
         Window.CreateWindow(1920, 1080, SuzanneExample::SetupWorld);
     }
@@ -60,13 +61,11 @@ public class SuzanneExample {
         camera.addComponent(new CameraController(cam, cameraModel));
         Window.GetInstance().setActiveCamera(cam);
 
-
         gameWorld.Add(suzanne, skybox, camera, sphere);
         gameWorld.AddGizmo(axisX, axisY, axisZ);
 
         Rigidbody suzanneBody = new Rigidbody(new Vector3f(1,1,1), new BoxShape(new javax.vecmath.Vector3f(1,1,1)), 1);
         suzanne.addComponent(suzanneBody);
-        suzanneBody.setColliderID(6969);
 
         Camera cam2 = new Camera();
         suzanne.addComponent(cam2);

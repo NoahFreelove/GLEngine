@@ -83,13 +83,5 @@ public class Rigidbody extends Component {
         transform.setTranslation(position);
         rigidBody.setWorldTransform(new Transform(transform));
     }
-
-    /**
-     * Used for uniquely identifying this collider.
-     * @param id The unique id to set.
-     */
-    public void setColliderID(int id){
-        rigidBody.setIslandTag(id);
-    }
 }
 

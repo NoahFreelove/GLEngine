@@ -16,8 +16,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Camera extends Component {
 
-    private Matrix4f ViewMatrix;
-    private Matrix4f ProjectionMatrix;
+    private Matrix4f ViewMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+    private Matrix4f ProjectionMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
     private Matrix4f ModelMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 
     private float horizAngle = 3.14f;
@@ -104,7 +104,7 @@ public class Camera extends Component {
         return projectionMatrixBuffer;
     }
 
-    public FloatBuffer getModelMatrix(){
+    public FloatBuffer getModelMatrixBuffer(){
         FloatBuffer modelMatrixBuffer = BufferUtils.createFloatBuffer(16);
         matrixToBuffer(ModelMatrix, modelMatrixBuffer);
         return modelMatrixBuffer;

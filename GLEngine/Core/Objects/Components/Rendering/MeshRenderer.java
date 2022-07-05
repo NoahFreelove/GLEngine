@@ -4,14 +4,16 @@ import Core.Objects.Components.Component;
 import Core.Objects.Models.Mesh;
 import Core.Objects.Models.RenderSettings;
 import Core.Objects.Models.Texture;
+import Core.Shaders.ShaderProgram;
 import IO.Image;
 
 public class MeshRenderer extends Component {
     private Mesh mesh;
     private Texture texture;
     private RenderSettings renderSettings = new RenderSettings();
-
+    private ShaderProgram shader;
     public MeshRenderer(Mesh mesh, Image texture) {
+
         this.mesh = mesh;
         this.texture = new Texture(texture.createTexture(), texture);
     }
@@ -56,5 +58,9 @@ public class MeshRenderer extends Component {
 
     public void setRenderSettings(RenderSettings renderSettings) {
         this.renderSettings = renderSettings;
+    }
+
+    public ShaderProgram getShader() {
+        return shader;
     }
 }
