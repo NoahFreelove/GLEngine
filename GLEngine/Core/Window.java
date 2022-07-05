@@ -6,12 +6,9 @@ import Core.Objects.Components.Component;
 import Core.Objects.Components.Rendering.Camera;
 import Core.Objects.GameObject;
 import Core.Objects.Models.RenderSettings;
-import Core.Shaders.ShaderProgram;
-import Core.Shaders.ShaderUniformElement;
-import Core.Shaders.UniformValueType;
+import Core.Shaders.*;
 import Core.Worlds.World;
 import Core.Worlds.WorldManager;
-import Core.Shaders.ShaderManager;
 import IO.OBJ.ModelBuffer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -43,11 +40,6 @@ public class Window {
     public long window;
     private Camera ActiveCamera;
 
-
-    int ModelMatrixID;
-    int matrixID;
-    int ViewMatrixID;
-
     private final Callback postInitCallback;
 
     private World source;
@@ -57,7 +49,7 @@ public class Window {
     public ArrayList<KeyEvent> keyCallbacks = new ArrayList<>();
     public ArrayList<MouseEvent> mouseCallbacks = new ArrayList<>();
 
-    public ShaderProgram defaultShader;
+    public DefaultShader defaultShader;
 
 
     public void run() {
@@ -158,15 +150,8 @@ public class Window {
         glfwShowWindow(window);
 
         GL.createCapabilities();
-        defaultShader = new ShaderProgram();
-        ShaderManager.initShaders();
+        defaultShader = new DefaultShader();
 
-        defaultShader.getUniformElements().add(new ShaderUniformElement("MVP", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, defaultShader));
-        defaultShader.getUniformElements().add(new ShaderUniformElement("V", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, defaultShader));
-        defaultShader.getUniformElements().add(new ShaderUniformElement("M", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, defaultShader));
-        matrixID = glGetUniformLocation(defaultShader.getProgram(), "MVP");
-        ViewMatrixID = glGetUniformLocation(defaultShader.getProgram(), "V");
-        ModelMatrixID = glGetUniformLocation(defaultShader.getProgram(), "M");
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
@@ -272,9 +257,7 @@ public class Window {
 
         ActiveCamera.setActiveGameObject(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));
 
-        defaultShader.setElementValue("MVP", ActiveCamera.getMVPBuffer());
-        defaultShader.setElementValue("V", ActiveCamera.getViewMatrixBuffer());
-        defaultShader.setElementValue("M", ActiveCamera.getModelMatrixBuffer());
+        shader.PreRenderInit();
 
         for (ShaderUniformElement element :
                 shader.getUniformElements()) {

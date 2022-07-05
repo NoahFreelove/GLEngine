@@ -1,15 +1,16 @@
 package Core.Shaders;
 
 import Core.Window;
+import org.lwjgl.BufferUtils;
 
-import static org.lwjgl.opengl.GL11.GL_FALSE;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
+import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
-public class ShaderManager {
+public class DefaultShader extends ShaderProgram{
 
-    public static void initShaders(){
-        // vertex shader
-        Window.GetInstance().defaultShader.attachShader("#version 330 core\n" +
+    public DefaultShader() {
+        super();
+        attachShader("#version 330 core\n" +
                 "\n" +
                 "// Input vertex data, different for all executions of this shader.\n" +
                 "layout(location = 0) in vec3 vertexPosition_modelspace;\n" +
@@ -51,10 +52,10 @@ public class ShaderManager {
                 "\t\n" +
                 "\t// UV of the vertex. No special space for this one.\n" +
                 "\tUV = vertexUV;\n" +
-                "}", GL_VERTEX_SHADER, Window.GetInstance().defaultShader);
+                "}", GL_VERTEX_SHADER, this);
 
         // fragment shader
-        Window.GetInstance().defaultShader.attachShader("#version 330 core\n" +
+        attachShader("#version 330 core\n" +
                 "\n" +
                 "// Interpolated values from the vertex shaders\n" +
                 "in vec2 UV;\n" +
@@ -116,9 +117,17 @@ public class ShaderManager {
                 "\t\tMaterialSpecularColor * LightColor * 1 * pow(cosAlpha,5);\n" +
                 "\n" +
                 "\tcolor.a = 1;\n" +
-                "}", GL_FRAGMENT_SHADER, Window.GetInstance().defaultShader);
-        Window.GetInstance().defaultShader.LinkShaders();
+                "}", GL_FRAGMENT_SHADER, this);
+        LinkShaders();
+        getUniformElements().add(new ShaderUniformElement("MVP", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, this));
+        getUniformElements().add(new ShaderUniformElement("V", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, this));
+        getUniformElements().add(new ShaderUniformElement("M", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, this));
     }
 
-
+    @Override
+    public void PreRenderInit() {
+        setElementValue("MVP", Window.GetInstance().getActiveCamera().getMVPBuffer());
+        setElementValue("V", Window.GetInstance().getActiveCamera().getViewMatrixBuffer());
+        setElementValue("M", Window.GetInstance().getActiveCamera().getModelMatrixBuffer());
+    }
 }

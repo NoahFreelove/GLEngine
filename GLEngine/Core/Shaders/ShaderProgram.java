@@ -85,4 +85,8 @@ public class ShaderProgram {
             }
         }
     }
+
+    public void PreRenderInit(){
+
+    }
 }
