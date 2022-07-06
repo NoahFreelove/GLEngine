@@ -5,6 +5,7 @@ import Core.Objects.Models.Mesh;
 import Core.Objects.Models.RenderSettings;
 import Core.Objects.Models.Texture;
 import Core.Shaders.ShaderProgram;
+import IO.DDS.DDSFile;
 import IO.Image;
 
 public class MeshRenderer extends Component {
@@ -12,20 +13,30 @@ public class MeshRenderer extends Component {
     private Texture texture;
     private RenderSettings renderSettings = new RenderSettings();
     private ShaderProgram shader;
-    public MeshRenderer(Mesh mesh, Image texture) {
 
+    public MeshRenderer(Mesh mesh, Image texture) {
         this.mesh = mesh;
         this.texture = new Texture(texture.createTexture(), texture);
     }
 
+    public MeshRenderer(Mesh mesh, DDSFile ddsImage){
+        this.mesh = mesh;
+        this.texture = new Texture(ddsImage.createTexture(), ddsImage);
+    }
+
+    public MeshRenderer(Mesh mesh, Texture texture) {
+        this.mesh = mesh;
+        this.texture = texture;
+    }
+
     public MeshRenderer(Mesh mesh, int texture) {
         this.mesh = mesh;
-        this.texture = new Texture(texture, null);
+        this.texture = new Texture(texture);
     }
 
     public MeshRenderer(MeshRenderer meshRenderer) {
         this.mesh = new Mesh(meshRenderer.mesh);
-        this.texture = meshRenderer.texture;
+        this.texture = new Texture(meshRenderer.texture.getTextureID());
     }
 
     public MeshRenderer(Image texture){

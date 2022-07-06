@@ -17,7 +17,7 @@ public class Mesh{
     }
 
     public Mesh(Mesh mesh) {
-        this.model = mesh.model;
+        this.model = new Model(mesh.model);
         generateBuffers();
     }
 

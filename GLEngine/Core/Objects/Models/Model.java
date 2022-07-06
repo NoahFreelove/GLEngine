@@ -43,6 +43,11 @@ public class Model {
             type = ModelType.CUSTOM;
             this.customModel = (CustomModel) model;
         }
+        else if (model instanceof Model m){
+            type = ModelType.valueOf(m.toString());
+            this.customModel = m.getCustomModel();
+            this.objModel = m.getObjModel();
+        }
         else
             System.out.println("Unsupported model type: " + model.getClass().getSimpleName());
     }
@@ -56,10 +61,10 @@ public class Model {
     }
 
     public Obj getObjModel(){
-        return objModel;
+        return new Obj(objModel);
     }
 
     public CustomModel getCustomModel(){
-        return customModel;
+        return new CustomModel(customModel);
     }
 }

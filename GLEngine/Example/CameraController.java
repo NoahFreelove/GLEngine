@@ -65,22 +65,22 @@ public class CameraController extends Component {
 
     private void CheckKeyboardInput(long window, float deltaTime, Vector3f direction, Vector3f right) {
         if (Input.isKeyPressed(GLFW_KEY_W)) {
-            getParentPosition().add(direction.mul(deltaTime).mul(speed));
+            setParentPosition(getParentPosition().add(direction.mul(deltaTime).mul(speed)));
         }
         if (Input.isKeyPressed(GLFW_KEY_S)) {
-            getParentPosition().sub(direction.mul(deltaTime).mul(speed));
+            setParentPosition(getParentPosition().sub(direction.mul(deltaTime).mul(speed)));
         }
         if (Input.isKeyPressed(GLFW_KEY_D)) {
-            getParentPosition().add(right.mul(deltaTime).mul(speed));
+            setParentPosition(getParentPosition().add(right.mul(deltaTime).mul(speed)));
         }
         if (Input.isKeyPressed(GLFW_KEY_A)) {
-            getParentPosition().sub(right.mul(deltaTime).mul(speed));
+            setParentPosition(getParentPosition().sub(right.mul(deltaTime).mul(speed)));
         }
         if (Input.isKeyPressed(GLFW_KEY_SPACE)) {
-            getParentPosition().add(new Vector3f(0,1,0).mul(deltaTime).mul(speed));
+            setParentPosition(getParentPosition().add(new Vector3f(0,1,0).mul(deltaTime).mul(speed)));
         }
         if (Input.isKeyPressed(GLFW_KEY_LEFT_CONTROL)) {
-            getParentPosition().add(new Vector3f(0,-1,0).mul(deltaTime).mul(speed));
+            setParentPosition(getParentPosition().add(new Vector3f(0,-1,0).mul(deltaTime).mul(speed)));
         }
 
         speed = (glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS)? sprintSpeed : baseSpeed;

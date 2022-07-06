@@ -1,7 +1,6 @@
 package Example;
 
 import Core.Input.Input;
-import Core.Input.KeyEvent;
 import Core.Objects.Components.Component;
 import Core.Objects.Components.Physics.Rigidbody;
 import Core.Objects.Components.Rendering.Camera;

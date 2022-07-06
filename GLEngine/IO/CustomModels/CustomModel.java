@@ -16,6 +16,31 @@ public class CustomModel {
         this.uvs = uvs;
     }
 
+    public CustomModel(CustomModel cm){
+        vertices = new Vector3f[cm.getVertices().length];
+        int i = 0;
+        for (Vector3f v :
+                cm.getVertices()) {
+            vertices[i] = v;
+            i++;
+        }
+        normals = new Vector3f[cm.getNormals().length];
+        i = 0;
+        for (Vector3f v :
+                cm.getNormals()) {
+            normals[i] = v;
+            i++;
+        }
+
+        uvs = new Vector2f[cm.getUvs().length];
+        i = 0;
+        for (Vector2f v :
+                cm.getUvs()) {
+            uvs[i] = v;
+            i++;
+        }
+    }
+
     public Vector3f[] getVertices() {
         return vertices;
     }

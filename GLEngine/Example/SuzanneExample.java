@@ -22,7 +22,7 @@ import java.io.File;
 public class SuzanneExample {
     public static SuzanneController suzanneController;
 
-    // #TODO Implement Audio
+    //TODO: Implement Audio
     public static void main(String[] args){
         Window.CreateWindow(1920, 1080, SuzanneExample::SetupWorld);
     }
@@ -60,7 +60,9 @@ public class SuzanneExample {
         camera.addComponent(new CameraController(cam, cameraModel));
         Window.GetInstance().setActiveCamera(cam);
 
-        gameWorld.Add(suzanne, skybox, camera);
+        suzanne.addChild(sphere);
+
+        gameWorld.Add(suzanne, skybox, camera, sphere);
         gameWorld.AddGizmo(axisX, axisY, axisZ);
 
         Rigidbody suzanneBody = new Rigidbody(suzanne.getScale(), 1);
