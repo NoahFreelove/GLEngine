@@ -12,7 +12,7 @@ import org.joml.Vector3f;
 public class BoundingBox extends Component {
     GameObject boundingBox;
     @Override
-    public void OnAdded() {
+    public void ParentAdded() {
         Rigidbody rb = ((Rigidbody)getParent().getComponentByType(Rigidbody.class));
         if (rb == null)
             return;
@@ -26,6 +26,8 @@ public class BoundingBox extends Component {
 
     @Override
     public void Update(float deltaTime){
-        boundingBox.setPosition(getParentPosition());
+        if(boundingBox !=null){
+            boundingBox.setPosition(getParentPosition());
+        }
     }
 }

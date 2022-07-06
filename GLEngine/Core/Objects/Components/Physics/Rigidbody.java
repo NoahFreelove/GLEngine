@@ -25,6 +25,12 @@ public class Rigidbody extends Component {
         colliderShape = new BoxShape(dimensions);
     }
 
+    public Rigidbody(org.joml.Vector3f colliderDimensions, float mass) {
+        this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
+        colliderShape = new BoxShape(dimensions);
+        this.mass = mass;
+    }
+
     public Rigidbody(org.joml.Vector3f colliderDimensions, CollisionShape collider) {
         this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
         this.colliderShape = collider;
@@ -65,6 +71,7 @@ public class Rigidbody extends Component {
         rigidBody.getWorldTransform(transform);
         setParentPosition(new org.joml.Vector3f(transform.origin.x,transform.origin.y,transform.origin.z));
     }
+
     public org.joml.Vector3f getDimensions(){
         return new org.joml.Vector3f(dimensions.x, dimensions.y, dimensions.z);
     }
@@ -85,6 +92,7 @@ public class Rigidbody extends Component {
         transform.setTranslation(position);
         rigidBody.setWorldTransform(new Transform(transform));
     }
+
     public void setMass(float newMass){
         this.mass = newMass;
         rigidBody.setMassProps(newMass, new Vector3f());
@@ -93,13 +101,14 @@ public class Rigidbody extends Component {
 
     public boolean StepRaycast(){
         boolean isFalling;
-        Vector3f fromPos = new Vector3f(getParentPosition().x(), (getParentPosition().y()-1f),getParentPosition().z());
+        Vector3f fromPos = new Vector3f(getParentPosition().x(), (getParentPosition().y()-dimensions.y),getParentPosition().z());
         //System.out.println(fromPos.y);
+
 
         Vector3f dir = new Vector3f();
         rigidBody.getLinearVelocity(dir);
 
-        isFalling = (Math.abs(dir.y)>0.001);
+        isFalling = (Math.abs(dir.y)>0.01);
         dir.normalize();
         org.joml.Vector3f toPos = new org.joml.Vector3f(dir.x,dir.y,dir.z);
         toPos.mul(2f);
@@ -125,6 +134,12 @@ public class Rigidbody extends Component {
         //System.out.println("Is Falling:" + isFalling);
         //System.out.println("res: " + res.hasHit());
         //System.out.println("res2: " + res2.hasHit());
+
+        if(res.hasHit() && res2.hasHit()){
+            Vector3f velocity = new Vector3f();
+            rigidBody.getLinearVelocity(velocity);
+            rigidBody.setLinearVelocity(new Vector3f(velocity.x, -9.8f, velocity.z));
+        }
 
         return (res.hasHit()) && !res2.hasHit() && !isFalling;
     }

@@ -43,7 +43,7 @@ POS (1,-3,0)
 
 ROT (0,0,0)
 
-SCA (1,0.2,1)
+SCA (0.5,0.2,1)
 
 MOD "bin/cube.obj"
 
@@ -52,11 +52,11 @@ TEX "bin/wall.png"
 
 Step
 ///START GAMEOBJECT///
-POS (3,-2.7,0)
+POS (2,-2.8,0)
 
 ROT (0,0,0)
 
-SCA (1,0.2,1)
+SCA (0.5,0.2,1)
 
 MOD "bin/cube.obj"
 
@@ -65,16 +65,39 @@ TEX "bin/wall.png"
 
 Step
 ///START GAMEOBJECT///
-POS (5,-2.4,0)
+POS (3,-2.6,0)
 
 ROT (0,0,0)
 
-SCA (1,0.2,1)
+SCA (0.5,0.2,1)
 
 MOD "bin/cube.obj"
 
 TEX "bin/wall.png"
 ///END GAMEOBJECT///
 
+Step
+///START GAMEOBJECT///
+POS (4,-2.4,0)
 
+ROT (0,0,0)
 
+SCA (0.5,0.2,1)
+
+MOD "bin/cube.obj"
+
+TEX "bin/wall.png"
+///END GAMEOBJECT///
+
+Step
+///START GAMEOBJECT///
+POS (5,-2.2,0)
+
+ROT (0,0,0)
+
+SCA (0.5,0.2,1)
+
+MOD "bin/cube.obj"
+
+TEX "bin/wall.png"
+///END GAMEOBJECT///

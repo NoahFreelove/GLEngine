@@ -12,12 +12,17 @@ import javax.vecmath.Matrix4f;
 public class Collider extends Component {
     protected CollisionObject object;
 
-    public Collider(Vector3f position){
+    public Collider(Vector3f position, Vector3f rot){
         object = new CollisionObject();
         object.activate(true);
         Matrix4f positionMatrix = new Matrix4f();
         positionMatrix.setIdentity();
         positionMatrix.setTranslation(new javax.vecmath.Vector3f(position.x, position.y, position.z));
+
+        position.rotateX((float) Math.toRadians(rot.x()));
+        position.rotateY((float) Math.toRadians(rot.y()));
+        position.rotateZ((float) Math.toRadians(rot.z()));
+
         object.setWorldTransform(new Transform(positionMatrix));
     }
 

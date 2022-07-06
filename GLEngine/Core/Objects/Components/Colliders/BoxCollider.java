@@ -7,11 +7,11 @@ import org.joml.Vector3f;
 public class BoxCollider extends Collider {
 
     public BoxCollider(Vector3f position, Vector3f dimensions) {
-        super(position);
+        super(position, new Vector3f(0,0,0));
         object.setCollisionShape(new BoxShape(new javax.vecmath.Vector3f(dimensions.x, dimensions.y, dimensions.z)));
     }
-    public BoxCollider(Vector3f position, Vector3f dimensions, boolean wall) {
-        super(position);
+    public BoxCollider(Vector3f position, Vector3f dimensions, Vector3f rot, boolean wall) {
+        super(position, rot);
         if(wall)
             object.setCollisionShape(new BoxShape(new javax.vecmath.Vector3f(dimensions.x-0.2f, dimensions.y, dimensions.z-0.2f)));
         else  object.setCollisionShape(new BoxShape(new javax.vecmath.Vector3f(dimensions.x, dimensions.y, dimensions.z)));
@@ -20,7 +20,7 @@ public class BoxCollider extends Collider {
 
 
     public static BoxCollider GenerateBoxColliderForObject(GameObject gameObject, boolean isWall){
-        BoxCollider bc = new BoxCollider(gameObject.getPosition(), gameObject.getScale(), isWall);
+        BoxCollider bc = new BoxCollider(gameObject.getPosition(), gameObject.getScale(), gameObject.getRotation(), isWall);
         return bc;
     }
 }

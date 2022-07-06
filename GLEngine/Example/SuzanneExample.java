@@ -13,7 +13,6 @@ import Core.Worlds.WorldManager;
 import IO.DDS.DDSFile;
 import IO.Image;
 import IO.OBJ.OBJLoader;
-import com.bulletphysics.collision.shapes.BoxShape;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -64,7 +63,7 @@ public class SuzanneExample {
         gameWorld.Add(suzanne, skybox, camera);
         gameWorld.AddGizmo(axisX, axisY, axisZ);
 
-        Rigidbody suzanneBody = new Rigidbody(new Vector3f(1,1,1), new BoxShape(new javax.vecmath.Vector3f(1,1,1)), 1);
+        Rigidbody suzanneBody = new Rigidbody(suzanne.getScale(), 1);
         suzanne.addComponent(suzanneBody);
 
         Camera cam2 = new Camera();
