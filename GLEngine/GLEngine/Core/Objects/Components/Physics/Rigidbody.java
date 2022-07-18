@@ -133,7 +133,7 @@ public class Rigidbody extends Component {
         toPos = new org.joml.Vector3f(dir.x,dir.y,dir.z);
         toPos.mul(2f);
 
-        finalVec =new javax.vecmath.Vector3f(fromPos.x + toPos.x(), fromPos.y +stepThreshold, fromPos.z +toPos.z());
+        finalVec = new javax.vecmath.Vector3f(fromPos.x + toPos.x(), fromPos.y +stepThreshold, fromPos.z +toPos.z());
 
 
         CollisionWorld.ClosestRayResultCallback res2 = new CollisionWorld.ClosestRayResultCallback(fromPos,finalVec);
@@ -156,6 +156,10 @@ public class Rigidbody extends Component {
 
     public void Step(){
         setPosition(new org.joml.Vector3f(getParentPosition().x, getParentPosition().y+stepThreshold+0.2f, getParentPosition().z));
+    }
+
+    public void setStepThreshold(float stepThreshold) {
+        this.stepThreshold = stepThreshold;
     }
 }
 

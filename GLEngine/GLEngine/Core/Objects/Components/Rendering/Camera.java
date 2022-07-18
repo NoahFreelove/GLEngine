@@ -35,6 +35,7 @@ public class Camera extends Component {
     private Vector3f direction = new Vector3f();
     private Vector3f right = new Vector3f();
     private Vector3f up = new Vector3f();
+    private Vector3f forward = new Vector3f();
 
     private float halfWidth;
     private float halfHeight;
@@ -57,10 +58,12 @@ public class Camera extends Component {
 
         vertAngle = clamp(bottomAngle, topAngle, vertAngle);
 
-
         direction = new Vector3f((float) (Math.cos(vertAngle)* Math.sin(horizAngle)),
                 (float) Math.sin(vertAngle),
                 (float) (Math.cos(vertAngle) * Math.cos(horizAngle)));
+
+
+        forward = new Vector3f((float) Math.sin(horizAngle),0f, (float) Math.cos(horizAngle));
 
         right = new Vector3f((float) Math.sin(horizAngle - Math.PI/2),0f, (float) Math.cos(horizAngle- Math.PI/2));
 
@@ -176,6 +179,9 @@ public class Camera extends Component {
 
     public Vector3f getRightVector() {
         return right;
+    }
+    public Vector3f getForwardVector(){
+        return forward;
     }
 
     public Vector3f getUpVector() {
