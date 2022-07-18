@@ -2,7 +2,7 @@
 
 A OpenGL based Java game engine.
 
-Check out `src/Example/SuzanneExample.java` to see a demo.
+Check out `src/GLEngine/Example/SuzanneExample.java` to see a demo.
 
 **WASD + Mouse for Camera Movement.**
 
