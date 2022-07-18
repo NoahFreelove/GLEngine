@@ -20,6 +20,8 @@ public class Camera extends Component {
     private Matrix4f ProjectionMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
     private Matrix4f ModelMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 
+    private Vector3f offset = new Vector3f();
+
     private float horizAngle = 3.14f;
     private float vertAngle = 0f;
     private float fov = 90;
@@ -30,9 +32,9 @@ public class Camera extends Component {
     private float bottomAngle = (float) (-Math.PI/2);
     private float topAngle = (float) (Math.PI/2);
 
-    private Vector3f direction;
-    private Vector3f right;
-    private Vector3f up;
+    private Vector3f direction = new Vector3f();
+    private Vector3f right = new Vector3f();
+    private Vector3f up = new Vector3f();
 
     private float halfWidth;
     private float halfHeight;
@@ -73,7 +75,8 @@ public class Camera extends Component {
 
         Vector3f addedPos = new Vector3f();
         getParentPosition().add(direction, addedPos);
-        ViewMatrix.lookAt(getParentPosition(),addedPos,up);
+        addedPos.add(offset, addedPos);
+        ViewMatrix.lookAt(  new Vector3f().add(getParentPosition()).add(offset),addedPos,up);
     }
 
 
@@ -168,7 +171,7 @@ public class Camera extends Component {
     }
 
     public Vector3f getDirectionFacingVector() {
-        return direction;
+        return new Vector3f(direction);
     }
 
     public Vector3f getRightVector() {
@@ -219,5 +222,17 @@ public class Camera extends Component {
 
     public static boolean RaycastFromCenterCamera(Camera cam, float distance){
         return cam.RaycastFromCenterCamera(distance);
+    }
+
+    public float getHorizAngle() {
+        return horizAngle;
+    }
+
+    public float getVertAngle() {
+        return vertAngle;
+    }
+
+    public void setCameraOffset(Vector3f offset){
+        this.offset = offset;
     }
 }

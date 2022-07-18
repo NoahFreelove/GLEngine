@@ -157,7 +157,7 @@ public class Window {
 
     private void loop() {
 
-        int frameCount = 0;
+        int nbFrames = 0;
         double lastTime = 0;
 
         //int LightID = glGetUniformLocation(program, "LightPosition_worldspace");
@@ -189,10 +189,10 @@ public class Window {
             WorldManager.getCurrentWorld().step(deltaTime);
             // FPS counter
             double currentTime = glfwGetTime();
-            frameCount++;
+            nbFrames++;
             if ( currentTime - lastTime >= 1.0 ){
-                //System.out.printf("%f ms/frame. %d frames%n", 1000.0/frameCount, frameCount);
-                frameCount = 0;
+                //System.out.printf("%f ms/frame. %d frames%n", 1000.0/nbFrames, nbFrames);
+                nbFrames = 0;
                 lastTime += 1.0;
             }
         }

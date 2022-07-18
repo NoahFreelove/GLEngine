@@ -9,8 +9,10 @@ import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
+import org.joml.Quaternionf;
 
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 public class Rigidbody extends Component {
@@ -18,7 +20,7 @@ public class Rigidbody extends Component {
     private Vector3f dimensions;
     private CollisionShape colliderShape;
     private float mass = 1f;
-    protected float stepThreshold = 0.3f;
+    protected float stepThreshold = 0.5f;
 
     public Rigidbody(org.joml.Vector3f colliderDimensions) {
         this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
@@ -93,6 +95,12 @@ public class Rigidbody extends Component {
         rigidBody.setWorldTransform(new Transform(transform));
     }
 
+    public void setRotation(Quaternionf rot){
+        Transform t = new Transform();
+        getRigidBody().getWorldTransform(t);
+        t.setRotation(new Quat4f(rot.x(), rot.y(), rot.z(), rot.w()));
+    }
+
     public void setMass(float newMass){
         this.mass = newMass;
         rigidBody.setMassProps(newMass, new Vector3f());
@@ -140,6 +148,8 @@ public class Rigidbody extends Component {
             rigidBody.getLinearVelocity(velocity);
             rigidBody.setLinearVelocity(new Vector3f(velocity.x, -9.8f, velocity.z));
         }
+
+        //System.out.println(res.hasHit() + " : " + res2.hasHit());
 
         return (res.hasHit()) && !res2.hasHit() && !isFalling;
     }
