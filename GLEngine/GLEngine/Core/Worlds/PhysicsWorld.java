@@ -19,6 +19,7 @@ public class PhysicsWorld {
     public PhysicsWorld(){
         BroadphaseInterface broadphase = new DbvtBroadphase();
         CollisionConfiguration collisionConfig = new DefaultCollisionConfiguration();
+
         Dispatcher dispatcher = new CollisionDispatcher(collisionConfig);
         ConstraintSolver solver = new SequentialImpulseConstraintSolver();
         physicsWorldObject = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfig);

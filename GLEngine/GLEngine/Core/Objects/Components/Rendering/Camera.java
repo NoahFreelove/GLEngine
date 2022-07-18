@@ -209,7 +209,7 @@ public class Camera extends Component {
     public boolean RaycastFromCenterCamera(float distance){
         Vector3f rayDirection = new Vector3f(getDirectionFacingVector());
         rayDirection.normalize();
-        CollisionWorld.ClosestRayResultCallback result = Raycast(getParentPosition(),rayDirection,distance);
+        CollisionWorld.ClosestRayResultCallback result = Raycast(new Vector3f().add(getParentPosition()).add(offset),rayDirection,distance);
 
         return result.hasHit();
     }
@@ -217,7 +217,7 @@ public class Camera extends Component {
     public GameObject RayCastHitObject(float distance){
         Vector3f rayDirection = new Vector3f(getDirectionFacingVector());
         rayDirection.normalize();
-        CollisionWorld.ClosestRayResultCallback result = Raycast(getParentPosition(),rayDirection,distance);
+        CollisionWorld.ClosestRayResultCallback result = Raycast(new Vector3f().add(getParentPosition()).add(offset),rayDirection,distance);
         int hashCode = -1;
         if(result.collisionObject != null)
         {

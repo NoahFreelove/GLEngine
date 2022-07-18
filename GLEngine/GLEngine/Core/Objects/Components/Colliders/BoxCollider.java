@@ -12,7 +12,7 @@ public class BoxCollider extends Collider {
     }
     public BoxCollider(Vector3f position, Vector3f dimensions, Vector3f rot, boolean wall) {
         super(position, rot);
-        if(wall)
+        if(false)
             object.setCollisionShape(new BoxShape(new javax.vecmath.Vector3f(dimensions.x-0.2f, dimensions.y, dimensions.z-0.2f)));
         else  object.setCollisionShape(new BoxShape(new javax.vecmath.Vector3f(dimensions.x, dimensions.y, dimensions.z)));
     }

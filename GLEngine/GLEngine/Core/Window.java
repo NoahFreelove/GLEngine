@@ -152,7 +152,7 @@ public class Window {
         defaultShader = new DefaultShader();
 
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
     private void loop() {
@@ -179,8 +179,6 @@ public class Window {
                 ActiveCamera.UpdateRenderMatrix();
                 Render();
             }
-
-
 
             glfwSwapBuffers(window);
             glfwPollEvents();

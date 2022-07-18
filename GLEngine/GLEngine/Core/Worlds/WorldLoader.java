@@ -51,6 +51,7 @@ public class WorldLoader {
 
         Model    model = new Model();
         Image    image = new Image();
+        String   name  = "GameObject";
 
         for (String line : data) {
             if(line.equals("///START GAMEOBJECT///")){
@@ -64,7 +65,7 @@ public class WorldLoader {
                 lineNum++;
 
                 object = new GameObject(pos,rot,sca,model,image);
-                object.setName("Loaded obj");
+                object.setName(name);
                 object.addComponent(BoxCollider.GenerateBoxColliderForObject(object, true));
                 world.Add(object);
 
@@ -78,6 +79,12 @@ public class WorldLoader {
             }
 
             if(inGameObject){
+
+                if(line.startsWith("NAME")){
+                    line = cleanLine(line);
+                    name = line;
+                }
+
                 if(line.startsWith("POS")){
                     line = cleanLine(line);
 
@@ -138,11 +145,14 @@ public class WorldLoader {
 
     private static String cleanLine(String input)
     {
+        input = input.replace("NAME ", "");
         input = input.replace("POS ", "");
         input = input.replace("ROT ", "");
         input = input.replace("SCA ", "");
         input = input.replace("MOD ", "");
         input = input.replace("TEX ", "");
+
+        input = input.replace(" ", "");
 
         input = input.replace("CLASS ", "");
         input = input.replace("DIM ", "");
