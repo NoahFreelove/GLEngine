@@ -73,4 +73,8 @@ public class MeshRenderer extends Component {
     public ShaderProgram getShader() {
         return shader;
     }
+
+    public void setShader(ShaderProgram shader) {
+        this.shader = shader;
+    }
 }

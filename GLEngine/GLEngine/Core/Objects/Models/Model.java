@@ -32,24 +32,30 @@ public class Model {
         }
     }
 
-    public Model(Object model){
-        if(model instanceof Obj)
-        {
-            type = ModelType.OBJ;
-            this.objModel = (Obj) model;
+    public Model(Object model, boolean auto){
+        if(auto){
+            if(model instanceof Obj)
+            {
+                type = ModelType.OBJ;
+                this.objModel = (Obj) model;
+            }
+            else if(model instanceof CustomModel)
+            {
+                type = ModelType.CUSTOM;
+                this.customModel = (CustomModel) model;
+            }
+            else if (model instanceof Model m){
+                type = ModelType.valueOf(m.toString());
+                this.customModel = m.getCustomModel();
+                this.objModel = m.getObjModel();
+            }
+            else
+                System.err.println("Unsupported model type: " + model.getClass().getSimpleName());
+
+            return;
         }
-        else if(model instanceof CustomModel)
-        {
-            type = ModelType.CUSTOM;
-            this.customModel = (CustomModel) model;
-        }
-        else if (model instanceof Model m){
-            type = ModelType.valueOf(m.toString());
-            this.customModel = m.getCustomModel();
-            this.objModel = m.getObjModel();
-        }
-        else
-            System.out.println("Unsupported model type: " + model.getClass().getSimpleName());
+
+        System.err.println("Could not create model for type: " + model.getClass().getSimpleName());
     }
 
     public Object getPrimaryObject(){

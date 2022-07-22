@@ -48,7 +48,7 @@ public class Window {
     public ArrayList<KeyEvent> keyCallbacks = new ArrayList<>();
     public ArrayList<MouseEvent> mouseCallbacks = new ArrayList<>();
 
-    public DefaultShader defaultShader;
+    private DefaultShader defaultShader;
 
 
     public void run() {
@@ -152,7 +152,7 @@ public class Window {
         defaultShader = new DefaultShader();
 
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     }
 
     private void loop() {
@@ -168,7 +168,6 @@ public class Window {
         while ( !glfwWindowShouldClose(window) ) {
             double preFrameTime = glfwGetTime();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-
             UpdateObjects();
 
             if(Component.isComponentValid(ActiveCamera))
@@ -213,6 +212,7 @@ public class Window {
                 else RenderGameObject(o,defaultShader);
             }
         }
+
         if(WorldManager.areGizmosEnabled())
         {
             for (GameObject o :
@@ -232,7 +232,7 @@ public class Window {
         RenderSettings rs = gameObject.getMeshRenderer().getRenderSettings();
         ModelBuffer gameObjectBuffer = gameObject.getMeshRenderer().getMesh().getObjectBuffer();
         int textureID = gameObject.getMeshRenderer().getTexture().getTextureID();
-        glUseProgram(defaultShader.getProgram());
+        glUseProgram(shader.getProgram());
 
 
         ActiveCamera.setWireframe(rs.wireframe);
@@ -263,7 +263,10 @@ public class Window {
                 glUniformMatrix4fv(element.getLocation(), false, element.getValue());
             }
             else if(element.type() == UniformValueType.VEC3){
-                glUniformMatrix3fv(element.getLocation(), false, element.getValue());
+                glUniform3f(element.getLocation(), element.getValue().get(0),element.getValue().get(1),element.getValue().get(2));
+            }
+            else if(element.type() == UniformValueType.VEC4){
+                glUniform4f(element.getLocation(), element.getValue().get(0),element.getValue().get(1),element.getValue().get(2),element.getValue().get(3));
             }
         }
 
@@ -274,6 +277,7 @@ public class Window {
             glEnableVertexAttribArray(0);
             glBindBuffer(GL_ARRAY_BUFFER, gameObjectBuffer.vertexBuffer);
             glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+
         }
 
         if(gameObjectBuffer.uvs.limit()>0)
@@ -289,7 +293,7 @@ public class Window {
             glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
         }
 
-        glDrawArrays(gameObject.getMeshRenderer().getRenderSettings().drawMode, 0, gameObjectBuffer.vertices.limit());
+        glDrawArrays(gameObject.getMeshRenderer().getRenderSettings().drawMode, 0, gameObjectBuffer.vertices.limit() + gameObjectBuffer.uvs.limit() + gameObjectBuffer.normals.limit());
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);

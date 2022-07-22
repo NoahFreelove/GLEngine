@@ -99,8 +99,6 @@ public final class GameObject implements Serializable, Cloneable {
 
     public void setPosition(Vector3f newPos)
     {
-
-
         Vector3f oldPos = getPosition();
         this.position = new Vector3f(newPos);
 
