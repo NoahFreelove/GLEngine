@@ -100,4 +100,10 @@ SCA (0.5,0.2,1)
 MOD "bin/cube.obj"
 
 TEX "bin/wall.png"
+
+///COMP///
+CLASS "GLEngine.Example.RegisterTest"
+FIELD "value":5f,5f,25f:Vector3f
+///END COMP///
+
 ///END GAMEOBJECT///

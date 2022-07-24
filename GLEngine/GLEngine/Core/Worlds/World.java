@@ -1,5 +1,6 @@
 package GLEngine.Core.Worlds;
 
+import GLEngine.Core.Audio.Sound;
 import GLEngine.Core.Objects.GameObject;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.dynamics.RigidBody;
@@ -9,9 +10,13 @@ import java.util.Arrays;
 
 public class World {
     private final PhysicsWorld physicsWorld;
+
     private final ArrayList<GameObject> gameObjects = new ArrayList<>();
     private final ArrayList<GameObject> gizmos = new ArrayList<>();
+    private final ArrayList<Sound> activeSounds = new ArrayList<>();
     private final ArrayList<HashObject> colliderHashes = new ArrayList<>();
+
+    private boolean isActive;
 
     private String name = "Scene";
 
@@ -97,5 +102,13 @@ public class World {
             }
         }
         return new GameObject();
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }

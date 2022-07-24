@@ -5,6 +5,7 @@ import GLEngine.Core.Objects.GameObject;
 import org.joml.Vector3f;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Component implements ComponentBehavior, Serializable, Cloneable {
 
@@ -37,7 +38,6 @@ public class Component implements ComponentBehavior, Serializable, Cloneable {
 
     @Override
     public void ParentTransformed(Vector3f newPos, Vector3f newRot, Vector3f newScale) {}
-
 
     public Vector3f getParentPosition(){
         return attachedObject.getPosition();

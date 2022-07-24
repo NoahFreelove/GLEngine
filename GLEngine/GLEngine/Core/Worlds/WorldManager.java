@@ -9,6 +9,7 @@ public class WorldManager {
     private static final ArrayList<World> buildWorlds = new ArrayList<>(0);
 
     private static World currentWorld = new World();
+    private static World loadingWorld = new World();
 
     private static boolean enableGizmos = true;
 
@@ -38,12 +39,13 @@ public class WorldManager {
         if(buildWorlds.contains(world))
         {
             for (GameObject o : currentWorld.GameObjects()) { o.Unload(); }
-
+            currentWorld.setActive(false);
             Window.GetInstance().setRenderSource(world);
 
             for (GameObject o : world.GameObjects()) { o.Start(); }
-
+            world.setActive(true);
             currentWorld = world;
+            loadingWorld = world;
         }
     }
 
@@ -55,11 +57,19 @@ public class WorldManager {
         return currentWorld;
     }
 
+    public static World getLoadingWorld(){
+        return loadingWorld;
+    }
+
     public static boolean areGizmosEnabled() {
         return enableGizmos;
     }
 
     public static void setEnableGizmos(boolean enableGizmos) {
         WorldManager.enableGizmos = enableGizmos;
+    }
+
+    public static void setLoadingWorld(World loadingWorld) {
+        WorldManager.loadingWorld = loadingWorld;
     }
 }

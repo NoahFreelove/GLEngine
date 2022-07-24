@@ -14,15 +14,22 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
@@ -33,6 +40,9 @@ public class Window {
 
     private int width;
     private int height;
+
+    private long audioContext;
+    private long audioDevice;
 
     private static Window instance;
 
@@ -58,8 +68,15 @@ public class Window {
         if(postInitCallback !=null)
             postInitCallback.call();
 
-
         loop();
+
+        destroy();
+    }
+
+    private void destroy(){
+
+        alcDestroyContext(audioContext);
+        alcCloseDevice(audioDevice);
 
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
@@ -84,6 +101,7 @@ public class Window {
 
         if ( !glfwInit() )
             throw new IllegalStateException("Unable to initialize GLFW");
+
 
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
@@ -147,6 +165,26 @@ public class Window {
 
         // Make the window visible
         glfwShowWindow(window);
+
+        // Initialize audio
+        String audioDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
+        audioDevice = alcOpenDevice(audioDeviceName);
+
+        if (audioDevice == NULL) {
+            throw new RuntimeException("Failed to open audio device");
+        }
+        int[] attributes = {0};
+        audioContext = alcCreateContext(audioDevice, attributes);
+        alcMakeContextCurrent(audioContext);
+
+        ALCCapabilities alcCapabilities = ALC.createCapabilities(audioDevice);
+        ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+
+
+        if(!alCapabilities.OpenAL10)
+            assert false : "OpenAL 1.0 is not supported";
+
+
 
         GL.createCapabilities();
         defaultShader = new DefaultShader();

@@ -1,12 +1,16 @@
 package GLEngine.Core.Worlds;
 
 import GLEngine.Core.Objects.Components.Colliders.BoxCollider;
+import GLEngine.Core.Objects.Components.Component;
 import GLEngine.Core.Objects.GameObject;
 import GLEngine.Core.Objects.Models.Model;
 import GLEngine.IO.Image;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,10 +25,17 @@ public class WorldLoader {
         Process(loadedWorld, world);
     }
 
-    public static World LoadWorld(String path){
+    public static World LoadWorldObject(String path){
         World w = new World();
         LoadWorldToObject(path, w);
         return w;
+    }
+
+    public static void LoadWorld(String path){
+        World w = new World();
+        LoadWorldToObject(path, w);
+
+        WorldManager.SwitchWorld(w);
     }
 
     private static String[] readFile(String path){
@@ -44,7 +55,10 @@ public class WorldLoader {
     private static void Process(String[] data, World world){
         int lineNum = 0;
         boolean inGameObject = false;
+        boolean inComponent = false;
         GameObject object;
+        ArrayList<Component> components = new ArrayList<>(0);
+        int componentCount = 0;
         Vector3f pos = new Vector3f();
         Vector3f rot = new Vector3f();
         Vector3f sca = new Vector3f();
@@ -60,6 +74,18 @@ public class WorldLoader {
                 continue;
             }
 
+            if(line.equals("///COMP///")){
+                inComponent = true;
+                lineNum++;
+                continue;
+            }
+
+            if(line.equals("///END COMP///")){
+                inComponent = false;
+                lineNum++;
+                continue;
+            }
+
             if(line.equals("///END GAMEOBJECT///")){
                 inGameObject = false;
                 lineNum++;
@@ -67,6 +93,12 @@ public class WorldLoader {
                 object = new GameObject(pos,rot,sca,model,image);
                 object.setName(name);
                 object.addComponent(BoxCollider.GenerateBoxColliderForObject(object, true));
+
+                for (Component c :
+                        components) {
+                    object.addComponent(c);
+                }
+
                 world.Add(object);
 
                 pos = new Vector3f();
@@ -140,6 +172,78 @@ public class WorldLoader {
 
             }
 
+            if(inComponent){
+                if(line.startsWith("CLASS")){
+                    line = cleanLine(line);
+                    try {
+                        // Convert class name to class object
+                        Class<?> clazz = Class.forName(line);
+                        // Create constructor for class
+                        Constructor<?> constructor = clazz.getConstructor();
+                        // Create instance of class without casting
+                        if(constructor.newInstance() instanceof Component){
+                            components.add((Component) constructor.newInstance());
+                            componentCount++;
+                        }
+                        else System.err.println("Level Loader: Error parsing component");
+                        // Set
+                    } catch (Exception e) {
+                        System.err.println("Level Loader: Error parsing component: " + e.getMessage());
+                    }
+                }
+                if(line.startsWith("FIELD")){
+                    line = cleanLine(line);
+                    String[] subStr = line.split(":");
+                    if(subStr.length == 3){
+                        String fieldName = subStr[0];
+                        String fieldValue = subStr[1];
+                        String fieldType = subStr[2];
+                        try {
+                            Field field = components.get(componentCount-1).getClass().getField(fieldName);
+                            switch (fieldType){
+                                case "int"->{
+                                    field.setInt(components.get(componentCount-1), Integer.parseInt(fieldValue));
+                                }
+                                case "float"->{
+                                    field.setFloat(components.get(componentCount-1), Float.parseFloat(fieldValue));
+                                }
+                                case "boolean"->{
+                                    field.setBoolean(components.get(componentCount-1), Boolean.parseBoolean(fieldValue));
+                                }
+                                case "Vector3f"->{
+                                    String[] subStr2 = fieldValue.split(",");
+                                    if(subStr2.length == 3){
+                                        Vector3f vec = new Vector3f();
+                                        vec.x = Float.parseFloat(subStr2[0]);
+                                        vec.y = Float.parseFloat(subStr2[1]);
+                                        vec.z = Float.parseFloat(subStr2[2]);
+                                        field.set(components.get(componentCount-1), vec);
+                                    }
+                                    else System.err.println("Level Loader: Error parsing Vector3f");
+                                }
+                                case "Vector2f" ->{
+                                    String[] subStr2 = fieldValue.split(",");
+                                    if(subStr2.length == 2){
+                                        Vector2f vec = new Vector2f();
+                                        vec.x = Float.parseFloat(subStr2[0]);
+                                        vec.y = Float.parseFloat(subStr2[1]);
+                                        field.set(components.get(componentCount-1), vec);
+                                    }
+                                    else System.err.println("Level Loader: Error parsing Vector2f");
+                                }
+                                default -> {
+                                    field.set(components.get(componentCount-1), fieldValue);
+                                }
+                            }
+                        } catch (Exception e) {
+                            System.err.println("Level Loader: Error parsing component: " + e.getMessage());
+                        }
+                    }
+                    else System.err.println("Level Loader: Error parsing component");
+                }
+            }
+
+
         }
     }
 
@@ -151,6 +255,8 @@ public class WorldLoader {
         input = input.replace("SCA ", "");
         input = input.replace("MOD ", "");
         input = input.replace("TEX ", "");
+        input = input.replace("CLASS ", "");
+        input = input.replace("FIELD ", "");
 
         input = input.replace(" ", "");
 

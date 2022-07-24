@@ -122,6 +122,7 @@ public class DefaultShader extends ShaderProgram{
         getUniformElements().add(new ShaderUniformElement("MVP", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, this));
         getUniformElements().add(new ShaderUniformElement("V", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, this));
         getUniformElements().add(new ShaderUniformElement("M", BufferUtils.createFloatBuffer(0), UniformValueType.MAT4, this));
+
     }
 
     @Override

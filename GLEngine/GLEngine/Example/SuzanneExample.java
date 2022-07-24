@@ -60,8 +60,6 @@ public class SuzanneExample {
         camera.addComponent(new CameraController(cam, cameraModel));
         Window.GetInstance().setActiveCamera(cam);
 
-        suzanne.addChild(sphere);
-
         gameWorld.Add(suzanne, skybox, camera, sphere);
         gameWorld.AddGizmo(axisX, axisY, axisZ);
 
