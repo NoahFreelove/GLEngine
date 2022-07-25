@@ -10,6 +10,9 @@ import GLEngine.Core.Shaders.*;
 import GLEngine.Core.Worlds.World;
 import GLEngine.Core.Worlds.WorldManager;
 import GLEngine.IO.OBJ.ModelBuffer;
+import com.bulletphysics.BulletGlobals;
+import com.bulletphysics.BulletStats;
+import com.bulletphysics.collision.dispatch.CollisionDispatcher;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -33,6 +36,7 @@ import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
+import static org.lwjgl.system.MemoryStack.stackASCII;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -64,6 +68,7 @@ public class Window {
     public void run() {
         init();
         initOpenGLRenderSettings();
+
 
         if(postInitCallback !=null)
             postInitCallback.call();
@@ -118,14 +123,13 @@ public class Window {
         if ( !glfwInit() )
             throw new IllegalStateException("Unable to initialize GLFW");
 
-
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
         glfwWindowHint(GLFW_SAMPLES, 4);
         // Create the window
-        window = glfwCreateWindow(width, height, "GL Engine", NULL, NULL);
+        window = glfwCreateWindow(width, height, "GLEngine", NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 

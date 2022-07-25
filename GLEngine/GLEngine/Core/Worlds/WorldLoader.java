@@ -20,24 +20,28 @@ import java.util.List;
 // Keeping the scope of the loader to pretty small for now.
 public class WorldLoader {
 
-    public static void LoadWorldToObject(String path, World world){
+    public static void LoadWorldToObject(String path, World world, boolean loadComponents){
         String[] loadedWorld = readFile(path);
-        Process(loadedWorld, world);
+        Process(loadedWorld, world, loadComponents);
     }
 
     public static World LoadWorldObject(String path){
         World w = new World();
-        LoadWorldToObject(path, w);
+        LoadWorldToObject(path, w, true);
         return w;
     }
 
     public static void LoadWorld(String path){
         World w = new World();
-        LoadWorldToObject(path, w);
-
+        LoadWorldToObject(path, w, true);
         WorldManager.SwitchWorld(w);
     }
 
+    public static World PreviewWorld(String path){
+        World w = new World();
+        LoadWorldToObject(path, w, false);
+        return w;
+    }
     private static String[] readFile(String path){
         Path filePath = new File(path).toPath();
         List<String> stringList = new ArrayList<>(0);
@@ -52,7 +56,7 @@ public class WorldLoader {
 
 
 
-    private static void Process(String[] data, World world){
+    private static void Process(String[] data, World world, boolean loadComponents){
         int lineNum = 0;
         boolean inGameObject = false;
         boolean inComponent = false;
@@ -174,7 +178,7 @@ public class WorldLoader {
 
             }
 
-            if(inComponent){
+            if(inComponent && loadComponents){
                 if(line.startsWith("CLASS")){
                     line = cleanLine(line);
                     try {

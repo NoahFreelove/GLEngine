@@ -22,7 +22,6 @@ import java.io.File;
 public class SuzanneExample {
     public static SuzanneController suzanneController;
 
-    //TODO: Implement Audio
     public static void main(String[] args){
         Window.CreateWindow(1920, 1080, SuzanneExample::SetupWorld);
     }
@@ -32,7 +31,7 @@ public class SuzanneExample {
         WorldManager.AddWorldToBuild(gameWorld);
         WorldManager.SwitchWorld(0);
 
-        WorldLoader.LoadWorldToObject("bin/worlds/world1.txt", gameWorld);
+        WorldLoader.LoadWorldToObject("bin/worlds/world1.txt", gameWorld, true);
 
         GameObject suzanne = new GameObject(new Vector3f(-5,0,0), new Vector3f(0,0,0), new Vector3f(1,1,1), new Model(OBJLoader.loadModel(new File("bin/suzanne.obj"))), new DDSFile("bin/uvmap.DDS"));
         suzanne.setName("Suzanne");
@@ -54,7 +53,6 @@ public class SuzanneExample {
         GameObject cameraModel = new GameObject(camera.getPosition(), new Vector3f(0,90,0), new Vector3f(1,1,1), new Model(OBJLoader.loadModel(new File("bin/camera.obj"))), new DDSFile("bin/uvmap.DDS"));
 
         Camera cam = new Camera();
-
         cam.setBackgroundColor(new Vector4f(0,0.7f,0.7f,0));
         camera.addComponent(cam);
         camera.addComponent(new CameraController(cam, cameraModel));
