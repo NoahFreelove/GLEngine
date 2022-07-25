@@ -10,9 +10,8 @@ import GLEngine.Core.Shaders.*;
 import GLEngine.Core.Worlds.World;
 import GLEngine.Core.Worlds.WorldManager;
 import GLEngine.IO.OBJ.ModelBuffer;
-import com.bulletphysics.BulletGlobals;
-import com.bulletphysics.BulletStats;
-import com.bulletphysics.collision.dispatch.CollisionDispatcher;
+import GLEngine.Logging.LogType;
+import GLEngine.Logging.Logger;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -27,7 +26,6 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -36,7 +34,6 @@ import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.system.MemoryStack.stackASCII;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -79,20 +76,20 @@ public class Window {
     }
 
     private void destroy(){
-        System.out.println("========================== Destroying Window ==========================");
-        System.out.println("Audio...");
+        Logger.log("");
+        Logger.log("========================= Destroying Window =========================", LogType.Engine);
+        Logger.log("Destroying Audio Context...", LogType.Engine);
 
         try {
             alcDestroyContext(audioContext);
             alcCloseDevice(audioDevice);
-            System.out.println("...Success!");
 
         }catch (Exception e){
-            System.out.println("...Failure, Could not close audio device: " + e.getMessage());
+            Logger.log("...Failure, Could not close audio device: " + e.getMessage(), LogType.Engine);
         }
 
         try {
-            System.out.println("Window...");
+            Logger.log("Freeing Window Callbacks...", LogType.Engine);
 
             // Free the window callbacks and destroy the window
             glfwFreeCallbacks(window);
@@ -101,11 +98,12 @@ public class Window {
             // Terminate GLFW and free the error callback
             glfwTerminate();
             Objects.requireNonNull(glfwSetErrorCallback(null)).free();
-            System.out.println("...Success!");
         }
         catch (Exception e){
-            System.out.println("...Failure, Could not close window: " + e.getMessage());
+            Logger.log("...Failure, Could not close window: " + e.getMessage(), LogType.Engine);
         }
+        Logger.log("...Success!", LogType.Engine);
+        Logger.log("=====================================================================", LogType.Engine);
     }
 
     private Window(int width, int height, World startingWorld, Callback postInitCallback) {
@@ -119,21 +117,28 @@ public class Window {
 
     private void init() {
         GLFWErrorCallback.createPrint(System.err).set();
+        Logger.setEnableLogging(true);
+        Logger.log("========================== Creating Window ==========================", LogType.Engine);
 
         if ( !glfwInit() )
             throw new IllegalStateException("Unable to initialize GLFW");
+
+        Logger.log("Configuring Window Hints...", LogType.Engine);
 
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
         glfwWindowHint(GLFW_SAMPLES, 4);
+
+        Logger.log("Creating Window...", LogType.Engine);
+
         // Create the window
         window = glfwCreateWindow(width, height, "GLEngine", NULL, NULL);
         if ( window == NULL )
-            throw new RuntimeException("Failed to create the GLFW window");
+            throw new RuntimeException("Failed to create the window!");
 
-        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
+        Logger.log("Assigning Key Callbacks...", LogType.Engine);
         glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
             if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
@@ -148,6 +153,7 @@ public class Window {
             }
         });
 
+        Logger.log("Assigning Mouse Callbacks...", LogType.Engine);
         glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
             for (MouseEvent callback : mouseCallbacks) {
                 if(action == GLFW_RELEASE){
@@ -183,15 +189,15 @@ public class Window {
         // Enable v-sync
         glfwSwapInterval(1);
 
-        // Make the window visible
-        glfwShowWindow(window);
+
+        Logger.log("Initializing OpenAL...", LogType.Engine);
 
         // Initialize audio
         String audioDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
         audioDevice = alcOpenDevice(audioDeviceName);
 
         if (audioDevice == NULL) {
-            System.err.println("Could not initialize OpenAl! There is no audio device.");
+            Logger.log("Could not initialize OpenAl! There is no audio device.", LogType.Error);
         }
         else{
             int[] attributes = {0};
@@ -204,11 +210,20 @@ public class Window {
             assert alCapabilities.OpenAL10 : "OpenAL 1.0 is not supported";
         }
 
+        Logger.log("Creating Capabilities...", LogType.Engine);
         GL.createCapabilities();
+
+        Logger.log("Creating Default Shader...", LogType.Engine);
         defaultShader = new DefaultShader();
 
         glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+
+        Logger.log("Showing Window...", LogType.Engine);
+        glfwShowWindow(window);
+        Logger.log("...Success!", LogType.Engine);
+        Logger.log("=====================================================================\n", LogType.Engine);
+
     }
 
     private void loop() {
