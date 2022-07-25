@@ -82,6 +82,7 @@ public class WorldLoader {
 
             if(line.equals("///END COMP///")){
                 inComponent = false;
+
                 lineNum++;
                 continue;
             }
@@ -97,6 +98,7 @@ public class WorldLoader {
                 for (Component c :
                         components) {
                     object.addComponent(c);
+                    c.OnCreated();
                 }
 
                 world.Add(object);

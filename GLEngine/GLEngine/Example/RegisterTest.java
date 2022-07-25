@@ -20,6 +20,6 @@ public class RegisterTest extends Component {
     }
     @Override
     public void OnAdded(){
-        PlaySound.play();
+        //PlaySound.play();
     }
 }

@@ -22,6 +22,11 @@ public class Rigidbody extends Component {
     private float mass = 1f;
     protected float stepThreshold = 0.5f;
 
+    public Rigidbody(){
+        this.dimensions = new Vector3f(1,1,1);
+        this.colliderShape = new BoxShape(dimensions);
+    }
+
     public Rigidbody(org.joml.Vector3f colliderDimensions) {
         this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
         colliderShape = new BoxShape(dimensions);
@@ -48,7 +53,7 @@ public class Rigidbody extends Component {
     public void OnAdded(){
         rigidBody = new RigidBody(mass, new DefaultMotionState(), colliderShape);
 
-        WorldManager.getCurrentWorld().RegisterCollider(new HashObject(getParent(), rigidBody.getCollisionShape().hashCode()));
+        WorldManager.getLoadingWorld().RegisterCollider(new HashObject(getParent(), rigidBody.getCollisionShape().hashCode()));
 
         Vector3f position = new Vector3f(getParentPosition().x(), getParentPosition().y(), getParentPosition().z());
 
@@ -60,7 +65,7 @@ public class Rigidbody extends Component {
     }
 
     @Override
-    public void ParentAdded(){
+    public void OnCreated(){
         WorldManager.getCurrentWorld().getPhysicsWorld().getPhysicsWorldObject().addRigidBody(rigidBody);
     }
 
@@ -160,6 +165,11 @@ public class Rigidbody extends Component {
 
     public void setStepThreshold(float stepThreshold) {
         this.stepThreshold = stepThreshold;
+    }
+
+    public void setDimensions(Vector3f dimensions) {
+        this.dimensions = new Vector3f(dimensions);
+        this.colliderShape = new BoxShape(this.dimensions);
     }
 }
 

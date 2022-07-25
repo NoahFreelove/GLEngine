@@ -74,17 +74,33 @@ public class Window {
     }
 
     private void destroy(){
+        System.out.println("========================== Destroying Window ==========================");
+        System.out.println("Audio...");
 
-        alcDestroyContext(audioContext);
-        alcCloseDevice(audioDevice);
+        try {
+            alcDestroyContext(audioContext);
+            alcCloseDevice(audioDevice);
+            System.out.println("...Success!");
 
-        // Free the window callbacks and destroy the window
-        glfwFreeCallbacks(window);
-        glfwDestroyWindow(window);
+        }catch (Exception e){
+            System.out.println("...Failure, Could not close audio device: " + e.getMessage());
+        }
 
-        // Terminate GLFW and free the error callback
-        glfwTerminate();
-        glfwSetErrorCallback(null).free();
+        try {
+            System.out.println("Window...");
+
+            // Free the window callbacks and destroy the window
+            glfwFreeCallbacks(window);
+            glfwDestroyWindow(window);
+
+            // Terminate GLFW and free the error callback
+            glfwTerminate();
+            Objects.requireNonNull(glfwSetErrorCallback(null)).free();
+            System.out.println("...Success!");
+        }
+        catch (Exception e){
+            System.out.println("...Failure, Could not close window: " + e.getMessage());
+        }
     }
 
     private Window(int width, int height, World startingWorld, Callback postInitCallback) {
@@ -107,7 +123,7 @@ public class Window {
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
-
+        glfwWindowHint(GLFW_SAMPLES, 4);
         // Create the window
         window = glfwCreateWindow(width, height, "GL Engine", NULL, NULL);
         if ( window == NULL )
@@ -171,20 +187,18 @@ public class Window {
         audioDevice = alcOpenDevice(audioDeviceName);
 
         if (audioDevice == NULL) {
-            throw new RuntimeException("Failed to open audio device");
+            System.err.println("Could not initialize OpenAl! There is no audio device.");
         }
-        int[] attributes = {0};
-        audioContext = alcCreateContext(audioDevice, attributes);
-        alcMakeContextCurrent(audioContext);
+        else{
+            int[] attributes = {0};
+            audioContext = alcCreateContext(audioDevice, attributes);
+            alcMakeContextCurrent(audioContext);
 
-        ALCCapabilities alcCapabilities = ALC.createCapabilities(audioDevice);
-        ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+            ALCCapabilities alcCapabilities = ALC.createCapabilities(audioDevice);
+            ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
 
-
-        if(!alCapabilities.OpenAL10)
-            assert false : "OpenAL 1.0 is not supported";
-
-
+            assert alCapabilities.OpenAL10 : "OpenAL 1.0 is not supported";
+        }
 
         GL.createCapabilities();
         defaultShader = new DefaultShader();
@@ -362,6 +376,8 @@ public class Window {
         glDepthFunc(GL_LESS);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_MULTISAMPLE);
+        glEnable(GL_LINE_SMOOTH);
     }
 
 

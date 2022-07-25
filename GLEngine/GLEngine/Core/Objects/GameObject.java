@@ -173,7 +173,7 @@ public final class GameObject implements Serializable, Cloneable {
 
     public void Added(){
         for (Component component : components) {
-            component.ParentAdded();
+            component.OnCreated();
         }
     }
 

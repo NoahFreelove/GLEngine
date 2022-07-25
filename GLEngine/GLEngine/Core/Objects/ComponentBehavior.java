@@ -4,7 +4,7 @@ import org.joml.Vector3f;
 
 public interface ComponentBehavior {
     void Start(); // Called when scene is loaded
-    void ParentAdded(); // Called when parent is added to scene
+    void OnCreated(); // Called after component constructor has finished. Called by the world loader to set the fields.
     void Update(float deltaTime); // Called every frame this object is in an active scene
     void Unload(); // Called when scene is unloaded
     void OnDestroy(); // Called when the parent object is destroyed (removed from scene)

@@ -40,7 +40,7 @@ public class Plane extends Component {
                 pos, 1.0f)));
     }
     @Override
-    public void ParentAdded(){
+    public void OnCreated(){
         WorldManager.getCurrentWorld().addRigidBody(rb);
     }
 }

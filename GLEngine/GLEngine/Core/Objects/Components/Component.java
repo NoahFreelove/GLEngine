@@ -5,7 +5,7 @@ import GLEngine.Core.Objects.GameObject;
 import org.joml.Vector3f;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+
 
 public class Component implements ComponentBehavior, Serializable, Cloneable {
 
@@ -22,7 +22,7 @@ public class Component implements ComponentBehavior, Serializable, Cloneable {
     public void Start() {}
 
     @Override
-    public void ParentAdded() {}
+    public void OnCreated() {}
 
     @Override
     public void Unload() {}

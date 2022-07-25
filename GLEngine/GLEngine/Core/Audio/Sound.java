@@ -71,7 +71,7 @@ public class Sound {
         EXTEfx.alFilterf(filter, EXTEfx.AL_LOWPASS_GAIN, 25f);
         EXTEfx.alFilterf(filter, EXTEfx.AL_LOWPASS_GAINHF, 0f);
         AL10.alSourcei(sourceID, EXTEfx.AL_DIRECT_FILTER, filter);
-        alSourcef(sourceID, AL_MAX_GAIN, 100f);
+        alSourcef(sourceID, AL_MAX_GAIN, 10f);
         alSourcef(sourceID, AL_GAIN, 10f);
 
         free(rawAudioBuffer);
@@ -83,7 +83,7 @@ public class Sound {
     }
 
     public void play(){
-        // Dont play if scene isn't active
+        // Don't play if scene isn't active
         if(WorldManager.getCurrentWorld() != activeWorld)
             return;
 

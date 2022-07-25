@@ -12,7 +12,7 @@ import org.joml.Vector3f;
 public class BoundingBox extends Component {
     GameObject boundingBox;
     @Override
-    public void ParentAdded() {
+    public void OnCreated() {
         Rigidbody rb = ((Rigidbody)getParent().getComponentByType(Rigidbody.class));
         if (rb == null)
             return;
