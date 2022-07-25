@@ -9,6 +9,7 @@ import GLEngine.IO.DDS.DDSFile;
 import GLEngine.IO.Image;
 import org.joml.Vector3f;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -32,8 +33,8 @@ public final class GameObject implements Serializable, Cloneable {
         rotation = new Vector3f(0,0,0);
         scale = new Vector3f(1,1,1);
 
-        meshRenderer = new MeshRenderer(new Image("bin/texture.jpg"));
-        addComponent(meshRenderer);
+        addMissingTexture();
+
         initObject();
     }
 
@@ -41,8 +42,8 @@ public final class GameObject implements Serializable, Cloneable {
         position = new Vector3f(0,0,0);
         rotation = new Vector3f(0,0,0);
         scale = new Vector3f(1,1,1);
-        meshRenderer = new MeshRenderer(new Mesh(model),new Image("bin/texture.jpg"));
-        addComponent(meshRenderer);
+        addMissingTexture();
+
         initObject();
     }
 
@@ -51,8 +52,8 @@ public final class GameObject implements Serializable, Cloneable {
         this.rotation = rotation;
         this.scale = scale;
 
-        meshRenderer = new MeshRenderer(new Image("bin/texture.jpg"));
-        addComponent(meshRenderer);
+        addMissingTexture();
+
         initObject();
     }
 
@@ -60,7 +61,7 @@ public final class GameObject implements Serializable, Cloneable {
         this.position = position;
         this.rotation = rotation;
         this.scale = scale;
-        addComponent(meshRenderer = new MeshRenderer(new Mesh(model), new Image("bin/texture.jpg")));
+        addMissingTexture();
         initObject();
     }
 
@@ -308,4 +309,11 @@ public final class GameObject implements Serializable, Cloneable {
     }
 
     public ArrayList<GameObject> getChildren(){return new ArrayList<>(children);}
+    public ArrayList<Component> getComponents(){return new ArrayList<>(components);}
+
+    private void addMissingTexture(){
+        if(new File("bin/texture.jpg").exists()){
+            addComponent(meshRenderer = new MeshRenderer(new Image("bin/texture.jpg")));
+        }
+    }
 }
