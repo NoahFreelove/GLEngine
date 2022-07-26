@@ -1,5 +1,6 @@
 package GLEngine.Core.Objects.Components.Physics;
 
+import GLEngine.Core.Interfaces.EditorVisible;
 import GLEngine.Core.Objects.Components.Component;
 import GLEngine.Core.Worlds.HashObject;
 import GLEngine.Core.Worlds.WorldManager;
@@ -13,15 +14,20 @@ import org.joml.Quaternionf;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
+
 import javax.vecmath.Vector3f;
 
 public class Rigidbody extends Component {
     private RigidBody rigidBody;
-    private Vector3f dimensions;
-    private CollisionShape colliderShape;
-    private float mass = 1f;
-    protected float stepThreshold = 0.5f;
 
+    @EditorVisible
+    private Vector3f dimensions;
+    @EditorVisible
+    public Float mass = 1f;
+    @EditorVisible
+    public float stepThreshold = 0.5f;
+
+    private CollisionShape colliderShape;
     public Rigidbody(){
         this.dimensions = new Vector3f(1,1,1);
         this.colliderShape = new BoxShape(dimensions);
@@ -67,6 +73,8 @@ public class Rigidbody extends Component {
     @Override
     public void OnCreated(){
         WorldManager.getCurrentWorld().getPhysicsWorld().getPhysicsWorldObject().addRigidBody(rigidBody);
+        setMass(mass);
+        setDimensions(dimensions);
     }
 
     @Override

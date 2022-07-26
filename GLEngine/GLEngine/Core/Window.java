@@ -2,6 +2,7 @@ package GLEngine.Core;
 
 import GLEngine.Core.Input.KeyEvent;
 import GLEngine.Core.Input.MouseEvent;
+import GLEngine.Core.Interfaces.Callback;
 import GLEngine.Core.Objects.Components.Component;
 import GLEngine.Core.Objects.Components.Rendering.Camera;
 import GLEngine.Core.Objects.GameObject;

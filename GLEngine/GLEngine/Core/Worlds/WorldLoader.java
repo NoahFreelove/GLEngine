@@ -1,10 +1,13 @@
 package GLEngine.Core.Worlds;
 
+import GLEngine.Core.Interfaces.EditorVisible;
 import GLEngine.Core.Objects.Components.Colliders.BoxCollider;
 import GLEngine.Core.Objects.Components.Component;
 import GLEngine.Core.Objects.GameObject;
 import GLEngine.Core.Objects.Models.Model;
 import GLEngine.IO.Image;
+import GLEngine.Logging.LogType;
+import GLEngine.Logging.Logger;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -191,10 +194,9 @@ public class WorldLoader {
                             components.add((Component) constructor.newInstance());
                             componentCount++;
                         }
-                        else System.err.println("Level Loader: Error parsing component");
-                        // Set
+                        else Logger.log("Level Loader: Error parsing component", LogType.Error);
                     } catch (Exception e) {
-                        System.err.println("Level Loader: Error parsing component: " + e.getMessage());
+                        Logger.log("Level Loader: Error parsing component", LogType.Error);
                     }
                 }
                 if(line.startsWith("FIELD")){
@@ -205,7 +207,11 @@ public class WorldLoader {
                         String fieldValue = subStr[1];
                         String fieldType = subStr[2];
                         try {
-                            Field field = components.get(componentCount-1).getClass().getField(fieldName);
+                            Field field = components.get(componentCount-1).getClass().getDeclaredField(fieldName);
+
+                            field.setAccessible(true);
+                            if(!field.isAnnotationPresent(EditorVisible.class))
+                                continue;
                             switch (fieldType){
                                 case "int"->{
                                     field.setInt(components.get(componentCount-1), Integer.parseInt(fieldValue));
