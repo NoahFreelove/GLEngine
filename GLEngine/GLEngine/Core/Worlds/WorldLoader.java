@@ -23,29 +23,37 @@ import java.util.List;
 // Keeping the scope of the loader to pretty small for now.
 public class WorldLoader {
 
-    public static void LoadWorldToObject(String path, World world, boolean loadComponents){
+    public static void LoadWorldToObject(String path, World world, boolean loadComponents, boolean dummyLoad){
         String[] loadedWorld = readFile(path);
-        Process(loadedWorld, world, loadComponents);
+        Process(loadedWorld, world, loadComponents, dummyLoad);
     }
 
     public static World LoadWorldObject(String path){
         World w = new World();
-        LoadWorldToObject(path, w, true);
+        LoadWorldToObject(path, w, true, false);
         return w;
     }
 
     public static void LoadWorld(String path){
         World w = new World();
-        LoadWorldToObject(path, w, true);
+        LoadWorldToObject(path, w, true, false);
         WorldManager.SwitchWorld(w);
     }
 
     public static World PreviewWorld(String path){
         World w = new World();
-        LoadWorldToObject(path, w, false);
+        LoadWorldToObject(path, w, false, false);
         return w;
     }
-    private static String[] readFile(String path){
+
+    public static World DummyWorld(String path){
+        World w = new World();
+        LoadWorldToObject(path, w, true, true);
+        return w;
+    }
+
+    private static String[] readFile(String path)
+    {
         Path filePath = new File(path).toPath();
         List<String> stringList = new ArrayList<>(0);
         try {
@@ -59,7 +67,7 @@ public class WorldLoader {
 
 
 
-    private static void Process(String[] data, World world, boolean loadComponents){
+    private static void Process(String[] data, World world, boolean loadComponents, boolean dummyLoad){
         int lineNum = 0;
         boolean inGameObject = false;
         boolean inComponent = false;
@@ -69,7 +77,6 @@ public class WorldLoader {
         Vector3f pos = new Vector3f();
         Vector3f rot = new Vector3f();
         Vector3f sca = new Vector3f();
-
         Model    model = new Model();
         Image    image = new Image();
         String   name  = "GameObject";
@@ -97,10 +104,15 @@ public class WorldLoader {
             if(line.equals("///END GAMEOBJECT///")){
                 inGameObject = false;
                 lineNum++;
+                if(!dummyLoad){
+                    object = new GameObject(pos,rot,sca,model,image);
+                    object.addComponent(BoxCollider.GenerateBoxColliderForObject(object, true));
+                }
+                else {
+                    object = new GameObject(pos,rot,sca);
+                }
 
-                object = new GameObject(pos,rot,sca,model,image);
                 object.setName(name);
-                object.addComponent(BoxCollider.GenerateBoxColliderForObject(object, true));
 
                 for (Component c :
                         components) {
@@ -166,13 +178,13 @@ public class WorldLoader {
                     continue;
                 }
 
-                if(line.startsWith("MOD")){
+                if(line.startsWith("MOD") && !dummyLoad){
                     line = cleanLine(line);
                     model = new Model(line);
                     lineNum++;
                     continue;
                 }
-                if(line.startsWith("TEX")){
+                if(line.startsWith("TEX") && !dummyLoad){
                     line = cleanLine(line);
                     image = new Image(line);
                     lineNum++;

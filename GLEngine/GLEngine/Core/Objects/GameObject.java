@@ -5,6 +5,7 @@ import GLEngine.Core.Objects.Components.Physics.Rigidbody;
 import GLEngine.Core.Objects.Components.Rendering.MeshRenderer;
 import GLEngine.Core.Objects.Models.Mesh;
 import GLEngine.Core.Objects.Models.Model;
+import GLEngine.Core.Window;
 import GLEngine.IO.DDS.DDSFile;
 import GLEngine.IO.Image;
 import org.joml.Vector3f;
@@ -312,6 +313,9 @@ public final class GameObject implements Serializable, Cloneable {
     public ArrayList<Component> getComponents(){return new ArrayList<>(components);}
 
     private void addMissingTexture(){
+        if(Window.GetInstance() == null)
+            return;
+
         if(new File("bin/texture.jpg").exists()){
             addComponent(meshRenderer = new MeshRenderer(new Image("bin/texture.jpg")));
         }
