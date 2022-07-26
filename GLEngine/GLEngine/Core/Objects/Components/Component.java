@@ -1,5 +1,6 @@
 package GLEngine.Core.Objects.Components;
 
+import GLEngine.Core.Interfaces.EditorVisible;
 import GLEngine.Core.Objects.ComponentBehavior;
 import GLEngine.Core.Objects.GameObject;
 import org.joml.Vector3f;
@@ -11,7 +12,8 @@ public class Component implements ComponentBehavior, Serializable, Cloneable {
 
     private GameObject attachedObject = null;
 
-    private boolean isActive = true;
+    @EditorVisible
+    private boolean enabled = true;
 
     public Component(){}
 
@@ -71,17 +73,17 @@ public class Component implements ComponentBehavior, Serializable, Cloneable {
         attachedObject.setScale(scale);
     }
 
-    public void setActive(boolean active){
-        isActive = active;
+    public void setEnabled(boolean enabled){
+        this.enabled = enabled;
     }
 
-    public boolean isActive(){
-        return isActive;
+    public boolean isEnabled(){
+        return enabled;
     }
 
     public static boolean isComponentValid(Component comp){
         if(comp !=null)
-            return comp.isActive;
+            return comp.enabled;
 
         return false;
     }

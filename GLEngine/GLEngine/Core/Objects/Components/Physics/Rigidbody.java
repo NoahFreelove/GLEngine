@@ -11,17 +11,17 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import org.joml.Quaternionf;
+import javax.vecmath.Vector3f;
 
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Quat4f;
 
-import javax.vecmath.Vector3f;
 
 public class Rigidbody extends Component {
     private RigidBody rigidBody;
 
     @EditorVisible
-    private Vector3f dimensions;
+    private org.joml.Vector3f dimensions;
     @EditorVisible
     public Float mass = 1f;
     @EditorVisible
@@ -29,28 +29,28 @@ public class Rigidbody extends Component {
 
     private CollisionShape colliderShape;
     public Rigidbody(){
-        this.dimensions = new Vector3f(1,1,1);
-        this.colliderShape = new BoxShape(dimensions);
+        this.dimensions = new org.joml.Vector3f(1,1,1);
+        this.colliderShape = new BoxShape(new Vector3f(dimensions.x(), dimensions.y(), dimensions.z()));
     }
 
     public Rigidbody(org.joml.Vector3f colliderDimensions) {
-        this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
-        colliderShape = new BoxShape(dimensions);
+        this.dimensions = new org.joml.Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
+        colliderShape = new BoxShape(new Vector3f(dimensions.x(), dimensions.y(), dimensions.z()));
     }
 
     public Rigidbody(org.joml.Vector3f colliderDimensions, float mass) {
-        this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
-        colliderShape = new BoxShape(dimensions);
+        this.dimensions = new org.joml.Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
+        colliderShape = new BoxShape(new Vector3f(dimensions.x(), dimensions.y(), dimensions.z()));
         this.mass = mass;
     }
 
     public Rigidbody(org.joml.Vector3f colliderDimensions, CollisionShape collider) {
-        this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
+        this.dimensions = new org.joml.Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
         this.colliderShape = collider;
     }
 
     public Rigidbody(org.joml.Vector3f colliderDimensions, CollisionShape collider, float mass) {
-        this.dimensions = new Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
+        this.dimensions = new org.joml.Vector3f(colliderDimensions.x(), colliderDimensions.y(), colliderDimensions.z());
         this.colliderShape = collider;
         this.mass = mass;
     }
@@ -74,12 +74,12 @@ public class Rigidbody extends Component {
     public void OnCreated(){
         WorldManager.getCurrentWorld().getPhysicsWorld().getPhysicsWorldObject().addRigidBody(rigidBody);
         setMass(mass);
-        setDimensions(dimensions);
+        setDimensions(new Vector3f(dimensions.x(), dimensions.y(), dimensions.z()));
     }
 
     @Override
     public void Update(float deltaTime){
-        if(!isActive())
+        if(!isEnabled())
             return;
         rigidBody.activate();
         Transform transform = new Transform();
@@ -176,8 +176,8 @@ public class Rigidbody extends Component {
     }
 
     public void setDimensions(Vector3f dimensions) {
-        this.dimensions = new Vector3f(dimensions);
-        this.colliderShape = new BoxShape(this.dimensions);
+        this.dimensions = new org.joml.Vector3f(dimensions.x, dimensions.y, dimensions.z);
+        this.colliderShape = new BoxShape(dimensions);
     }
 }
 

@@ -29,6 +29,8 @@ public final class GameObject implements Serializable, Cloneable {
 
     private GameObject parent = this;
 
+    private GameObjectSaveData saveData;
+
     public GameObject(){
         position = new Vector3f(0,0,0);
         rotation = new Vector3f(0,0,0);
@@ -151,31 +153,36 @@ public final class GameObject implements Serializable, Cloneable {
 
     public void Update(float deltaTime) {
         for (Component component : components) {
-            component.Update(deltaTime);
+            if(component.isEnabled())
+                component.Update(deltaTime);
         }
     }
 
     public void Start() {
         for (Component component : components) {
-            component.Start();
+            if(component.isEnabled())
+                component.Start();
         }
     }
 
     public void Unload() {
         for (Component component : components) {
-            component.Unload();
+            if(component.isEnabled())
+                component.Unload();
         }
     }
 
     public void OnDestroy() {
         for (Component component : components) {
-            component.OnDestroy();
+            if(component.isEnabled())
+                component.OnDestroy();
         }
     }
 
-    public void Added(){
+    public void Created(){
         for (Component component : components) {
-            component.OnCreated();
+            if(component.isEnabled())
+                component.OnCreated();
         }
     }
 
@@ -225,11 +232,6 @@ public final class GameObject implements Serializable, Cloneable {
         child.setParent(child);
     }
 
-    @Override
-    public String toString() {
-        return String.format("GameObject: %s (%s). %d Components", identity.getName(), identity.getTag(), components.size());
-    }
-
     public Component getComponent(int index){
         return components.get(index);
     }
@@ -264,7 +266,7 @@ public final class GameObject implements Serializable, Cloneable {
         if(object == null)
             return false;
 
-        return (!object.getIdentity().name.equals("empty") && object.getMeshRenderer().isActive());
+        return (!object.getIdentity().name.equals("empty") && object.getMeshRenderer().isEnabled());
     }
 
     public GameObject getParent() {
@@ -305,7 +307,6 @@ public final class GameObject implements Serializable, Cloneable {
             if(rb !=null){
                 rb.setPosition(tmpPos);
             }
-
         }
     }
 
@@ -319,5 +320,18 @@ public final class GameObject implements Serializable, Cloneable {
         if(new File("bin/texture.jpg").exists()){
             addComponent(meshRenderer = new MeshRenderer(new Image("bin/texture.jpg")));
         }
+    }
+
+    public GameObjectSaveData getSaveData() {
+        return saveData;
+    }
+
+    public void setSaveData(GameObjectSaveData saveData) {
+        this.saveData = saveData;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("GameObject: %s (%s). %d Components", identity.getName(), identity.getTag(), components.size());
     }
 }

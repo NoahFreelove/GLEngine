@@ -4,6 +4,7 @@ import GLEngine.Core.Interfaces.EditorVisible;
 import GLEngine.Core.Objects.Components.Colliders.BoxCollider;
 import GLEngine.Core.Objects.Components.Component;
 import GLEngine.Core.Objects.GameObject;
+import GLEngine.Core.Objects.GameObjectSaveData;
 import GLEngine.Core.Objects.Models.Model;
 import GLEngine.IO.Image;
 import GLEngine.Logging.LogType;
@@ -80,6 +81,8 @@ public class WorldLoader {
         Model    model = new Model();
         Image    image = new Image();
         String   name  = "GameObject";
+        String   tag   = "Tag";
+        GameObjectSaveData saveData = new GameObjectSaveData();
 
         for (String line : data) {
             if(line.equals("///START GAMEOBJECT///")){
@@ -110,9 +113,11 @@ public class WorldLoader {
                 }
                 else {
                     object = new GameObject(pos,rot,sca);
+                    object.setSaveData(saveData);
                 }
 
                 object.setName(name);
+                object.setTag(tag);
 
                 for (Component c :
                         components) {
@@ -127,7 +132,9 @@ public class WorldLoader {
                 sca = new Vector3f();
                 model = new Model();
                 image = new Image();
-
+                name = "GameObject";
+                tag = "Tag";
+                saveData = new GameObjectSaveData();
                 continue;
             }
 
@@ -136,6 +143,13 @@ public class WorldLoader {
                 if(line.startsWith("NAME")){
                     line = cleanLine(line);
                     name = line;
+                    saveData.name = name;
+                }
+
+                if(line.startsWith("TAG")){
+                    line = cleanLine(line);
+                    tag = line;
+                    saveData.tag = tag;
                 }
 
                 if(line.startsWith("POS")){
@@ -146,6 +160,7 @@ public class WorldLoader {
                         pos.x = Float.parseFloat(subStr[0]);
                         pos.y = Float.parseFloat(subStr[1]);
                         pos.z = Float.parseFloat(subStr[2]);
+                        saveData.initialPosition = pos;
                     }
                     else System.err.println("Level Loader: Error parsing gameobject");
                     lineNum++;
@@ -159,6 +174,7 @@ public class WorldLoader {
                         rot.x = Float.parseFloat(subStr[0]);
                         rot.y = Float.parseFloat(subStr[1]);
                         rot.z = Float.parseFloat(subStr[2]);
+                        saveData.initialRotation = rot;
                     }
                     else System.err.println("Level Loader: Error parsing gameobject");
                     lineNum++;
@@ -172,21 +188,33 @@ public class WorldLoader {
                         sca.x = Float.parseFloat(subStr[0]);
                         sca.y = Float.parseFloat(subStr[1]);
                         sca.z = Float.parseFloat(subStr[2]);
+                        saveData.initialScale = sca;
                     }
                     else System.err.println("Level Loader: Error parsing gameobject");
                     lineNum++;
                     continue;
                 }
 
-                if(line.startsWith("MOD") && !dummyLoad){
+                if(line.startsWith("MOD")){
                     line = cleanLine(line);
-                    model = new Model(line);
+
+                    if(dummyLoad){
+                        saveData.modelPath = line;
+                    }
+                    else{
+                        model = new Model(line);
+                    }
                     lineNum++;
                     continue;
                 }
-                if(line.startsWith("TEX") && !dummyLoad){
+                if(line.startsWith("TEX")){
                     line = cleanLine(line);
-                    image = new Image(line);
+                    if(dummyLoad){
+                        saveData.texturePath = line;
+                    }
+                    else {
+                        image = new Image(line);
+                    }
                     lineNum++;
                     continue;
                 }
@@ -274,6 +302,7 @@ public class WorldLoader {
     private static String cleanLine(String input)
     {
         input = input.replace("NAME ", "");
+        input = input.replace("TAG ", "");
         input = input.replace("POS ", "");
         input = input.replace("ROT ", "");
         input = input.replace("SCA ", "");

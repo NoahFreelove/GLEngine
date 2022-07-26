@@ -31,7 +31,7 @@ public class SuzanneExample {
         WorldManager.AddWorldToBuild(gameWorld);
         WorldManager.SwitchWorld(0);
 
-        WorldLoader.LoadWorldToObject("bin/worlds/world1.txt", gameWorld, true);
+        WorldLoader.LoadWorldToObject("bin/worlds/world1.txt", gameWorld, true,false);
 
         GameObject suzanne = new GameObject(new Vector3f(-5,0,0), new Vector3f(0,0,0), new Vector3f(1,1,1), new Model(OBJLoader.loadModel(new File("bin/suzanne.obj"))), new DDSFile("bin/uvmap.DDS"));
         suzanne.setName("Suzanne");

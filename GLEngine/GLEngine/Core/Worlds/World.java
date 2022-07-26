@@ -40,24 +40,24 @@ public class World {
 
     public void Add(GameObject object){
         gameObjects.add(object);
-        object.Added();
+        object.Created();
     }
     public void AddGizmo(GameObject gizmo){
         gizmos.add(gizmo);
-        gizmo.Added();
+        gizmo.Created();
     }
 
     public void Add(GameObject... objects){
         gameObjects.addAll(Arrays.asList(objects));
         for (GameObject o : objects) {
-            o.Added();
+            o.Created();
         }
     }
 
     public void AddGizmo(GameObject... gizmo){
         gizmos.addAll(Arrays.asList(gizmo));
         for (GameObject g : gizmo) {
-            g.Added();
+            g.Created();
         }
     }
 
