@@ -6,6 +6,7 @@ import GLEngine.Core.Objects.Components.Component;
 import GLEngine.Core.Objects.GameObject;
 import GLEngine.Core.Objects.GameObjectSaveData;
 import GLEngine.Core.Objects.Models.Model;
+import GLEngine.Core.Objects.Transform;
 import GLEngine.IO.Image;
 import GLEngine.Logging.LogType;
 import GLEngine.Logging.Logger;
@@ -120,6 +121,10 @@ public class WorldLoader {
                 saveData.name = name;
                 saveData.tag = tag;
 
+                if(dummyLoad){
+                    object.addComponent(new Transform(pos,rot,sca));
+                }
+
                 for (Component c :
                         components) {
                     object.addComponent(c);
@@ -222,7 +227,6 @@ public class WorldLoader {
                     lineNum++;
                     continue;
                 }
-
             }
 
             if(inComponent && loadComponents){
@@ -231,6 +235,9 @@ public class WorldLoader {
                     try {
                         // Convert class name to class object
                         Class<?> clazz = Class.forName(line);
+                        if(clazz == Transform.class){
+                            throw new Exception("Not allowed to attach the Transform component to GameObjects. Please remove it from the file.");
+                        }
                         // Create constructor for class
                         Constructor<?> constructor = clazz.getConstructor();
                         // Create instance of class without casting
@@ -295,12 +302,13 @@ public class WorldLoader {
                                     }
                                     else System.err.println("Level Loader: Error parsing Vector2f");
                                 }
+                                case "String" -> field.set(components.get(componentCount-1), fieldValue);
                                 default -> {
                                     field.set(components.get(componentCount-1), fieldValue);
                                 }
                             }
                         } catch (Exception e) {
-                            System.err.println("Level Loader: Error parsing component: " + e);
+                            //System.err.println("Level Loader: Error parsing component: " + e);
                         }
                     }
                     else System.err.println("Level Loader: Error parsing component");

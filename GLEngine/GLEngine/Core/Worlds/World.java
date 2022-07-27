@@ -39,8 +39,11 @@ public class World {
     }
 
     public void Add(GameObject object){
-        gameObjects.add(object);
-        object.Created();
+        if(!gameObjects.contains(object))
+        {
+            gameObjects.add(object);
+            object.Created();
+        }
     }
     public void AddGizmo(GameObject gizmo){
         gizmos.add(gizmo);
