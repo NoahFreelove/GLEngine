@@ -26,7 +26,7 @@ public class CameraController extends Component {
     public CameraController(Camera camRef, GameObject cameraModel){
         this.camRef = camRef;
         this.cameraModel = cameraModel;
-        this.cameraModel.getMeshRenderer().setActive(false);
+        this.cameraModel.getMeshRenderer().setEnabled(false);
         WorldManager.getCurrentWorld().AddGizmo(cameraModel);
 
         Window.GetInstance().mouseCallbacks.add(new MouseEvent() {
@@ -90,6 +90,4 @@ public class CameraController extends Component {
             System.out.println("You Hit:" + object.getIdentity().getName());
         }
     }
-
-
 }

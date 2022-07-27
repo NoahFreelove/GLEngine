@@ -99,7 +99,6 @@ public class WorldLoader {
 
             if(line.equals("///END COMP///")){
                 inComponent = false;
-
                 lineNum++;
                 continue;
             }
@@ -118,10 +117,13 @@ public class WorldLoader {
 
                 object.setName(name);
                 object.setTag(tag);
+                saveData.name = name;
+                saveData.tag = tag;
 
                 for (Component c :
                         components) {
                     object.addComponent(c);
+                    c.setParent(object);
                     c.OnCreated();
                 }
 
@@ -132,6 +134,8 @@ public class WorldLoader {
                 sca = new Vector3f();
                 model = new Model();
                 image = new Image();
+                components = new ArrayList<>(0);
+                componentCount = 0;
                 name = "GameObject";
                 tag = "Tag";
                 saveData = new GameObjectSaveData();
@@ -247,20 +251,28 @@ public class WorldLoader {
                         String fieldValue = subStr[1];
                         String fieldType = subStr[2];
                         try {
-                            Field field = components.get(componentCount-1).getClass().getDeclaredField(fieldName);
+                            Field field;
+                            if(fieldName.equals("enabled")){
+                                field = Component.class.getDeclaredField("enabled");
+                                field.setAccessible(true);
+                                field.set(components.get(componentCount-1), Boolean.parseBoolean(fieldValue));
+                                continue;
+                            }
+
+                            field = components.get(componentCount-1).getClass().getDeclaredField(fieldName);
 
                             field.setAccessible(true);
                             if(!field.isAnnotationPresent(EditorVisible.class))
                                 continue;
                             switch (fieldType){
-                                case "int"->{
-                                    field.setInt(components.get(componentCount-1), Integer.parseInt(fieldValue));
+                                case "int", "Integer"->{
+                                    field.set(components.get(componentCount-1), Integer.parseInt(fieldValue));
                                 }
-                                case "float"->{
-                                    field.setFloat(components.get(componentCount-1), Float.parseFloat(fieldValue));
+                                case "float", "Float"->{
+                                    field.set(components.get(componentCount-1), Float.parseFloat(fieldValue));
                                 }
-                                case "boolean"->{
-                                    field.setBoolean(components.get(componentCount-1), Boolean.parseBoolean(fieldValue));
+                                case "boolean", "Boolean"->{
+                                    field.set(components.get(componentCount-1), Boolean.parseBoolean(fieldValue));
                                 }
                                 case "Vector3f"->{
                                     String[] subStr2 = fieldValue.split(",");
@@ -288,7 +300,7 @@ public class WorldLoader {
                                 }
                             }
                         } catch (Exception e) {
-                            System.err.println("Level Loader: Error parsing component: " + e.getMessage());
+                            System.err.println("Level Loader: Error parsing component: " + e);
                         }
                     }
                     else System.err.println("Level Loader: Error parsing component");

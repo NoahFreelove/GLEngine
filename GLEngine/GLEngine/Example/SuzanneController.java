@@ -94,12 +94,12 @@ public class SuzanneController extends Component {
 
         if (Input.isKeyPressed(GLFW_KEY_F3)){
             Window.GetInstance().setActiveCamera(cam1);
-            cameraModel.getMeshRenderer().setActive(false);
+            cameraModel.getMeshRenderer().setEnabled(false);
         }
 
         if (Input.isKeyPressed(GLFW_KEY_F4)){
             Window.GetInstance().setActiveCamera(cam2);
-            cameraModel.getMeshRenderer().setActive(true);
+            cameraModel.getMeshRenderer().setEnabled(true);
         }
 
         //System.out.println(rb.StepRaycast());

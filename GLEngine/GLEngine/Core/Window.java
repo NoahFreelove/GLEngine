@@ -23,6 +23,7 @@ import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -129,9 +130,8 @@ public class Window {
         // Configure GLFW
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will be resizable
         glfwWindowHint(GLFW_SAMPLES, 4);
-
         Logger.log("Creating Window...", LogType.Engine);
 
         // Create the window
@@ -189,7 +189,6 @@ public class Window {
         glfwMakeContextCurrent(window);
         // Enable v-sync
         glfwSwapInterval(1);
-
 
         Logger.log("Initializing OpenAL...", LogType.Engine);
 
