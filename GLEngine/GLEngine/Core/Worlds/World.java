@@ -42,26 +42,18 @@ public class World {
         if(!gameObjects.contains(object))
         {
             gameObjects.add(object);
-            object.Created();
         }
     }
     public void AddGizmo(GameObject gizmo){
         gizmos.add(gizmo);
-        gizmo.Created();
     }
 
-    public void Add(GameObject... objects){
+    public void AddAll(GameObject... objects){
         gameObjects.addAll(Arrays.asList(objects));
-        for (GameObject o : objects) {
-            o.Created();
-        }
     }
 
-    public void AddGizmo(GameObject... gizmo){
+    public void AddAllGizmos(GameObject... gizmo){
         gizmos.addAll(Arrays.asList(gizmo));
-        for (GameObject g : gizmo) {
-            g.Created();
-        }
     }
 
     public void Remove(GameObject object){

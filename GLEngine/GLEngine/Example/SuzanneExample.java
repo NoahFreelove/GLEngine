@@ -58,8 +58,8 @@ public class SuzanneExample {
         camera.addComponent(new CameraController(cam, cameraModel));
         Window.GetInstance().setActiveCamera(cam);
 
-        gameWorld.Add(suzanne, skybox, camera, sphere);
-        gameWorld.AddGizmo(axisX, axisY, axisZ);
+        gameWorld.AddAll(suzanne, skybox, camera, sphere);
+        gameWorld.AddAllGizmos(axisX, axisY, axisZ);
 
         Rigidbody suzanneBody = new Rigidbody(suzanne.getScale(), 1);
         suzanne.addComponent(suzanneBody);

@@ -135,7 +135,8 @@ public class WorldLoader {
                         components) {
                     object.addComponent(c);
                     c.setParent(object);
-                    c.OnCreated();
+                    if(!dummyLoad)
+                        c.OnCreated();
                 }
 
                 world.Add(object);
