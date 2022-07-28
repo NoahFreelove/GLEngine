@@ -10,6 +10,7 @@ import GLEngine.Core.Objects.Transform;
 import GLEngine.IO.Image;
 import GLEngine.Logging.LogType;
 import GLEngine.Logging.Logger;
+import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -24,6 +25,8 @@ import java.util.List;
 
 // Keeping the scope of the loader to pretty small for now.
 public class WorldLoader {
+
+    public static String binPathPrefix = "";
 
     public static void LoadWorldToObject(String path, World world, boolean loadComponents, boolean dummyLoad){
         String[] loadedWorld = readFile(path);
@@ -42,8 +45,9 @@ public class WorldLoader {
         WorldManager.SwitchWorld(w);
     }
 
-    public static World PreviewWorld(String path){
+    public static World PreviewWorld(String path, String binPath){
         World w = new World();
+        binPathPrefix = binPath;
         LoadWorldToObject(path, w, false, false);
         return w;
     }
@@ -171,7 +175,7 @@ public class WorldLoader {
                         pos.z = Float.parseFloat(subStr[2]);
                         saveData.initialPosition = pos;
                     }
-                    else System.err.println("Level Loader: Error parsing gameobject");
+                    else System.err.println("Level Loader: Error parsing GameObject");
                     lineNum++;
                     continue;
                 }
@@ -185,7 +189,7 @@ public class WorldLoader {
                         rot.z = Float.parseFloat(subStr[2]);
                         saveData.initialRotation = rot;
                     }
-                    else System.err.println("Level Loader: Error parsing gameobject");
+                    else System.err.println("Level Loader: Error parsing GameObject");
                     lineNum++;
                     continue;
                 }
@@ -199,7 +203,7 @@ public class WorldLoader {
                         sca.z = Float.parseFloat(subStr[2]);
                         saveData.initialScale = sca;
                     }
-                    else System.err.println("Level Loader: Error parsing gameobject");
+                    else System.err.println("Level Loader: Error parsing GameObject");
                     lineNum++;
                     continue;
                 }
@@ -209,6 +213,9 @@ public class WorldLoader {
 
                     if(dummyLoad){
                         saveData.modelPath = line;
+                    }
+                    else if (!loadComponents){
+                        model = new Model(binPathPrefix + "/"+line);
                     }
                     else{
                         model = new Model(line);
@@ -220,6 +227,10 @@ public class WorldLoader {
                     line = cleanLine(line);
                     if(dummyLoad){
                         saveData.texturePath = line;
+                    }
+                    else if (!loadComponents){
+                        saveData.texturePath = binPathPrefix  + "/"+line;
+                        image = new Image(saveData.texturePath);
                     }
                     else {
                         image = new Image(line);
@@ -302,6 +313,18 @@ public class WorldLoader {
                                     }
                                     else System.err.println("Level Loader: Error parsing Vector2f");
                                 }
+                                case "Quaternionf"->{
+                                    String[] subStr2 = fieldValue.split(",");
+                                    if(subStr2.length == 4){
+                                        Quaternionf quat = new Quaternionf();
+                                        quat.x = Float.parseFloat(subStr2[0]);
+                                        quat.y = Float.parseFloat(subStr2[1]);
+                                        quat.z = Float.parseFloat(subStr2[1]);
+                                        quat.w = Float.parseFloat(subStr2[1]);
+                                        field.set(components.get(componentCount-1), quat);
+                                    }
+                                    else System.err.println("Level Loader: Error parsing Quaternionf");
+                                }
                                 case "String" -> field.set(components.get(componentCount-1), fieldValue);
                                 default -> {
                                     field.set(components.get(componentCount-1), fieldValue);
@@ -314,8 +337,6 @@ public class WorldLoader {
                     else System.err.println("Level Loader: Error parsing component");
                 }
             }
-
-
         }
     }
 
