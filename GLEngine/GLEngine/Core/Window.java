@@ -63,6 +63,8 @@ public class Window {
 
     private DefaultShader defaultShader;
 
+    private RenderSettings masterRenderSettings = null;
+
 
     public void run() {
         init();
@@ -305,10 +307,17 @@ public class Window {
         int textureID = gameObject.getMeshRenderer().getTexture().getTextureID();
         glUseProgram(shader.getProgram());
 
+        if(masterRenderSettings == null){
+            ActiveCamera.setWireframe(rs.wireframe);
+            ActiveCamera.setCull(rs.cullFace);
+            ActiveCamera.setDepthTest(rs.depthTest);
+        }
+        else {
+            ActiveCamera.setWireframe(masterRenderSettings.wireframe);
+            ActiveCamera.setCull(masterRenderSettings.cullFace);
+            ActiveCamera.setDepthTest(masterRenderSettings.depthTest);
+        }
 
-        ActiveCamera.setWireframe(rs.wireframe);
-        ActiveCamera.setCull(rs.cullFace);
-        ActiveCamera.setDepthTest(rs.depthTest);
 
         // If the object doesn't have a model, we don't render it
         if(gameObjectBuffer == null)
@@ -469,6 +478,14 @@ public class Window {
 
     public void setActiveCamera(Camera activeCamera) {
         ActiveCamera = activeCamera;
+    }
+
+    public RenderSettings getMasterRenderSettings() {
+        return masterRenderSettings;
+    }
+
+    public void setMasterRenderSettings(RenderSettings masterRenderSettings) {
+        this.masterRenderSettings = masterRenderSettings;
     }
 
     //endregion

@@ -7,6 +7,7 @@ import GLEngine.Core.Objects.GameObject;
 import GLEngine.Core.Objects.GameObjectSaveData;
 import GLEngine.Core.Objects.Models.Model;
 import GLEngine.Core.Objects.Transform;
+import GLEngine.Core.Shaders.MeshRenderProperties;
 import GLEngine.IO.Image;
 import GLEngine.Logging.LogType;
 import GLEngine.Logging.Logger;
@@ -127,6 +128,7 @@ public class WorldLoader {
 
                 if(dummyLoad){
                     object.addComponent(new Transform(pos,rot,sca));
+                    object.addComponent(new MeshRenderProperties(saveData.modelPath, saveData.texturePath));
                 }
 
                 for (Component c :
@@ -246,8 +248,8 @@ public class WorldLoader {
                     try {
                         // Convert class name to class object
                         Class<?> clazz = Class.forName(line);
-                        if(clazz == Transform.class){
-                            throw new Exception("Not allowed to attach the Transform component to GameObjects. Please remove it from the file.");
+                        if(clazz == Transform.class || clazz == MeshRenderProperties.class){
+                            throw new Exception("Not allowed to attach the Transform or MeshRenderProperties component to GameObjects. Please remove it from the file.");
                         }
                         // Create constructor for class
                         Constructor<?> constructor = clazz.getConstructor();
