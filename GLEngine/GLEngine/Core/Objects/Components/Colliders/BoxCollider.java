@@ -1,10 +1,16 @@
 package GLEngine.Core.Objects.Components.Colliders;
 
+import GLEngine.Core.Interfaces.EditorVisible;
 import GLEngine.Core.Objects.GameObject;
 import com.bulletphysics.collision.shapes.BoxShape;
 import org.joml.Vector3f;
 
 public class BoxCollider extends Collider {
+
+    @EditorVisible
+    public Vector3f dimensions = new Vector3f();
+
+    public BoxCollider(){}
 
     public BoxCollider(Vector3f position, Vector3f dimensions) {
         super(position, new Vector3f(0,0,0));
@@ -15,6 +21,12 @@ public class BoxCollider extends Collider {
         if(false)
             object.setCollisionShape(new BoxShape(new javax.vecmath.Vector3f(dimensions.x-0.2f, dimensions.y, dimensions.z-0.2f)));
         else  object.setCollisionShape(new BoxShape(new javax.vecmath.Vector3f(dimensions.x, dimensions.y, dimensions.z)));
+    }
+
+    @Override
+    public void OnCreated(){
+        object.setCollisionShape(new BoxShape(new javax.vecmath.Vector3f(dimensions.x, dimensions.y, dimensions.z)));
+        super.OnCreated();
     }
 
 

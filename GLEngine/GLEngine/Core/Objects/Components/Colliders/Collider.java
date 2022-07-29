@@ -1,5 +1,6 @@
 package GLEngine.Core.Objects.Components.Colliders;
 
+import GLEngine.Core.Interfaces.EditorVisible;
 import GLEngine.Core.Objects.Components.Component;
 import GLEngine.Core.Worlds.HashObject;
 import GLEngine.Core.Worlds.WorldManager;
@@ -11,6 +12,9 @@ import javax.vecmath.Matrix4f;
 
 public class Collider extends Component {
     protected CollisionObject object;
+
+    @EditorVisible
+    protected Vector3f position;
 
     public Collider() {
         this.object = new CollisionObject();
@@ -34,6 +38,7 @@ public class Collider extends Component {
     public void OnCreated() {
         WorldManager.getCurrentWorld().addCollider(object);
         WorldManager.getCurrentWorld().RegisterCollider(new HashObject(getParent(), object.getCollisionShape().hashCode()));
+        setPosition(position);
     }
 
     @Override
@@ -46,6 +51,7 @@ public class Collider extends Component {
         object.getWorldTransform(T);
         T.origin.set(position.x(), position.y(), position.z());
         transform(T);
+        this.position = new Vector3f(position);
     }
 
     public void transform(Transform T){

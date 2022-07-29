@@ -1,12 +1,17 @@
 package GLEngine.Core.Shaders;
 
+import GLEngine.Core.Interfaces.EditorVisible;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class Color {
+    @EditorVisible
     private float r;
+    @EditorVisible
     private float g;
+    @EditorVisible
     private float b;
+    @EditorVisible
     private float a;
 
     public Color(){
@@ -14,6 +19,12 @@ public class Color {
         g = 1;
         b = 1;
         a = 1;
+    }
+    public Color(Color c){
+        r = c.r;
+        g = c.g;
+        b = c.b;
+        a = c.a;
     }
 
     public Color(float r, float g, float b, float a) {
@@ -76,4 +87,19 @@ public class Color {
         return new Vector4f(r,g,b,a);
     }
 
+    public void setR(float r) {
+        this.r = r;
+    }
+
+    public void setG(float g) {
+        this.g = g;
+    }
+
+    public void setB(float b) {
+        this.b = b;
+    }
+
+    public void setA(float a) {
+        this.a = a;
+    }
 }

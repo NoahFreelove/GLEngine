@@ -7,6 +7,7 @@ import GLEngine.Core.Objects.GameObject;
 import GLEngine.Core.Objects.GameObjectSaveData;
 import GLEngine.Core.Objects.Models.Model;
 import GLEngine.Core.Objects.Transform;
+import GLEngine.Core.Shaders.Color;
 import GLEngine.Core.Shaders.MeshRenderProperties;
 import GLEngine.IO.Image;
 import GLEngine.Logging.LogType;
@@ -327,6 +328,15 @@ public class WorldLoader {
                                         field.set(components.get(componentCount-1), quat);
                                     }
                                     else System.err.println("Level Loader: Error parsing Quaternionf");
+                                }
+                                case "Color"->{
+                                    String[] subStr2 = fieldValue.split(",");
+                                    if(subStr2.length == 4){
+                                        Color color = new Color();
+                                        color.setColor(Float.parseFloat(subStr2[0]), Float.parseFloat(subStr2[1]), Float.parseFloat(subStr2[2]), Float.parseFloat(subStr2[3]));
+                                        field.set(components.get(componentCount-1), color);
+                                    }
+                                    else System.err.println("Level Loader: Error parsing Color");
                                 }
                                 case "String" -> field.set(components.get(componentCount-1), fieldValue);
                                 default -> {
