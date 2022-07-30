@@ -41,7 +41,7 @@ public class OBJLoader extends Object {
     /**
      * @param file the file to be loaded
      * @return the loaded <code>GLEngine.IO.OBJ.Obj</code>
-     * @throws java.io.FileNotFoundException thrown if the GLEngine.IO.OBJ.Obj file is not found
+     * @throws FileNotFoundException thrown if the GLEngine.IO.OBJ.Obj file is not found
      */
     public static Obj loadModel(File file)  {
         try {

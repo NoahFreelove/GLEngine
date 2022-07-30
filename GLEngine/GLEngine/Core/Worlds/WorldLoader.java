@@ -51,6 +51,7 @@ public class WorldLoader {
     public static World PreviewWorld(String path, String binPath){
         World w = new World();
         binPathPrefix = binPath;
+        System.out.println(binPathPrefix);
         LoadWorldToObject(path, w, false, false);
         return w;
     }
@@ -221,7 +222,12 @@ public class WorldLoader {
                         saveData.modelPath = line;
                     }
                     else
-                        model = new Model(binPathPrefix+line);
+                    {
+                        if(line.equals("")){
+                            model = new Model(binPathPrefix+line);
+                        }
+                        else model = null;
+                    }
 
                     lineNum++;
                     continue;
@@ -234,7 +240,10 @@ public class WorldLoader {
                     else
                     {
                         saveData.texturePath = binPathPrefix+line;
-                        image = new Image(saveData.texturePath);
+                        if(line.equals("")){
+                            image = null;
+                        }
+                        else image = new Image(saveData.texturePath);
                     }
                     lineNum++;
                     continue;
