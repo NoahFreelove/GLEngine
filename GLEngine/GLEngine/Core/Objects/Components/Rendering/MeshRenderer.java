@@ -16,7 +16,9 @@ public class MeshRenderer extends Component {
 
     public MeshRenderer(Mesh mesh, Image texture) {
         this.mesh = mesh;
-        this.texture = new Texture(texture.createTexture(), texture);
+        if(texture !=null){
+            this.texture = new Texture(texture.createTexture(), texture);
+        }
     }
 
     public MeshRenderer(Mesh mesh, DDSFile ddsImage){

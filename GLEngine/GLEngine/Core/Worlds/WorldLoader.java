@@ -224,9 +224,10 @@ public class WorldLoader {
                     else
                     {
                         if(line.equals("")){
-                            model = new Model(binPathPrefix+line);
+                            model = null;
+
                         }
-                        else model = null;
+                        else model = new Model(binPathPrefix+line);
                     }
 
                     lineNum++;

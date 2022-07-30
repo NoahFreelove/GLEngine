@@ -303,7 +303,10 @@ public class Window {
     private void RenderGameObject(GameObject gameObject, ShaderProgram shader){
         RenderSettings rs = gameObject.getMeshRenderer().getRenderSettings();
         ModelBuffer gameObjectBuffer = gameObject.getMeshRenderer().getMesh().getObjectBuffer();
-        int textureID = gameObject.getMeshRenderer().getTexture().getTextureID();
+        int textureID = -1;
+        if(gameObject.getMeshRenderer().getTexture() != null){
+            textureID = gameObject.getMeshRenderer().getTexture().getTextureID();
+        }
         glUseProgram(shader.getProgram());
 
 
