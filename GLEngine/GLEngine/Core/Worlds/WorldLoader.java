@@ -28,10 +28,11 @@ import java.util.List;
 // Keeping the scope of the loader to pretty small for now.
 public class WorldLoader {
 
-    public static String binPathPrefix = "";
+    public static String binPathPrefix = "/";
 
     public static void LoadWorldToObject(String path, World world, boolean loadComponents, boolean dummyLoad){
         String[] loadedWorld = readFile(path);
+        WorldManager.setLoadingWorld(world);
         Process(loadedWorld, world, loadComponents, dummyLoad);
     }
 
@@ -136,9 +137,10 @@ public class WorldLoader {
                         components) {
                     object.addComponent(c);
                     c.setParent(object);
-                    if(!dummyLoad)
-                        c.OnCreated();
                 }
+
+                if(!dummyLoad)
+                    object.OnCreated();
 
                 world.Add(object);
 
@@ -218,12 +220,9 @@ public class WorldLoader {
                     if(dummyLoad){
                         saveData.modelPath = line;
                     }
-                    else if (!loadComponents){
-                        model = new Model(binPathPrefix + "/"+line);
-                    }
-                    else{
-                        model = new Model(line);
-                    }
+                    else
+                        model = new Model(binPathPrefix+line);
+
                     lineNum++;
                     continue;
                 }
@@ -232,12 +231,10 @@ public class WorldLoader {
                     if(dummyLoad){
                         saveData.texturePath = line;
                     }
-                    else if (!loadComponents){
-                        saveData.texturePath = binPathPrefix  + "/"+line;
+                    else
+                    {
+                        saveData.texturePath = binPathPrefix+line;
                         image = new Image(saveData.texturePath);
-                    }
-                    else {
-                        image = new Image(line);
                     }
                     lineNum++;
                     continue;

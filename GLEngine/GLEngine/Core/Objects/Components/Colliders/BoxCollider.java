@@ -2,6 +2,7 @@ package GLEngine.Core.Objects.Components.Colliders;
 
 import GLEngine.Core.Interfaces.EditorVisible;
 import GLEngine.Core.Objects.GameObject;
+import GLEngine.Core.Worlds.WorldManager;
 import com.bulletphysics.collision.shapes.BoxShape;
 import org.joml.Vector3f;
 
@@ -21,6 +22,7 @@ public class BoxCollider extends Collider {
         if(false)
             object.setCollisionShape(new BoxShape(new javax.vecmath.Vector3f(dimensions.x-0.2f, dimensions.y, dimensions.z-0.2f)));
         else  object.setCollisionShape(new BoxShape(new javax.vecmath.Vector3f(dimensions.x, dimensions.y, dimensions.z)));
+        this.dimensions = dimensions;
     }
 
     @Override

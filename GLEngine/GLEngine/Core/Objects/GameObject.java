@@ -25,7 +25,7 @@ public final class GameObject implements Serializable, Cloneable {
 
     private Identity identity = new Identity("empty", "gameObject");
 
-    private MeshRenderer meshRenderer;
+    private MeshRenderer meshRenderer = new MeshRenderer();
 
     private GameObject parent = this;
 
@@ -45,8 +45,17 @@ public final class GameObject implements Serializable, Cloneable {
         position = new Vector3f(0,0,0);
         rotation = new Vector3f(0,0,0);
         scale = new Vector3f(1,1,1);
+        this.meshRenderer.setMesh(new Mesh(model));
+        this.meshRenderer.setTexture(null);
         addMissingTexture();
 
+        initObject();
+    }
+    public GameObject(MeshRenderer mesh){
+        position = new Vector3f(0,0,0);
+        rotation = new Vector3f(0,0,0);
+        scale = new Vector3f(1,1,1);
+        this.meshRenderer = mesh;
         initObject();
     }
 
@@ -179,7 +188,7 @@ public final class GameObject implements Serializable, Cloneable {
         }
     }
 
-    public void Created(){
+    public void OnCreated(){
         for (Component component : components) {
             if(component.isEnabled())
                 component.OnCreated();

@@ -3,6 +3,8 @@ package GLEngine.Logging;
 public class Logger {
     private static boolean enableLogging = true;
 
+    public static int logLevel = 3;
+
     public static void log(String msg){
         if(!enableLogging())
             return;
@@ -15,6 +17,8 @@ public class Logger {
     }
 
     public static void log(String msg, LogType type){
+        if(logLevel < type.ordinal())
+            return;
         if(type == LogType.Error){
             logError(type + ": " + msg);
         }else

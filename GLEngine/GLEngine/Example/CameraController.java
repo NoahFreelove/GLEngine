@@ -90,4 +90,6 @@ public class CameraController extends Component {
             System.out.println("You Hit:" + object.getIdentity().getName());
         }
     }
+
+
 }

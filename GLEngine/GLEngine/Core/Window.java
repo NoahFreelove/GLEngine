@@ -23,7 +23,6 @@ import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -307,6 +306,7 @@ public class Window {
         int textureID = gameObject.getMeshRenderer().getTexture().getTextureID();
         glUseProgram(shader.getProgram());
 
+
         if(masterRenderSettings == null){
             ActiveCamera.setWireframe(rs.wireframe);
             ActiveCamera.setCull(rs.cullFace);
@@ -330,7 +330,7 @@ public class Window {
             glUniform1i(textureID, 0);
         }
         else{
-            System.out.println("Object has no texture");
+            Logger.log("Object: '" + gameObject.getIdentity().getName() + "' has no texture", LogType.Debug);
         }
 
         ActiveCamera.setActiveGameObject(TransformObject(gameObject.getPosition(), gameObject.getRotation(), gameObject.getScale()));

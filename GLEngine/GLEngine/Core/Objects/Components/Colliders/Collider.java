@@ -11,10 +11,10 @@ import org.joml.Vector3f;
 import javax.vecmath.Matrix4f;
 
 public class Collider extends Component {
-    protected CollisionObject object;
+    public CollisionObject object;
 
     @EditorVisible
-    protected Vector3f position;
+    protected Vector3f position = new Vector3f();
 
     public Collider() {
         this.object = new CollisionObject();
@@ -23,6 +23,7 @@ public class Collider extends Component {
     public Collider(Vector3f position, Vector3f rot){
         object = new CollisionObject();
         object.activate(true);
+        this.position = position;
         Matrix4f positionMatrix = new Matrix4f();
         positionMatrix.setIdentity();
         positionMatrix.setTranslation(new javax.vecmath.Vector3f(position.x, position.y, position.z));
@@ -36,8 +37,8 @@ public class Collider extends Component {
 
     @Override
     public void OnCreated() {
-        WorldManager.getCurrentWorld().addCollider(object);
-        WorldManager.getCurrentWorld().RegisterCollider(new HashObject(getParent(), object.getCollisionShape().hashCode()));
+        WorldManager.getLoadingWorld().addCollider(object);
+        WorldManager.getLoadingWorld().RegisterCollider(new HashObject(getParent(), object.getCollisionShape().hashCode()));
         setPosition(position);
     }
 

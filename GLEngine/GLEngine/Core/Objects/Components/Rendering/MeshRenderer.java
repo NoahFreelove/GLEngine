@@ -77,4 +77,12 @@ public class MeshRenderer extends Component {
     public void setShader(ShaderProgram shader) {
         this.shader = shader;
     }
+
+    public void setMesh(Mesh mesh) {
+        this.mesh = mesh;
+    }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+    }
 }
