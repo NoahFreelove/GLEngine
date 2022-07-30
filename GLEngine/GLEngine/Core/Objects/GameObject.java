@@ -188,6 +188,7 @@ public final class GameObject implements Serializable, Cloneable {
         }
     }
 
+    // Called by the world loader after all components have been loaded onto component.
     public void OnCreated(){
         for (Component component : components) {
             if(component.isEnabled())
@@ -251,7 +252,7 @@ public final class GameObject implements Serializable, Cloneable {
                 return component;
             }
         }
-        return null;
+        return new Component();
     }
 
     public MeshRenderer getMeshRenderer(){

@@ -43,6 +43,16 @@ public class Collider extends Component {
     }
 
     @Override
+    public void OnRemoved(){
+        WorldManager.getCurrentWorld().RemoveCollider(object);
+    }
+
+    @Override
+    public void OnDestroy(){
+        WorldManager.getCurrentWorld().RemoveCollider(object);
+    }
+
+    @Override
     public void ParentTransformed(Vector3f newPos, Vector3f newRot, Vector3f newScale) {
         transform(newPos, newRot, newScale);
     }

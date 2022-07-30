@@ -72,7 +72,7 @@ public class Rigidbody extends Component {
 
     @Override
     public void OnCreated(){
-        WorldManager.getCurrentWorld().getPhysicsWorld().getPhysicsWorldObject().addRigidBody(rigidBody);
+        WorldManager.getLoadingWorld().getPhysicsWorld().getPhysicsWorldObject().addRigidBody(rigidBody);
         setMass(mass);
         setDimensions(new Vector3f(dimensions.x(), dimensions.y(), dimensions.z()));
     }

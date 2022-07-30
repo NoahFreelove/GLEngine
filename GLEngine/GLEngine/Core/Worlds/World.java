@@ -88,6 +88,9 @@ public class World {
         colliderHashes.add(ho);
         //System.out.printf("registered collider %d : %s%n", ho.getColliderHash(), ho.getGameObject().getIdentity().getName());
     }
+    public void RemoveCollider(CollisionObject collider){
+        physicsWorld.getPhysicsWorldObject().removeCollisionObject(collider);
+    }
 
     public GameObject getObjectByColliderHash(int hash){
         for (HashObject ho :
@@ -105,5 +108,25 @@ public class World {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public GameObject getGameObjectByName(String name){
+        for (GameObject go :
+                gameObjects) {
+            if (go.getIdentity().getName().equals(name)) {
+                return go;
+            }
+        }
+        return new GameObject();
+    }
+
+    public GameObject getGameObjectByTag(String tag){
+        for (GameObject go :
+                gameObjects) {
+            if (go.getIdentity().getTag().equals(tag)) {
+                return go;
+            }
+        }
+        return new GameObject();
     }
 }
