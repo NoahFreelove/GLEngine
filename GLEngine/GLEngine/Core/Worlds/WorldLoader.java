@@ -117,7 +117,7 @@ public class WorldLoader {
                 lineNum++;
                 if(!dummyLoad){
                     object = new GameObject(pos,rot,sca,model,image);
-                    object.addComponent(BoxCollider.GenerateBoxColliderForObject(object, true));
+                    //object.addComponent(BoxCollider.GenerateBoxColliderForObject(object));
                 }
                 else {
                     object = new GameObject(pos,rot,sca);

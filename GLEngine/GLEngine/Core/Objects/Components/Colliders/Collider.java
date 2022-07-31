@@ -18,6 +18,8 @@ public class Collider extends Component {
 
     public Collider() {
         this.object = new CollisionObject();
+        object.activate(true);
+
     }
 
     public Collider(Vector3f position, Vector3f rot){
@@ -40,6 +42,9 @@ public class Collider extends Component {
         WorldManager.getLoadingWorld().addCollider(object);
         WorldManager.getLoadingWorld().RegisterCollider(new HashObject(getParent(), object.getCollisionShape().hashCode()));
         setPosition(position);
+
+        object.activate(true);
+
     }
 
     @Override
@@ -58,10 +63,11 @@ public class Collider extends Component {
     }
 
     public void setPosition(Vector3f position){
-        Transform T =  new Transform();
-        object.getWorldTransform(T);
-        T.origin.set(position.x(), position.y(), position.z());
-        transform(T);
+        Matrix4f positionMatrix = new Matrix4f();
+        positionMatrix.setIdentity();
+        positionMatrix.setTranslation(new javax.vecmath.Vector3f(position.x, position.y, position.z));
+        transform(new Transform(positionMatrix));
+
         this.position = new Vector3f(position);
     }
 

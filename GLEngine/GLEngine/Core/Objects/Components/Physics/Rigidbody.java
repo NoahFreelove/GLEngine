@@ -26,6 +26,8 @@ public class Rigidbody extends Component {
     public Float mass = 1f;
     @EditorVisible
     public float stepThreshold = 0.5f;
+    @EditorVisible
+    private float friction = 1f;
 
     private CollisionShape colliderShape;
     public Rigidbody(){
@@ -75,6 +77,7 @@ public class Rigidbody extends Component {
         WorldManager.getLoadingWorld().getPhysicsWorld().getPhysicsWorldObject().addRigidBody(rigidBody);
         setMass(mass);
         setDimensions(new Vector3f(dimensions.x(), dimensions.y(), dimensions.z()));
+        rigidBody.setFriction(friction);
     }
 
     @Override
@@ -155,13 +158,6 @@ public class Rigidbody extends Component {
         //System.out.println("Is Falling:" + isFalling);
         //System.out.println("res: " + res.hasHit());
         //System.out.println("res2: " + res2.hasHit());
-
-        if(res.hasHit() && res2.hasHit()){
-            Vector3f velocity = new Vector3f();
-            rigidBody.getLinearVelocity(velocity);
-            rigidBody.setLinearVelocity(new Vector3f(velocity.x, -9.8f, velocity.z));
-        }
-
         //System.out.println(res.hasHit() + " : " + res2.hasHit());
 
         return (res.hasHit()) && !res2.hasHit() && !isFalling;

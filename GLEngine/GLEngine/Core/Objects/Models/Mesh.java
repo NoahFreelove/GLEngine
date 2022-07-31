@@ -2,6 +2,8 @@ package GLEngine.Core.Objects.Models;
 
 import GLEngine.IO.OBJ.ModelToBuffer;
 import GLEngine.IO.OBJ.ModelBuffer;
+import GLEngine.Logging.LogType;
+import GLEngine.Logging.Logger;
 import org.lwjgl.BufferUtils;
 
 public class Mesh{
@@ -32,7 +34,7 @@ public class Mesh{
     private void generateBuffers(){
         if(model == null)
         {
-            System.out.println("Model is null");
+            Logger.log("Model is null", LogType.Debug);
             objectBuffer = new ModelBuffer(BufferUtils.createFloatBuffer(0),BufferUtils.createFloatBuffer(0),BufferUtils.createFloatBuffer(0));
             return;
         }
