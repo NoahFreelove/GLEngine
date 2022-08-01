@@ -40,10 +40,10 @@ public class Camera extends Component {
     @EditorVariableAttribute(tooltip = "Far Plane is the distance to when the camera stops rendering objects")
     private float Far = 300f;
     @EditorVisible
-    @EditorVariableAttribute(min = -3.14f, max = 0, piLock = true, tooltip = "The maximum angle the camera can look down")
+    @EditorVariableAttribute(min = -3.14f, max = 0, step = (float)Math.PI/4, tooltip = "The maximum angle the camera can look down")
     private float AngleClampBottom = (float) (-Math.PI/2);
     @EditorVisible
-    @EditorVariableAttribute(min = 0, max = 3.14f, piLock = true, tooltip = "The maximum angle the camera can look up")
+    @EditorVariableAttribute(min = 0, max = 3.14f, step =(float)Math.PI/4, tooltip = "The maximum angle the camera can look up")
     private float AngleClampTop = (float) (Math.PI/2);
 
     private Vector3f direction = new Vector3f();
