@@ -1,7 +1,7 @@
 package GLEngine.Core.Objects.Components.Rendering;
 
 import GLEngine.Core.Interfaces.EditorName;
-import GLEngine.Core.Interfaces.EditorRange;
+import GLEngine.Core.Interfaces.EditorVariableAttribute;
 import GLEngine.Core.Interfaces.EditorVisible;
 import GLEngine.Core.Objects.Components.Component;
 import GLEngine.Core.Objects.GameObject;
@@ -28,19 +28,22 @@ public class Camera extends Component {
     private float horizAngle = 3.14f;
     private float vertAngle = 0f;
 
+
     @EditorVisible
     @EditorName(name = "Field of View")
-    @EditorRange(min = 1, max = 179)
+    @EditorVariableAttribute(min = 1, max = 179, intLock = true, header = "Camera Properties", tooltip = "Field of View is how many degrees the camera can see")
     private float fov = 90;
     @EditorVisible
+    @EditorVariableAttribute(tooltip = "Near Plane is the distance to when the camera starts to render objects")
     private float Near = 0.1f;
     @EditorVisible
+    @EditorVariableAttribute(tooltip = "Far Plane is the distance to when the camera stops rendering objects")
     private float Far = 300f;
     @EditorVisible
-    @EditorRange(min = -3.14f, max = 0)
+    @EditorVariableAttribute(min = -3.14f, max = 0, piLock = true, tooltip = "The maximum angle the camera can look down")
     private float AngleClampBottom = (float) (-Math.PI/2);
     @EditorVisible
-    @EditorRange(min = 0, max = 3.14f)
+    @EditorVariableAttribute(min = 0, max = 3.14f, piLock = true, tooltip = "The maximum angle the camera can look up")
     private float AngleClampTop = (float) (Math.PI/2);
 
     private Vector3f direction = new Vector3f();
