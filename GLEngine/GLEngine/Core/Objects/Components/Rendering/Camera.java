@@ -1,5 +1,7 @@
 package GLEngine.Core.Objects.Components.Rendering;
 
+import GLEngine.Core.Interfaces.EditorName;
+import GLEngine.Core.Interfaces.EditorRange;
 import GLEngine.Core.Interfaces.EditorVisible;
 import GLEngine.Core.Objects.Components.Component;
 import GLEngine.Core.Objects.GameObject;
@@ -27,14 +29,18 @@ public class Camera extends Component {
     private float vertAngle = 0f;
 
     @EditorVisible
-    private float FieldOfView = 90;
+    @EditorName(name = "Field of View")
+    @EditorRange(min = 1, max = 179)
+    private float fov = 90;
     @EditorVisible
     private float Near = 0.1f;
     @EditorVisible
     private float Far = 300f;
     @EditorVisible
+    @EditorRange(min = -3.14f, max = 0)
     private float AngleClampBottom = (float) (-Math.PI/2);
     @EditorVisible
+    @EditorRange(min = 0, max = 3.14f)
     private float AngleClampTop = (float) (Math.PI/2);
 
     private Vector3f direction = new Vector3f();
@@ -49,8 +55,8 @@ public class Camera extends Component {
         super();
     }
 
-    public Camera(float FieldOfView, float near, float far, float topMaxAngle, float bottomMaxAngle){
-        this.FieldOfView = FieldOfView;
+    public Camera(float fov, float near, float far, float topMaxAngle, float bottomMaxAngle){
+        this.fov = fov;
         this.Far = far;
         this.Near = near;
         this.AngleClampTop = topMaxAngle;
@@ -75,7 +81,7 @@ public class Camera extends Component {
         up = new Vector3f();
         right.cross(direction,up);
 
-        float FOV = this.FieldOfView;
+        float FOV = this.fov;
 
         ProjectionMatrix = new Matrix4f().perspective((float)Math.toRadians(FOV), (float)Window.GetInstance().getWidth()/ (float)Window.GetInstance().getHeight(), Near, Far);
 
