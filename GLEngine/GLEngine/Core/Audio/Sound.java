@@ -3,7 +3,6 @@ package GLEngine.Core.Audio;
 import GLEngine.Core.Worlds.World;
 import GLEngine.Core.Worlds.WorldManager;
 import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.EXTEfx;
 import org.lwjgl.stb.STBVorbis;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -40,7 +39,6 @@ public class Sound {
             return;
         }
 
-
         int channels = channelsBuffer.get(0);
         int sampleRate = sampleRateBuffer.get(0);
 
@@ -66,13 +64,13 @@ public class Sound {
 
         alSourcei(sourceID, AL_POSITION, 0);
 
-        final int filter = EXTEfx.alGenFilters();
+        /*final int filter = EXTEfx.alGenFilters();
         EXTEfx.alFilteri(filter, EXTEfx.AL_FILTER_TYPE, EXTEfx.AL_FILTER_LOWPASS);
         EXTEfx.alFilterf(filter, EXTEfx.AL_LOWPASS_GAIN, 25f);
         EXTEfx.alFilterf(filter, EXTEfx.AL_LOWPASS_GAINHF, 0f);
         AL10.alSourcei(sourceID, EXTEfx.AL_DIRECT_FILTER, filter);
         alSourcef(sourceID, AL_MAX_GAIN, 10f);
-        alSourcef(sourceID, AL_GAIN, 10f);
+        alSourcef(sourceID, AL_GAIN, 10f);*/
 
         free(rawAudioBuffer);
     }

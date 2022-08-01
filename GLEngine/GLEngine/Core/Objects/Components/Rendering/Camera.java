@@ -1,5 +1,6 @@
 package GLEngine.Core.Objects.Components.Rendering;
 
+import GLEngine.Core.Interfaces.EditorVisible;
 import GLEngine.Core.Objects.Components.Component;
 import GLEngine.Core.Objects.GameObject;
 import GLEngine.Core.Window;
@@ -16,21 +17,25 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Camera extends Component {
 
-    private Matrix4f ViewMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
     private Matrix4f ProjectionMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
+    private Matrix4f ViewMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
     private Matrix4f ModelMatrix = new Matrix4f(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1);
 
     private Vector3f offset = new Vector3f();
 
     private float horizAngle = 3.14f;
     private float vertAngle = 0f;
-    private float fov = 90;
 
-    private float near = 0.1f;
-    private float far = 300f;
-
-    private float bottomAngle = (float) (-Math.PI/2);
-    private float topAngle = (float) (Math.PI/2);
+    @EditorVisible
+    private float FieldOfView = 90;
+    @EditorVisible
+    private float Near = 0.1f;
+    @EditorVisible
+    private float Far = 300f;
+    @EditorVisible
+    private float AngleClampBottom = (float) (-Math.PI/2);
+    @EditorVisible
+    private float AngleClampTop = (float) (Math.PI/2);
 
     private Vector3f direction = new Vector3f();
     private Vector3f right = new Vector3f();
@@ -44,19 +49,19 @@ public class Camera extends Component {
         super();
     }
 
-    public Camera(float fov, float near, float far, float topMaxAngle, float bottomMaxAngle){
-        this.fov = fov;
-        this.far = far;
-        this.near = near;
-        this.topAngle = topMaxAngle;
-        this.bottomAngle = bottomMaxAngle;
+    public Camera(float FieldOfView, float near, float far, float topMaxAngle, float bottomMaxAngle){
+        this.FieldOfView = FieldOfView;
+        this.Far = far;
+        this.Near = near;
+        this.AngleClampTop = topMaxAngle;
+        this.AngleClampBottom = bottomMaxAngle;
     }
 
     public void UpdateRenderMatrix(){
         halfWidth = Window.GetInstance().getWidth()/2f;
         halfHeight = Window.GetInstance().getHeight()/2f;
 
-        vertAngle = clamp(bottomAngle, topAngle, vertAngle);
+        vertAngle = clamp(AngleClampBottom, AngleClampTop, vertAngle);
 
         direction = new Vector3f((float) (Math.cos(vertAngle)* Math.sin(horizAngle)),
                 (float) Math.sin(vertAngle),
@@ -70,9 +75,9 @@ public class Camera extends Component {
         up = new Vector3f();
         right.cross(direction,up);
 
-        float FOV = fov;
+        float FOV = this.FieldOfView;
 
-        ProjectionMatrix = new Matrix4f().perspective((float)Math.toRadians(FOV), (float)Window.GetInstance().getWidth()/ (float)Window.GetInstance().getHeight(),near,far);
+        ProjectionMatrix = new Matrix4f().perspective((float)Math.toRadians(FOV), (float)Window.GetInstance().getWidth()/ (float)Window.GetInstance().getHeight(), Near, Far);
 
         ViewMatrix = new Matrix4f();
 
